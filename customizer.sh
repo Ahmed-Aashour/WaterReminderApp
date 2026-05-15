@@ -40,7 +40,7 @@ do
   echo "Creating $n/java/$SUBDIR"
   mkdir -p $n/java/$SUBDIR
   echo "Moving files to $n/java/$SUBDIR"
-  mv $n/java/android/template/* $n/java/$SUBDIR
+  mv $n/java/android/waterreminder/* $n/java/$SUBDIR
   echo "Removing old $n/java/android/template"
   rm -rf mv $n/java/android
 done

@@ -23,17 +23,17 @@ plugins {
 }
 
 android {
-    namespace = "android.template"
+    namespace = "android.waterreminder"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "android.template"
+        applicationId = "android.waterreminder"
         minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "android.template.HiltTestRunner"
+        testInstrumentationRunner = "android.waterreminder.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
