@@ -103,11 +103,11 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Local tests: jUnit, coroutines, Android runner
+    // Local tests: JUnit, coroutines, Android runner
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 
-    // Instrumented tests: jUnit rules and runners
+    // Instrumented tests: JUnit rules and runners
 
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -117,4 +117,12 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
+    // Added Dependencies
+    /////////////////////
+    // Jetpack DataStore Preferences
+    implementation(libs.androidx.datastore.preferences)
+
+    // Coroutines (needed to collect data asynchronously)
+    implementation(libs.kotlinx.coroutines.android)
 }
