@@ -1,5 +1,6 @@
 package android.waterreminder.ui
 
+import android.content.res.Configuration
 import android.waterreminder.data.WaterDataStore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -145,6 +148,54 @@ fun WaterDashboardContent(
                     Text("+500 ml")
                 }
             }
+        }
+    }
+}
+
+/**
+ * A standard, crisp Light Mode preview using mock data
+ */
+@Preview(
+    showBackground = true,
+    name = "Light Mode - Initial State"
+)
+@Composable
+fun WaterDashboardPreviewEmpty() {
+    MaterialTheme {
+        Surface {
+            WaterDashboardContent(
+                currentIntake = 0,
+                dailyTarget = 2000,
+                progressFraction = 0.0f,
+                progressPercentage = 0,
+                onIncrementWater = {}, // Empty lambda: clicks do nothing in static preview
+                onResetWater = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview displaying what the UI looks like when the goal is partially complete,
+ * forced into Android's Dark Mode system configuration.
+ */
+@Preview(
+    showBackground = true,
+    name = "Dark Mode - Progress State",
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun WaterDashboardPreviewHalfFull() {
+    MaterialTheme {
+        Surface {
+            WaterDashboardContent(
+                currentIntake = 1250,
+                dailyTarget = 2500,
+                progressFraction = 0.5f,
+                progressPercentage = 50,
+                onIncrementWater = {},
+                onResetWater = {}
+            )
         }
     }
 }

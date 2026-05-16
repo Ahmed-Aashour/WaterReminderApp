@@ -128,4 +128,10 @@ dependencies {
 
     // The core material design icons (including Refresh, Favorite, Share, etc.)
     implementation(libs.androidx.compose.material.icons.core)
+
+    // Required for the @Preview annotation to be recognized by the build engine
+//    implementation(libs.androidx.ui.tooling)
+
+    // Required for the actual IDE canvas panel to render the graphics
+//    debugImplementation(libs.androidx.ui.tooling)
 }
