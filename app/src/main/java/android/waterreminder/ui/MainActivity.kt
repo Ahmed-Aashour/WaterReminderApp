@@ -34,6 +34,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -81,6 +82,16 @@ fun WaterDashboard(dataStore: WaterDataStore) {
     // Coroutine scope is required to call the suspend write operations of DataStore
     val scope = rememberCoroutineScope()
 
+    // Calculate the progress metrics
+    // Perform decimal division, then clamp it between 0.0f and 1.0f for the progress bar.
+    val progressFraction = if (dailyTarget > 0) {
+        (currentIntake.toFloat() / dailyTarget.toFloat()).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+    // Calculate percentage integer (e.g., 0.45 becomes 45)
+    val progressPercentage = (progressFraction * 100).toInt()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -103,19 +114,36 @@ fun WaterDashboard(dataStore: WaterDataStore) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Main Metric Display
+            // 2. Visual Progress Indicator
+            // LinearProgressIndicator expects a value between 0.0 (0%) and 1.0 (100%)
+            LinearProgressIndicator(
+                progress = { progressFraction },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(12.dp)
+                    .padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 3. Display Percentage Metric
             Text(
-                text = "$currentIntake ml",
-                fontSize = 48.sp,
-                style = MaterialTheme.typography.headlineLarge,
+                text = "$progressPercentage%",
+                fontSize = 64.sp,
+                style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.primary
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Main Metric Volume Display
             Text(
-                text = "Daily Target: $dailyTarget ml",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp)
+                text = "$currentIntake / $dailyTarget ml",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(64.dp))
@@ -126,18 +154,14 @@ fun WaterDashboard(dataStore: WaterDataStore) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = {
-                        scope.launch { dataStore.incrementWater(250) }
-                    },
+                    onClick = { scope.launch { dataStore.incrementWater(250) } },
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
                 ) {
                     Text("+250 ml")
                 }
 
                 Button(
-                    onClick = {
-                        scope.launch { dataStore.incrementWater(500) }
-                    },
+                    onClick = { scope.launch { dataStore.incrementWater(500) } },
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
                 ) {
                     Text("+500 ml")
