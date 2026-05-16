@@ -1,4 +1,4 @@
-package android.waterreminder
+package android.waterreminder.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore

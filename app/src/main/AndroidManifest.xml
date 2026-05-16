@@ -47,7 +47,7 @@
         </activity>
         <!-- Receiver of alarm signals -->
         <receiver
-                android:name=".WaterReminderReceiver"
+                android:name=".service.WaterReminderReceiver"
                 android:enabled="true"
                 android:exported="false" />
     </application>

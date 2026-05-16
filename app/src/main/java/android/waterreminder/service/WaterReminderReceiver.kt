@@ -1,5 +1,6 @@
-package android.waterreminder
+package android.waterreminder.service
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
@@ -28,7 +29,7 @@ class WaterReminderReceiver : BroadcastReceiver() {
 
         // 2. Build the visual notification banner
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // TODO: System default icon for now
+            .setSmallIcon(R.drawable.ic_dialog_info) // TODO: System default icon for now
             .setContentTitle("Time to Hydrate! 💧")
             .setContentText("Keep your energy up. Take a quick break and drink a glass of water.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)

@@ -1,9 +1,8 @@
-package android.waterreminder
+package android.waterreminder.service
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -61,7 +60,7 @@ class WaterNotificationScheduler(private val context: Context) {
      * Testing utility
      * */
     private fun scheduleTestReminder(context: Context) {
-        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Checking if the app is legally allowed to schedule exact alarms
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

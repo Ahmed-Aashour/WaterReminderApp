@@ -17,9 +17,8 @@
 package android.waterreminder.ui
 
 import android.os.Bundle
-import android.waterreminder.WaterDashboardScreen
-import android.waterreminder.WaterDataStore
-import android.waterreminder.WaterNotificationScheduler
+import android.waterreminder.data.WaterDataStore
+import android.waterreminder.service.WaterNotificationScheduler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
