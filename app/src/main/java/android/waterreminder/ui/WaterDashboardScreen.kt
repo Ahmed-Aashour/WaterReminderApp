@@ -2,32 +2,17 @@ package android.waterreminder.ui
 
 import android.content.res.Configuration
 import android.waterreminder.data.WaterDataStore
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,54 +83,90 @@ fun WaterDashboardContent(
                 .padding(paddingValues)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceBetween // Spreads out ring vs buttons beautifully
         ) {
-            LinearProgressIndicator(
-                progress = { progressFraction },
+
+            // Header spacing layout block
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 1. THE HYDRATION RING CONTAINER
+            // Box allows us to layer the text directly over the center of the circular indicator
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(260.dp) // Large explicit footprint for the ring dashboard
+            ) {
+                // Background Track Ring (Shows the uncompleted goal space cleanly)
+                CircularProgressIndicator(
+                    progress = { 1.0f },
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    strokeWidth = 14.dp,
+                    strokeCap = StrokeCap.Round
+                )
+
+                // Active Progress Ring Layer
+                CircularProgressIndicator(
+                    progress = { progressFraction },
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 14.dp,
+                    strokeCap = StrokeCap.Round // Smoothly rounds the edges of the progress line
+                )
+
+                // Core Stats Stacked inside the Ring center
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "$progressPercentage%",
+                        fontSize = 54.sp,
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "$currentIntake / $dailyTarget ml",
+                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Message label
+            Text(
+                text = if (progressFraction >= 1.0f) "Goal Achieved! 🎉" else "Stay Hydrated!",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            // 2. ACTION CONTROLS FOOTER
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(12.dp)
-                    .padding(horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "$progressPercentage%",
-                fontSize = 64.sp,
-                style = MaterialTheme.typography.displayLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "$currentIntake / $dailyTarget ml",
-                fontSize = 20.sp,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(64.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+                    .padding(bottom = 32.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
                     onClick = { onIncrementWater(250) },
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                        .padding(horizontal = 8.dp)
                 ) {
-                    Text("+250 ml")
+                    Text("+250 ml", fontSize = 16.sp)
                 }
 
                 Button(
                     onClick = { onIncrementWater(500) },
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                        .padding(horizontal = 8.dp)
                 ) {
-                    Text("+500 ml")
+                    Text("+500 ml", fontSize = 16.sp)
                 }
             }
         }
