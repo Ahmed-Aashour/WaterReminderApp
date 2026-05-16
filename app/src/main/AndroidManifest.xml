@@ -50,6 +50,11 @@
                 android:name=".service.WaterReminderReceiver"
                 android:enabled="true"
                 android:exported="false" />
+        <!-- New Action Receiver Entry -->
+        <receiver
+                android:name=".service.NotificationActionReceiver"
+                android:enabled="true"
+                android:exported="false" />
     </application>
 
 </manifest>

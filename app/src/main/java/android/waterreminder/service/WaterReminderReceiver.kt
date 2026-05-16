@@ -1,13 +1,14 @@
 package android.waterreminder.service
 
-import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.RemoteInput
 
 class WaterReminderReceiver : BroadcastReceiver() {
 
@@ -15,7 +16,6 @@ class WaterReminderReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "water_reminder_channel"
 
-        // 1. Create a Notification Channel (Required for Android 8.0+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
@@ -27,16 +27,58 @@ class WaterReminderReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // 2. Build the visual notification banner
+        // 1. INTENT FOR QUICK DRINK (+250ml) BUTTON
+        val quickDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "ACTION_QUICK_DRINK"
+        }
+        val quickDrinkPendingIntent = PendingIntent.getBroadcast(
+            context,
+            101,
+            quickDrinkIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // 2. INTENT & INPUT FOR CUSTOM TEXT REPLY FIELD
+        val remoteInput = RemoteInput.Builder("KEY_CUSTOM_WATER_AMOUNT").apply {
+            setLabel("Amount in ml (e.g., 350)")
+        }.build()
+
+        val customDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "ACTION_CUSTOM_DRINK"
+        }
+        // Must use FLAG_MUTABLE for RemoteInput text input to be attached by the system!
+        val customDrinkPendingIntent = PendingIntent.getBroadcast(
+            context,
+            102,
+            customDrinkIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
+
+        // 3. BUILD THE INTERACTIVE BANNER
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_dialog_info) // TODO: System default icon for now
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Time to Hydrate! 💧")
-            .setContentText("Keep your energy up. Take a quick break and drink a glass of water.")
+            .setContentText("Log your intake quickly below.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true) // Dismisses the notification when clicked
+            .setAutoCancel(true)
+
+            // Add the basic quick button action
+            .addAction(
+                android.R.drawable.ic_menu_add,
+                "+250 ml",
+                quickDrinkPendingIntent
+            )
+
+            // Add the text-input action box
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    android.R.drawable.ic_menu_edit,
+                    "Custom Amount",
+                    customDrinkPendingIntent
+                ).addRemoteInput(remoteInput).build()
+            )
             .build()
 
-        // 3. Fire the notification (ID 1 acts as a unique reference slot)
         notificationManager.notify(1, notification)
     }
 }
