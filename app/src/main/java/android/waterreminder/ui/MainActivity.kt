@@ -24,6 +24,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.waterreminder.WaterDataStore
+import android.waterreminder.WaterNotificationScheduler
 import android.waterreminder.WaterReminderReceiver
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -61,14 +62,15 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Instantiate the data storage layer
+    // Instantiating business-logic engines cleanly via lazy delegation
     private val waterDataStore by lazy { WaterDataStore(applicationContext) }
+    private val notificationScheduler by lazy { WaterNotificationScheduler(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Schedule a test reminder alarm when the app opens
-        scheduleTestReminder(this)
+        // Let the scheduler handle the setup implicitly
+        notificationScheduler.scheduleRepeatingReminders()
 
         setContent {
             MaterialTheme {
@@ -80,63 +82,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun scheduleTestReminder(context: Context) {
-        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-
-        // Checking if the app is legally allowed to schedule exact alarms
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (!alarmManager.canScheduleExactAlarms()) {
-                Log.w("WaterReminder", "Cannot schedule exact alarm: Permission denied by system/user.")
-                // Fallback: Use an inexact alarm which doesn't require special permission
-                scheduleInexactReminder(context, alarmManager)
-                return
-            }
-        }
-
-        // Alarm setup
-        val intent = Intent(context, WaterReminderReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val triggerTime = System.currentTimeMillis() + 10000
-
-        // Wrap the scheduling call inside a try-catch block as a safety net
-        try {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                triggerTime,
-                pendingIntent
-            )
-        } catch (e: SecurityException) {
-            Log.e("WaterReminder", "SecurityException caught while scheduling alarm", e)
-            scheduleInexactReminder(context, alarmManager)
-        }
-    }
-
-    // Fallback method to prevent the engine from breaking entirely
-    private fun scheduleInexactReminder(context: Context, alarmManager: AlarmManager) {
-        val intent = Intent(context, WaterReminderReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val triggerTime = System.currentTimeMillis() + 10000
-
-        // setAndAllowWhileIdle lets Android shift the timing slightly to save battery, bypasses the restriction
-        alarmManager.setAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
-        )
     }
 }
 
