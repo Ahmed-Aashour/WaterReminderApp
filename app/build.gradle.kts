@@ -125,4 +125,7 @@ dependencies {
 
     // Coroutines (needed to collect data asynchronously)
     implementation(libs.kotlinx.coroutines.android)
+
+    // The core material design icons (including Refresh, Favorite, Share, etc.)
+    implementation(libs.androidx.compose.material.icons.core)
 }
