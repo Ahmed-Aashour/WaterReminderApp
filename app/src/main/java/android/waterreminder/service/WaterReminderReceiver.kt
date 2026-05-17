@@ -1,5 +1,6 @@
 package android.waterreminder.service
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -23,9 +24,14 @@ class WaterReminderReceiver : BroadcastReceiver() {
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Reminders to drink water regularly"
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
             notificationManager.createNotificationChannel(channel)
         }
+
+        // Trigger the next alarm for repeating notifications
+        val scheduler = WaterNotificationScheduler(context.applicationContext)
+        scheduler.scheduleRepeatingReminders()
 
         // 1. INTENT FOR QUICK DRINK (+250ml) BUTTON
         val quickDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
@@ -57,19 +63,16 @@ class WaterReminderReceiver : BroadcastReceiver() {
         // 3. BUILD THE INTERACTIVE BANNER
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Time to Hydrate! 💧")
-            .setContentText("Log your intake quickly below.")
+            .setContentTitle("Time to Hydrate your body! 💧")
+            .setContentText("Go drink water and enter the amount you drank")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
-
-            // Add the basic quick button action
             .addAction(
                 android.R.drawable.ic_menu_add,
                 "+250 ml",
                 quickDrinkPendingIntent
             )
-
-            // Add the text-input action box
             .addAction(
                 NotificationCompat.Action.Builder(
                     android.R.drawable.ic_menu_edit,
