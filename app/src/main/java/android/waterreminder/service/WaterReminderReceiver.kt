@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.waterreminder.R
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 
@@ -62,9 +63,9 @@ class WaterReminderReceiver : BroadcastReceiver() {
 
         // 3. BUILD THE INTERACTIVE BANNER
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_hydra_logo)
             .setContentTitle("Time to Hydrate your body! 💧")
-            .setContentText("Go drink water and enter the amount you drank")
+            .setContentText("Go drink glass of water and enter the amount")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
