@@ -1,8 +1,12 @@
 package android.waterreminder.ui
 
 import android.content.res.Configuration
+import android.waterreminder.R
 import android.waterreminder.data.WaterDataStore
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
@@ -12,11 +16,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+
+// Brand Color
+val HydraBlue = Color(0xFF2EA9EB)
+// Custom Typography Font (font asset is in res/font/dg_ghayaty_regular.ttf)
+val DGGhayaty = FontFamily(
+    Font(R.font.dg_ghayaty_regular, weight = FontWeight.Normal),
+)
+// re-usable base style mapping the Figma italic layout
+val italicStyle = TextStyle(
+    fontFamily = DGGhayaty,
+    fontStyle = FontStyle.Italic,
+    fontWeight = FontWeight.W400,
+)
 
 /**
  * 1. STATEFUL CONTAINER
@@ -65,108 +88,161 @@ fun WaterDashboardContent(
     onIncrementWater: (Int) -> Unit,
     onResetWater: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Water Tracker") },
-                actions = {
-                    IconButton(onClick = onResetWater) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "Reset Progress")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.White
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(24.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween // Spreads out ring vs buttons beautifully
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-
-            // Header spacing layout block
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 1. THE HYDRATION RING CONTAINER
-            // Box allows us to layer the text directly over the center of the circular indicator
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.size(260.dp) // Large explicit footprint for the ring dashboard
+            // HEADER
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Background Track Ring (Shows the uncompleted goal space cleanly)
-                CircularProgressIndicator(
-                    progress = { 1.0f },
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    strokeWidth = 14.dp,
-                    strokeCap = StrokeCap.Round
-                )
-
-                // Active Progress Ring Layer
-                CircularProgressIndicator(
-                    progress = { progressFraction },
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 14.dp,
-                    strokeCap = StrokeCap.Round // Smoothly rounds the edges of the progress line
-                )
-
-                // Core Stats Stacked inside the Ring center
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Card(
+                    colors = CardDefaults.cardColors(Color.White),
+                    shape = RoundedCornerShape(5.dp),
+                    modifier = Modifier.size(width = 214.dp, height = 60.dp),
                 ) {
-                    Text(
-                        text = "$progressPercentage%",
-                        fontSize = 54.sp,
-                        style = MaterialTheme.typography.displayLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = "Hydra-ate\nYourself",
+                            style = italicStyle,
+                            fontSize = 28.sp,
+                            color = HydraBlue,
+                        )
+                    }
+                }
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "$currentIntake / $dailyTarget ml",
-                        fontSize = 16.sp,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                // Reset icon mapped neatly adjacent to the custom header banner
+                IconButton(onClick = onResetWater) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Reset Progress",
+                        tint = HydraBlue
                     )
                 }
             }
 
-            // Message label
-            Text(
-                text = if (progressFraction >= 1.0f) "Goal Achieved! 🎉" else "Stay Hydrated!",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            // 2. ACTION CONTROLS FOOTER
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            // RADIAL PROGRESS BAR
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(5.dp),
+                modifier = Modifier.size(width = 245.dp, height = 249.dp)
             ) {
-                Button(
-                    onClick = { onIncrementWater(250) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .padding(horizontal = 8.dp)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Text("+250 ml", fontSize = 16.sp)
+                    CircularProgressIndicator(
+                        progress = { progressFraction },
+                        modifier = Modifier.size(200.dp),
+                        color = HydraBlue,
+                        trackColor = HydraBlue.copy(alpha = 0.3f),
+                        strokeWidth = 10.dp,
+                        strokeCap = StrokeCap.Round
+                    )
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = "$progressPercentage%",
+                            style = italicStyle,
+                            fontSize = 32.sp,
+                            color = HydraBlue,
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "$currentIntake / $dailyTarget ml",
+                            style = italicStyle,
+                            fontSize = 12.sp,
+                            color = HydraBlue.copy(alpha = 0.9f),
+                        )
+                    }
+                }
+            }
+
+            // HISTORY CARD (Cups Empty State)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = if (progressPercentage != 100) "Press a cup below to add" else "Fully Hydrated! Great Job! 😎",
+                    style = italicStyle,
+                    fontSize = 16.sp,
+                    color = HydraBlue,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Card(
+                    colors = CardDefaults.cardColors(HydraBlue),
+                    shape = RoundedCornerShape(5.dp),
+                    modifier = Modifier.fillMaxWidth().height(94.dp),
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = if (currentIntake == 0) "No Cups Drank!" else "Hydra Log Active!",
+                            style = italicStyle,
+                            fontSize = 40.sp,
+                            color = Color.White,
+                        )
+                    }
+                }
+            }
+
+            // MULTI-OPTION QUICK DRINK DOCK
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Generic factory item macro function for modularity
+                val dynamicAmounts = listOf(250, 350, 500)
+                dynamicAmounts.forEach { amount ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    ) {
+                        Button(
+                            onClick = { onIncrementWater(amount) },
+                            colors = ButtonDefaults.buttonColors(containerColor = HydraBlue),
+                            shape = RoundedCornerShape(5.dp),
+                            modifier = Modifier.size(width = 53.dp, height = 78.dp),
+                            contentPadding = PaddingValues(0.dp),
+                        ) {
+                            Text("🥛", fontSize = 24.dp.value.sp)
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "${amount}ml",
+                            style = italicStyle,
+                            fontSize = 16.sp,
+                            color = HydraBlue,
+                        )
+                    }
                 }
 
-                Button(
-                    onClick = { onIncrementWater(500) },
+                // Plus Input Button Custom Amount
+                IconButton(
+                    onClick = { onIncrementWater(100) },
                     modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 20.dp)
+                        .size(34.dp)
+                        .background(HydraBlue, CircleShape)
                 ) {
-                    Text("+500 ml", fontSize = 16.sp)
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Custom Add",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
         }
@@ -174,11 +250,11 @@ fun WaterDashboardContent(
 }
 
 /**
- * A standard, crisp Light Mode preview using mock data
+ * A preview displaying what the UI looks like initially
  */
 @Preview(
     showBackground = true,
-    name = "Light Mode - Initial State"
+    name = "Initial State"
 )
 @Composable
 fun WaterDashboardPreviewEmpty() {
@@ -197,23 +273,46 @@ fun WaterDashboardPreviewEmpty() {
 }
 
 /**
- * A preview displaying what the UI looks like when the goal is partially complete,
- * forced into Android's Dark Mode system configuration.
+ * A preview displaying what the UI looks like when the goal is "partially complete"
  */
 @Preview(
     showBackground = true,
-    name = "Dark Mode - Progress State",
+    name = "Partial State",
     uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
-fun WaterDashboardPreviewHalfFull() {
+fun WaterDashboardPreviewThreeForthFull() {
     MaterialTheme {
         Surface {
             WaterDashboardContent(
-                currentIntake = 1250,
+                currentIntake = 1250+625,
                 dailyTarget = 2500,
-                progressFraction = 0.5f,
-                progressPercentage = 50,
+                progressFraction = 0.75f,
+                progressPercentage = 75,
+                onIncrementWater = {},
+                onResetWater = {}
+            )
+        }
+    }
+}
+
+/**
+ * A preview displaying what the UI looks like when the goal is "fully complete"
+ */
+@Preview(
+    showBackground = true,
+    name = "Full State",
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun WaterDashboardPreviewFull() {
+    MaterialTheme {
+        Surface {
+            WaterDashboardContent(
+                currentIntake = 2500,
+                dailyTarget = 2500,
+                progressFraction = 1f,
+                progressPercentage = 100,
                 onIncrementWater = {},
                 onResetWater = {}
             )
