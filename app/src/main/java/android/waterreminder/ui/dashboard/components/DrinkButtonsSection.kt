@@ -13,34 +13,55 @@ import androidx.compose.ui.unit.sp
 import android.waterreminder.ui.theme.AgbalumoFont
 import android.waterreminder.ui.theme.ErtawyTheme
 import android.waterreminder.ui.core.components.CustomAddButton
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 
-fun Modifier.horizontalFadingEdge(): Modifier = this
+/**
+ * Custom extension modifier that dynamically scales a fading alpha mask on both
+ * the left and right edges depending on the list's real-time scrolling progression.
+ */
+fun Modifier.dynamicFadingEdges(scrollState: ScrollState, fadeWidthDp: Float = 100f): Modifier = this
     .graphicsLayer {
-        // 1. Isolate the layer composition so blend modes don't bleed into the background canvas
-        compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen
+        compositingStrategy = CompositingStrategy.Offscreen
     }
     .drawWithContent {
-        drawContent() // Render the child buttons first
+        drawContent() // Render the baseline preset buttons first
 
-        // 2. Define a clean gradient from fully visible to fully transparent across the last 32dp
-        val fadeWidth = 32.dp.toPx()
-        val gradientStart = size.width - fadeWidth
+        // Calculate dynamic values
+        val currentScroll = scrollState.value
+        val maxScroll = scrollState.maxValue
+        val viewWidth = size.width
 
-        drawRect(
-            brush = Brush.horizontalGradient(
-                colors = listOf(Color.Black, Color.Transparent),
-                startX = gradientStart,
-                endX = size.width
-            ),
-            blendMode = BlendMode.DstIn // Keeps destination content only where the alpha brush is present
-        )
+        // Draw left fading edge if we have scrolled away from the absolute start position (0 px)
+        if (currentScroll > 0) {
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(Color.Transparent, Color.Black),
+                    startX = 0f,
+                    endX = fadeWidthDp
+                ),
+                blendMode = BlendMode.DstIn
+            )
+        }
+
+        // Draw right fading edge ONLY if we haven't hit the end boundary line yet
+        if (currentScroll < maxScroll && maxScroll > 0) {
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(Color.Black, Color.Transparent),
+                    startX = viewWidth - fadeWidthDp,
+                    endX = viewWidth
+                ),
+                blendMode = BlendMode.DstIn
+            )
+        }
     }
 
 @Composable
@@ -49,6 +70,9 @@ fun DrinkButtonsSection(
     onCustomAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Instantiate and track the scroll state so our modifier can access its layout state parameters
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = modifier.width(342.dp) // Bound tightly to Figma's structural block footprint
     ) {
@@ -75,7 +99,7 @@ fun DrinkButtonsSection(
                 modifier = Modifier
                     .weight(1f) // Fills remaining space dynamically
                     .padding(end = 16.dp) // Prevents buttons from kissing the custom add button
-                    .horizontalFadingEdge() // Fading
+                    .dynamicFadingEdges(scrollState) // Fading
                     .horizontalScroll(rememberScrollState()), // Enables frictionless horizontal scrolling
                 horizontalArrangement = Arrangement.spacedBy(16.dp), // Space gaps between preset buttons
                 verticalAlignment = Alignment.CenterVertically
