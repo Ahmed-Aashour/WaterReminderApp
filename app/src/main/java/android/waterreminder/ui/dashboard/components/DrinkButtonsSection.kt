@@ -55,6 +55,7 @@ fun DrinkButtonsSection(
                     .padding(end = 16.dp) // Prevents buttons from kissing the custom add button
                     .padding(bottom = 8.dp) // Keeps a tiny gap above the scroll indicator
                     .padding(bottom = 8.dp) // Keeps breathing gap above indicator track line
+                    .horizontalScroll(scrollState) // Enables frictionless horizontal scrolling
                     .simpleHorizontalScrollbar(
                         state = scrollState,
                         scrollbarWidth = 4.dp,
@@ -64,8 +65,7 @@ fun DrinkButtonsSection(
                     .dynamicFadingEdges(
                         state = scrollState,
                         fadeWidth = 32.dp
-                    )
-                    .horizontalScroll(rememberScrollState()), // Enables frictionless horizontal scrolling
+                    ),
                 horizontalArrangement = Arrangement.spacedBy(16.dp), // Space gaps between preset buttons
                 verticalAlignment = Alignment.CenterVertically
             ) {

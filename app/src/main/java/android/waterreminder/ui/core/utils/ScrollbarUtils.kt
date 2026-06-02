@@ -66,29 +66,36 @@ fun Modifier.simpleHorizontalScrollbar(
     indicatorColor: Color,
     trackColor: Color
 ): Modifier = this.drawWithContent {
+    // 1. Draw your buttons as usual
     drawContent()
+
     val maxScroll = state.maxValue.toFloat()
     if (maxScroll <= 0f) return@drawWithContent
 
     val currentScroll = state.value.toFloat()
     val viewWidth = size.width
     val thickness = scrollbarWidth.toPx()
-    val yOffset = size.height - thickness
 
-    // 1. Render Track Line Background
+    // --- THE CANVAS MATH FIX ---
+    // Instead of drawing at the absolute bottom line, we subtract an extra 8dp (converted to Px)
+    // from the thickness calculation area so it paints safely under the component margins.
+    val clearanceBufferPx = 8.dp.toPx()
+    val yOffset = size.height - thickness + clearanceBufferPx
+
+    // Calculate indicator thumb slider scale metrics
+    val totalContentWidth = viewWidth + maxScroll
+    val indicatorWidth = (viewWidth / totalContentWidth) * viewWidth
+    val scrollRatio = currentScroll / maxScroll
+    val indicatorX = (viewWidth - indicatorWidth) * scrollRatio
+
+    // 2. Render Track Line Background safely in space buffer
     drawRect(
         color = trackColor,
         topLeft = Offset(x = 0f, y = yOffset),
         size = Size(width = viewWidth, height = thickness)
     )
 
-    // 2. Compute Proportional Thumb Mapping Width Metrics
-    val totalContentWidth = viewWidth + maxScroll
-    val indicatorWidth = (viewWidth / totalContentWidth) * viewWidth
-    val scrollRatio = currentScroll / maxScroll
-    val indicatorX = (viewWidth - indicatorWidth) * scrollRatio
-
-    // 3. Render Active Position Thumb Overlay
+    // 3. Render Active Position Thumb Overlay safely in space buffer
     drawRect(
         color = indicatorColor,
         topLeft = Offset(x = indicatorX, y = yOffset),
