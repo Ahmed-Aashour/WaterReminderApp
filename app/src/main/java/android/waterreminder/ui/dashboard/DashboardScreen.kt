@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import android.waterreminder.ui.dashboard.components.Header
 import android.waterreminder.ui.core.components.SettingsButton // Notice the decoupled core import path!
+import android.waterreminder.ui.dashboard.components.ProgressBar
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -34,7 +35,13 @@ fun DashboardScreen(
                 }
             )
 
-            // Layout anchors remain clear for future components...
+            Spacer(modifier = Modifier.height(24.dp)) // Spacing matching top constraints
+
+            // 2. Mount the New Progress Bar Component
+            ProgressBar(
+                currentIntakeMl = 1600,
+                targetIntakeMl = 2000
+            )
         }
     }
 }
