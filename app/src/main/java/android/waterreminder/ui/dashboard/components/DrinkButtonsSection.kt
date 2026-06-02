@@ -52,8 +52,8 @@ fun DrinkButtonsSection(
                 modifier = Modifier
                     .weight(1f) // Fills remaining space dynamically
                     .padding(end = 16.dp)
-                    .horizontalScroll(scrollState) // Enables frictionless horizontal scrolling
-                    .dynamicFadingEdges(state = scrollState, fadeWidth = 32.dp),
+                    .dynamicFadingEdges(state = scrollState, fadeWidth = 32.dp)
+                    .horizontalScroll(scrollState), // Enables frictionless horizontal scrolling
                 horizontalArrangement = Arrangement.spacedBy(16.dp), // Space gaps between preset buttons
                 verticalAlignment = Alignment.CenterVertically
             ) {
