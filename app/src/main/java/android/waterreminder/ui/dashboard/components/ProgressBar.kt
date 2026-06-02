@@ -28,7 +28,16 @@ fun ProgressBar(
 ) {
     // Calculate progress ratio safely
     val progressPercentage = if (targetIntakeMl > 0) (currentIntakeMl * 100) / targetIntakeMl else 0
-    val progressFraction = if (targetIntakeMl > 0) currentIntakeMl.toFloat() / targetIntakeMl.toFloat() else 0f
+
+    // Coerce the fraction between 0f and 1f so it doesn't break layout boundaries if goals are exceeded
+    val progressFraction = if (targetIntakeMl > 0) {
+        (currentIntakeMl.toFloat() / targetIntakeMl.toFloat()).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+
+    // To make water fill up from the bottom, we invert the math layout line:
+    val waterLevelLine = 1f - progressFraction
 
     // Card Container (Figma Box-sizing specs translated to exact dp sizes)
     Box(
@@ -38,8 +47,9 @@ fun ProgressBar(
             .background(
                 // Figma linear-gradient definition translation
                 Brush.verticalGradient(
-                    0.2018f to Color.Transparent,
-                    0.2019f to WaterProgress
+                    // Dynamic color anchors adapt live to user state tracking
+                    waterLevelLine to Color.Transparent,
+                    (waterLevelLine + 0.001f).coerceIn(0f, 1f) to WaterProgress
                 )
             )
             .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(15.dp))
@@ -98,7 +108,7 @@ fun ProgressBar(
 fun ProgressBarPreview() {
     ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
-            ProgressBar(currentIntakeMl = 1500, targetIntakeMl = 2000)
+            ProgressBar(currentIntakeMl = 500, targetIntakeMl = 2000)
         }
     }
 }
