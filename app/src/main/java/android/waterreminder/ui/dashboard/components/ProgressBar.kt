@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.ui.theme.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,13 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import android.waterreminder.ui.theme.ErtawyTheme
-import android.waterreminder.ui.theme.ErtawyTypography
-import android.waterreminder.ui.theme.WaterPrimary
-import android.waterreminder.ui.theme.WaterProgress
 
 @Composable
 fun ProgressBar(
@@ -69,18 +67,33 @@ fun ProgressBar(
             ) {
                 // Background Track Circle Layer
                 androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                    val strokeWidthPx = 8.dp.toPx()
+                    val outerOutlineWidthPx = 12.dp.toPx() // Slightly wider to sit behind the track
+
+                    // FIXED OUTLINE BORDER
+                    // Draws a crisp, solid white backdrop ring to separate the progress track from the fluid gradient background
                     drawCircle(
-                        color = Color.White.copy(alpha = 0.4f),
-                        radius = size.minDimension / 2,
-                        style = Stroke(width = 8.dp.toPx())
-                    )
-                    // Animated Arc Tracking Indicator Rim
-                    drawArc(
                         color = WaterPrimary,
+                        radius = size.minDimension / 2,
+                        style = Stroke(width = outerOutlineWidthPx)
+                    )
+
+                    // BACKGROUND TRACK RING
+                    // The translucent blue track container inside the white outline bounds
+                    drawCircle(
+                        color = WaterPrimary,
+                        radius = size.minDimension / 2,
+                        style = Stroke(width = strokeWidthPx)
+                    )
+
+                    // ACTIVE PROGRESS ARC LAYER
+                    // The actual dynamic filling indicator ring drawn neatly on top
+                    drawArc(
+                        color = WaterLight,
                         startAngle = -90f,
                         sweepAngle = 360f * progressFraction,
                         useCenter = false,
-                        style = Stroke(width = 8.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round)
+                        style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
                     )
                 }
 
@@ -103,12 +116,42 @@ fun ProgressBar(
     }
 }
 
-@Preview(name = "Progress Bar Component", showBackground = true)
+@Preview(name = "Progress Bar 25%", showBackground = true)
 @Composable
-fun ProgressBarPreview() {
+fun ProgressBarPreview_25() {
     ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             ProgressBar(currentIntakeMl = 500, targetIntakeMl = 2000)
+        }
+    }
+}
+
+@Preview(name = "Progress Bar 50%", showBackground = true)
+@Composable
+fun ProgressBarPreview_50() {
+    ErtawyTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ProgressBar(currentIntakeMl = 1000, targetIntakeMl = 2000)
+        }
+    }
+}
+
+@Preview(name = "Progress Bar 75%", showBackground = true)
+@Composable
+fun ProgressBarPreview_75() {
+    ErtawyTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ProgressBar(currentIntakeMl = 1500, targetIntakeMl = 2000)
+        }
+    }
+}
+
+@Preview(name = "Progress Bar 100%", showBackground = true)
+@Composable
+fun ProgressBarPreview_100() {
+    ErtawyTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            ProgressBar(currentIntakeMl = 2000, targetIntakeMl = 2000)
         }
     }
 }
