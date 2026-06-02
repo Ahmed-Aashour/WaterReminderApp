@@ -1,7 +1,8 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.ui.core.components.CustomAddButton
-import android.waterreminder.ui.core.utils.scrollEffects
+import android.waterreminder.ui.core.utils.dynamicFadingEdges
+import android.waterreminder.ui.core.utils.simpleHorizontalScrollbar
 import android.waterreminder.ui.theme.AgbalumoFont
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.horizontalScroll
@@ -54,12 +55,15 @@ fun DrinkButtonsSection(
                     .padding(end = 16.dp) // Prevents buttons from kissing the custom add button
                     .padding(bottom = 8.dp) // Keeps a tiny gap above the scroll indicator
                     .padding(bottom = 8.dp) // Keeps breathing gap above indicator track line
-                    .scrollEffects(
+                    .simpleHorizontalScrollbar(
                         state = scrollState,
                         scrollbarWidth = 4.dp,
-                        fadeWidth = 32.dp,
                         indicatorColor = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    )
+                    .dynamicFadingEdges(
+                        state = scrollState,
+                        fadeWidth = 32.dp
                     )
                     .horizontalScroll(rememberScrollState()), // Enables frictionless horizontal scrolling
                 horizontalArrangement = Arrangement.spacedBy(16.dp), // Space gaps between preset buttons

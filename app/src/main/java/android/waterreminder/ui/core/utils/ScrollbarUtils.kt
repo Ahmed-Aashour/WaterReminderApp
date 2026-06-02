@@ -14,34 +14,24 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Applies a combined visual effect for scrollable rows:
- * 1. A permanent horizontal scrollbar tracking mechanism at the bottom edge.
- * 2. Dynamic fading edges on the left and right sides based on scroll position.
+ * Effect A: Dynamically applies a blending alpha gradient layer to the edges
+ * of a scrollable viewport box based on real-time layout movement parameters.
  */
-fun Modifier.scrollEffects(
+fun Modifier.dynamicFadingEdges(
     state: ScrollState,
-    scrollbarWidth: Dp = 4.dp,
-    indicatorColor: Color,
-    trackColor: Color,
     fadeWidth: Dp = 32.dp
 ): Modifier = this
-    // 1. Isolate the layer composition so alpha blending mask doesn't bleed through
-    .graphicsLayer {
-        compositingStrategy = CompositingStrategy.Offscreen
-    }
+    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
     .drawWithContent {
-        drawContent() // Render the baseline inner cup buttons first
-
+        drawContent()
         val currentScroll = state.value
         val maxScroll = state.maxValue
         val viewWidth = size.width
-
-        if (maxScroll <= 0) return@drawWithContent // Auto-skip effects if content fits completely
-
-        // --- PART A: DYNAMIC FADING EDGES MASK ---
         val fadeWidthPx = fadeWidth.toPx()
 
-        // Apply left edge fade if user has scrolled right from the starting line
+        if (maxScroll <= 0) return@drawWithContent
+
+        // Left Edge Mask Fade
         if (currentScroll > 0) {
             drawRect(
                 brush = Brush.horizontalGradient(
@@ -53,7 +43,7 @@ fun Modifier.scrollEffects(
             )
         }
 
-        // Apply right edge fade if there is still content remaining to be scrolled
+        // Right Edge Mask Fade
         if (currentScroll < maxScroll) {
             drawRect(
                 brush = Brush.horizontalGradient(
@@ -64,32 +54,44 @@ fun Modifier.scrollEffects(
                 blendMode = BlendMode.DstIn
             )
         }
-
-        // --- PART B: STATIC PERSISTENT SCROLLBAR ---
-        val thickness = scrollbarWidth.toPx()
-        val yOffset = size.height - thickness
-        val maxScrollFloat = maxScroll.toFloat()
-        val currentScrollFloat = currentScroll.toFloat()
-
-        // 1. Draw Background Track Line
-        drawRect(
-            color = trackColor,
-            topLeft = Offset(x = 0f, y = yOffset),
-            size = Size(width = viewWidth, height = thickness)
-        )
-
-        // 2. Calculate proportional dimensions for the physical indicator thumb
-        val totalContentWidth = viewWidth + maxScrollFloat
-        val indicatorWidth = (viewWidth / totalContentWidth) * viewWidth
-
-        // Map list tracking position to track window space bounds smoothly
-        val scrollRatio = currentScrollFloat / maxScrollFloat
-        val indicatorX = (viewWidth - indicatorWidth) * scrollRatio
-
-        // 3. Draw Active Position Indicator Drag Overlay
-        drawRect(
-            color = indicatorColor,
-            topLeft = Offset(x = indicatorX, y = yOffset),
-            size = Size(width = indicatorWidth, height = thickness)
-        )
     }
+
+/**
+ * Effect B: Renders a clean, persistent horizontal track and proportional position thumb
+ * indicator at the absolute bottom coordinates of the host layout box.
+ */
+fun Modifier.simpleHorizontalScrollbar(
+    state: ScrollState,
+    scrollbarWidth: Dp = 4.dp,
+    indicatorColor: Color,
+    trackColor: Color
+): Modifier = this.drawWithContent {
+    drawContent()
+    val maxScroll = state.maxValue.toFloat()
+    if (maxScroll <= 0f) return@drawWithContent
+
+    val currentScroll = state.value.toFloat()
+    val viewWidth = size.width
+    val thickness = scrollbarWidth.toPx()
+    val yOffset = size.height - thickness
+
+    // 1. Render Track Line Background
+    drawRect(
+        color = trackColor,
+        topLeft = Offset(x = 0f, y = yOffset),
+        size = Size(width = viewWidth, height = thickness)
+    )
+
+    // 2. Compute Proportional Thumb Mapping Width Metrics
+    val totalContentWidth = viewWidth + maxScroll
+    val indicatorWidth = (viewWidth / totalContentWidth) * viewWidth
+    val scrollRatio = currentScroll / maxScroll
+    val indicatorX = (viewWidth - indicatorWidth) * scrollRatio
+
+    // 3. Render Active Position Thumb Overlay
+    drawRect(
+        color = indicatorColor,
+        topLeft = Offset(x = indicatorX, y = yOffset),
+        size = Size(width = indicatorWidth, height = thickness)
+    )
+}
