@@ -13,6 +13,35 @@ import androidx.compose.ui.unit.sp
 import android.waterreminder.ui.theme.AgbalumoFont
 import android.waterreminder.ui.theme.ErtawyTheme
 import android.waterreminder.ui.core.components.CustomAddButton
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+
+fun Modifier.horizontalFadingEdge(): Modifier = this
+    .graphicsLayer {
+        // 1. Isolate the layer composition so blend modes don't bleed into the background canvas
+        compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen
+    }
+    .drawWithContent {
+        drawContent() // Render the child buttons first
+
+        // 2. Define a clean gradient from fully visible to fully transparent across the last 32dp
+        val fadeWidth = 32.dp.toPx()
+        val gradientStart = size.width - fadeWidth
+
+        drawRect(
+            brush = Brush.horizontalGradient(
+                colors = listOf(Color.Black, Color.Transparent),
+                startX = gradientStart,
+                endX = size.width
+            ),
+            blendMode = BlendMode.DstIn // Keeps destination content only where the alpha brush is present
+        )
+    }
 
 @Composable
 fun DrinkButtonsSection(
@@ -21,38 +50,49 @@ fun DrinkButtonsSection(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.width(342.dp) // Conforms structurally to the global UI component footprint
+        modifier = modifier.width(342.dp) // Bound tightly to Figma's structural block footprint
     ) {
-        // --- Component Section Header Label ---
+        // --- Section Title ---
         Text(
             text = "Drink Cups",
             style = TextStyle(
                 fontFamily = AgbalumoFont,
-                fontSize = 20.sp, // Matches Figma 'Section - 20/Auto' description rules
+                fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.primary
             ),
             modifier = Modifier.padding(bottom = 10.dp)
         )
 
-        // --- Buttons Alignment Dock Row ---
+        // --- Layout Grid Row ---
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp), // Calculates clean structural layout flow gaps
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val presets = listOf(250, 350, 500)
 
-            // Loop through your decoupled components
-            presets.forEach { amount ->
-                PresetCupButton(
-                    amountMl = amount,
-                    onClick = onPresetClick
-                )
+            // --- THE SCROLL BOX CONTAINER ---
+            // Takes up all available space up to the Custom Add Button block.
+            Row(
+                modifier = Modifier
+                    .weight(1f) // Fills remaining space dynamically
+                    .padding(end = 16.dp) // Prevents buttons from kissing the custom add button
+                    .horizontalFadingEdge() // Fading
+                    .horizontalScroll(rememberScrollState()), // Enables frictionless horizontal scrolling
+                horizontalArrangement = Arrangement.spacedBy(16.dp), // Space gaps between preset buttons
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Expanded list to demonstrate scroll capability cleanly
+                val presets = listOf(250, 350, 500, 750, 1000)
+
+                presets.forEach { amount ->
+                    PresetCupButton(
+                        amountMl = amount,
+                        onClick = onPresetClick
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.weight(1f)) // Intuitively balances the layout gap leading up to the action switch
-
-            // Inject global standalone add component
+            // --- FIXED CUSTOM ADD ACTION WINDOW ---
+            // Sits securely on the right edge, unaffected by the scrolling container content
             CustomAddButton(
                 onClick = onCustomAddClick
             )
