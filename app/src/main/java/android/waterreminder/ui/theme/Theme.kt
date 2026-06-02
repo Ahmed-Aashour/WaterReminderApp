@@ -18,7 +18,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = WaterPrimary,
     surface = WaterWhite,
-    surfaceVariant = SurfaceVariantLight
+    surfaceVariant = WaterLight
 )
 
 @Composable
