@@ -1,33 +1,29 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.ui.core.components.CustomAddButton
+import android.waterreminder.ui.theme.AgbalumoFont
+import android.waterreminder.ui.theme.ErtawyTheme
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.waterreminder.ui.theme.AgbalumoFont
-import android.waterreminder.ui.theme.ErtawyTheme
-import android.waterreminder.ui.core.components.CustomAddButton
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 
 /**
  * Custom extension modifier that dynamically scales a fading alpha mask on both
  * the left and right edges depending on the list's real-time scrolling progression.
  */
-fun Modifier.dynamicFadingEdges(scrollState: ScrollState, fadeWidthDp: Float = 100f): Modifier = this
+fun Modifier.dynamicFadingEdges(scrollState: ScrollState, fadeWidth: Float = 32f): Modifier = this
     .graphicsLayer {
         compositingStrategy = CompositingStrategy.Offscreen
     }
@@ -38,25 +34,26 @@ fun Modifier.dynamicFadingEdges(scrollState: ScrollState, fadeWidthDp: Float = 1
         val currentScroll = scrollState.value
         val maxScroll = scrollState.maxValue
         val viewWidth = size.width
+        val fadeWidthPx = fadeWidth.dp.toPx()
 
-        // Draw left fading edge if we have scrolled away from the absolute start position (0 px)
+        // Draw left fading edge if we have scrolled away from the starting line
         if (currentScroll > 0) {
             drawRect(
                 brush = Brush.horizontalGradient(
                     colors = listOf(Color.Transparent, Color.Black),
                     startX = 0f,
-                    endX = fadeWidthDp
+                    endX = fadeWidthPx
                 ),
                 blendMode = BlendMode.DstIn
             )
         }
 
-        // Draw right fading edge ONLY if we haven't hit the end boundary line yet
+        // Draw right fading edge ONLY if we haven't reached the end boundary buffer zone yet
         if (currentScroll < maxScroll && maxScroll > 0) {
             drawRect(
                 brush = Brush.horizontalGradient(
                     colors = listOf(Color.Black, Color.Transparent),
-                    startX = viewWidth - fadeWidthDp,
+                    startX = viewWidth - fadeWidthPx,
                     endX = viewWidth
                 ),
                 blendMode = BlendMode.DstIn
