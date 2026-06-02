@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 val HydraBlue = Color(0xFF2EA9EB)
 // Custom Typography Font (font asset is in res/font/dg_ghayaty_regular.ttf)
 val DGGhayaty = FontFamily(
-    Font(R.font.dg_ghayaty_regular, weight = FontWeight.Normal),
+    Font(R.font.agbalumo_regular, weight = FontWeight.Normal),
 )
 // re-usable base style mapping the Figma italic layout
 val italicStyle = TextStyle(
