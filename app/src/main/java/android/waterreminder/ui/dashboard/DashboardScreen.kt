@@ -8,12 +8,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import android.waterreminder.ui.dashboard.components.Header
 import android.waterreminder.ui.core.components.SettingsButton // Notice the decoupled core import path!
+import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
 import android.waterreminder.ui.dashboard.components.ProgressBar
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DashboardScreen(
+    currentIntake: Int,
+    targetIntake: Int,
+    onAddWater: (Int) -> Unit,
+    onCustomAddTrigger: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -27,21 +32,25 @@ fun DashboardScreen(
                 .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Assembling the parts cleanly
             Header(
                 title = "Ertawy",
-                actionButton = {
-                    SettingsButton(onClick = onNavigateToSettings)
-                }
+                actionButton = { SettingsButton(onClick = onNavigateToSettings) }
             )
 
-            Spacer(modifier = Modifier.height(24.dp)) // Spacing matching top constraints
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // 2. Mount the New Progress Bar Component
             ProgressBar(
-                currentIntakeMl = 1600,
-                targetIntakeMl = 2000
+                currentIntakeMl = currentIntake,
+                targetIntakeMl = targetIntake
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            DrinkButtonsSection(
+                onPresetClick = onAddWater,
+                onCustomAddClick = onCustomAddTrigger
+            )
+
         }
     }
 }
@@ -54,6 +63,12 @@ fun DashboardScreen(
 @Composable
 fun DashboardScreenPreview() {
     ErtawyTheme {
-        DashboardScreen(onNavigateToSettings = {})
+        DashboardScreen(
+            currentIntake = 500,
+            targetIntake = 2000,
+            onAddWater = {},
+            onCustomAddTrigger = {},
+            onNavigateToSettings = {}
+        )
     }
 }
