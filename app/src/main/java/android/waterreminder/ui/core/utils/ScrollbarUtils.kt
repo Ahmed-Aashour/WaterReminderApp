@@ -3,8 +3,6 @@ package android.waterreminder.ui.core.utils
 import androidx.compose.foundation.ScrollState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -14,7 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Effect A: Dynamically applies a blending alpha gradient layer to the edges
+ * Dynamically applies a blending alpha gradient layer to the edges
  * of a scrollable viewport box based on real-time layout movement parameters.
  */
 fun Modifier.dynamicFadingEdges(
@@ -55,50 +53,3 @@ fun Modifier.dynamicFadingEdges(
             )
         }
     }
-
-/**
- * Effect B: Renders a clean, persistent horizontal track and proportional position thumb
- * indicator at the absolute bottom coordinates of the host layout box.
- */
-fun Modifier.simpleHorizontalScrollbar(
-    state: ScrollState,
-    scrollbarWidth: Dp = 4.dp,
-    indicatorColor: Color,
-    trackColor: Color
-): Modifier = this.drawWithContent {
-    // 1. Draw your buttons as usual
-    drawContent()
-
-    val maxScroll = state.maxValue.toFloat()
-    if (maxScroll <= 0f) return@drawWithContent
-
-    val currentScroll = state.value.toFloat()
-    val viewWidth = size.width
-    val thickness = scrollbarWidth.toPx()
-
-    // --- THE CANVAS MATH FIX ---
-    // Instead of drawing at the absolute bottom line, we subtract an extra 8dp (converted to Px)
-    // from the thickness calculation area so it paints safely under the component margins.
-    val clearanceBufferPx = 8.dp.toPx()
-    val yOffset = size.height - thickness + clearanceBufferPx
-
-    // Calculate indicator thumb slider scale metrics
-    val totalContentWidth = viewWidth + maxScroll
-    val indicatorWidth = (viewWidth / totalContentWidth) * viewWidth
-    val scrollRatio = currentScroll / maxScroll
-    val indicatorX = (viewWidth - indicatorWidth) * scrollRatio
-
-    // 2. Render Track Line Background safely in space buffer
-    drawRect(
-        color = trackColor,
-        topLeft = Offset(x = 0f, y = yOffset),
-        size = Size(width = viewWidth, height = thickness)
-    )
-
-    // 3. Render Active Position Thumb Overlay safely in space buffer
-    drawRect(
-        color = indicatorColor,
-        topLeft = Offset(x = indicatorX, y = yOffset),
-        size = Size(width = indicatorWidth, height = thickness)
-    )
-}
