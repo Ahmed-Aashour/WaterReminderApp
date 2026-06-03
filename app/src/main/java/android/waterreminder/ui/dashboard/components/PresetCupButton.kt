@@ -1,8 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
-import android.waterreminder.ui.theme.AgbalumoFont
 import android.waterreminder.ui.theme.ErtawyTheme
-import android.waterreminder.ui.theme.WaterLight
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,10 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 // TODO: Animate button clicks
 // TODO: Add Sounds
@@ -31,7 +27,7 @@ fun PresetCupButton(
     Card(
         onClick = { onClick(amountMl) },
         colors = CardDefaults.cardColors(
-            containerColor = WaterLight, // #A5F0FF
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.primary
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
@@ -46,11 +42,8 @@ fun PresetCupButton(
         ) {
             Text(
                 text = "${amountMl}ml",
-                style = TextStyle(
-                    fontFamily = AgbalumoFont,
-                    fontSize = 14.sp, // Figma Normal style: 14px
-                    color = MaterialTheme.colorScheme.primary
-                )
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }

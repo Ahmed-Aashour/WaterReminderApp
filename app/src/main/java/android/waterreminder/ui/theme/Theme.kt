@@ -1,53 +1,65 @@
 package android.waterreminder.ui.theme
 
-import android.os.Build
+import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-//    primary = Purple80,
-//    secondary = PurpleGrey80,
-//    tertiary = Pink80
-)
+// --- LIGHT COLOR SCHEME ---
 private val LightColorScheme = lightColorScheme(
     primary = WaterPrimary,
+    onPrimary = WaterWhite,
+    primaryContainer = WaterLight,
+    onPrimaryContainer = WaterDark,
     surface = WaterWhite,
-    surfaceVariant = WaterLight
+    onSurface = WaterDark,
+    surfaceVariant = WaterLight,
+    onSurfaceVariant = WaterDark,
+    background = WaterWhite,
+    onBackground = WaterDark
+)
+
+// --- DARK COLOR SCHEME ---
+private val DarkColorScheme = darkColorScheme(
+    primary = WaterLight,            // Flipped to Light blue so text remains highly readable on dark backgrounds
+    onPrimary = WaterDark,
+    primaryContainer = WaterDark,
+    onPrimaryContainer = WaterLight,
+    surface = WaterSurfaceDark,
+    onSurface = WaterOnSurfaceDark,
+    surfaceVariant = WaterSurfaceDark,
+    onSurfaceVariant = WaterLight,
+    background = WaterBackgroundDark,
+    onBackground = WaterOnSurfaceDark
 )
 
 @Composable
-fun ErtawyTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = LightColorScheme,
-        content = content
-    )
-}
-
-@Composable
-fun MyApplicationTheme(
+fun ErtawyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val view = LocalView.current
+
+    // Set the Android system status bar color to match the theme context smoothly
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-//        typography = Typography,
+        // We link your typography structure cleanly into the composition lifecycle here
+        typography = Material3TypographyBridge,
         content = content
     )
 }

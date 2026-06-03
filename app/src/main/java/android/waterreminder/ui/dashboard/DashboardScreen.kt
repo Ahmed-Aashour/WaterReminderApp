@@ -58,7 +58,7 @@ fun DashboardScreen(
 @Preview(
     name = "Full Dashboard Screen Viewport",
     showBackground = true,
-    showSystemUi = true // This renders the Android status bar and navigation buttons for high fidelity
+    showSystemUi = true
 )
 @Composable
 fun DashboardScreenPreview() {

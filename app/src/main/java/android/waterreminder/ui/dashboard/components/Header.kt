@@ -27,7 +27,7 @@ fun Header(
     ) {
         Text(
             text = title,
-            style = ErtawyTypography.titleStyle,
+            style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.wrapContentHeight(Alignment.CenterVertically)
         )

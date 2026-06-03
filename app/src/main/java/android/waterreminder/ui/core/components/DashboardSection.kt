@@ -1,6 +1,5 @@
 package android.waterreminder.ui.core.components
 
-import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -30,7 +29,7 @@ fun DashboardSection(
         // Uniform Section Title Block with clipping fixes included
         Text(
             text = title,
-            style = ErtawyTypography.sectionStyle,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 10.dp)
         )
