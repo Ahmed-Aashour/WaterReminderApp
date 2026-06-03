@@ -1,21 +1,21 @@
 package android.waterreminder.ui.dashboard.components
 
-import android.waterreminder.ui.core.components.CustomAddButton
-import android.waterreminder.ui.core.utils.dynamicFadingEdges
-import android.waterreminder.ui.theme.AgbalumoFont
-import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import android.waterreminder.ui.core.components.CustomAddButton
+import android.waterreminder.ui.core.components.DashboardSection // Your newly created slot component
+import android.waterreminder.ui.core.utils.dynamicFadingEdges
+import android.waterreminder.ui.theme.ErtawyTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DrinkButtonsSection(
@@ -23,43 +23,27 @@ fun DrinkButtonsSection(
     onCustomAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Instantiate and track the scroll state so our modifier can access its layout state parameters
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = modifier.width(342.dp) // Bound tightly to Figma's structural block footprint
+    DashboardSection(
+        title = "Drink Cups",
+        modifier = modifier
     ) {
-        // --- Section Title ---
-        Text(
-            text = "Drink Cups",
-            style = TextStyle(
-                fontFamily = AgbalumoFont,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-
-        // --- Layout Grid Row ---
+        // Everything inside this lambda block fills the "content" slot seamlessly!
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            // --- THE SCROLL BOX CONTAINER ---
-            // Takes up all available space up to the Custom Add Button block.
             Row(
                 modifier = Modifier
-                    .weight(1f) // Fills remaining space dynamically
+                    .weight(1f)
                     .padding(end = 16.dp)
                     .dynamicFadingEdges(state = scrollState, fadeWidth = 32.dp)
-                    .horizontalScroll(scrollState), // Enables frictionless horizontal scrolling
-                horizontalArrangement = Arrangement.spacedBy(16.dp), // Space gaps between preset buttons
+                    .horizontalScroll(scrollState),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Expanded list to demonstrate scroll capability cleanly
                 val presets = listOf(250, 350, 500, 750, 1000)
-
                 presets.forEach { amount ->
                     PresetCupButton(
                         amountMl = amount,
@@ -68,11 +52,7 @@ fun DrinkButtonsSection(
                 }
             }
 
-            // --- FIXED CUSTOM ADD ACTION WINDOW ---
-            // Sits securely on the right edge, unaffected by the scrolling container content
-            CustomAddButton(
-                onClick = onCustomAddClick
-            )
+            CustomAddButton(onClick = onCustomAddClick)
         }
     }
 }
