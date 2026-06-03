@@ -64,21 +64,46 @@ fun DashboardScreen(
 }
 
 @Preview(
-    name = "Full Dashboard Screen Viewport",
+    name = "Dashboard - Light Mode",
     showBackground = true,
     showSystemUi = true
 )
 @Composable
-fun DashboardScreenPreview() {
+fun DashboardScreenLightPreview() {
     val mockHistory = listOf(
-        DrunkCupHistory(amountMl = 250, count = 1),
-        DrunkCupHistory(amountMl = 350, count = 2)
+        DrunkCupHistory(amountMl = 250, count = 2),
+        DrunkCupHistory(amountMl = 500, count = 1)
     )
 
-    ErtawyTheme {
+    ErtawyTheme(darkTheme = false) {
         DashboardScreen(
-            currentIntake = 950,
-            targetIntake = 2000,
+            currentIntake = 1000,
+            targetIntake = 2500,
+            historyLogs = mockHistory,
+            onAddWater = {},
+            onCustomAddTrigger = {},
+            onNavigateToSettings = {}
+        )
+    }
+}
+
+@Preview(
+    name = "Dashboard - Dark Mode",
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+fun DashboardScreenDarkPreview() {
+    val mockHistory = listOf(
+        DrunkCupHistory(amountMl = 250, count = 3),
+        DrunkCupHistory(amountMl = 350, count = 1),
+        DrunkCupHistory(amountMl = 750, count = 1)
+    )
+
+    ErtawyTheme(darkTheme = true) {
+        DashboardScreen(
+            currentIntake = 1850,
+            targetIntake = 3000,
             historyLogs = mockHistory,
             onAddWater = {},
             onCustomAddTrigger = {},
