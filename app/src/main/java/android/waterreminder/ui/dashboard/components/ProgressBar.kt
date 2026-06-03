@@ -116,41 +116,49 @@ fun ProgressBar(
     }
 }
 
-@Preview(name = "Progress Bar 25%", showBackground = true)
+@Preview(name = "Progress 25% - Light Mode", showBackground = true)
 @Composable
-fun ProgressBarPreview_25() {
-    ErtawyTheme {
+fun ProgressBarPreview_25_Light() {
+    ErtawyTheme(darkTheme = false) {
         Box(modifier = Modifier.padding(16.dp)) {
             ProgressBar(currentIntakeMl = 500, targetIntakeMl = 2000)
         }
     }
 }
 
-@Preview(name = "Progress Bar 50%", showBackground = true)
+@Preview(name = "Progress 50% - Dark Mode", showBackground = true)
 @Composable
-fun ProgressBarPreview_50() {
-    ErtawyTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+fun ProgressBarPreview_50_Dark() {
+    ErtawyTheme(darkTheme = true) {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+        ) {
             ProgressBar(currentIntakeMl = 1000, targetIntakeMl = 2000)
         }
     }
 }
 
-@Preview(name = "Progress Bar 75%", showBackground = true)
+@Preview(name = "Progress 75% - Light Mode", showBackground = true)
 @Composable
-fun ProgressBarPreview_75() {
-    ErtawyTheme {
+fun ProgressBarPreview_75_Light() {
+    ErtawyTheme(darkTheme = false) {
         Box(modifier = Modifier.padding(16.dp)) {
             ProgressBar(currentIntakeMl = 1500, targetIntakeMl = 2000)
         }
     }
 }
 
-@Preview(name = "Progress Bar 100%", showBackground = true)
+@Preview(name = "Progress 100% - Dark Mode", showBackground = true)
 @Composable
-fun ProgressBarPreview_100() {
-    ErtawyTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+fun ProgressBarPreview_100_Dark() {
+    ErtawyTheme(darkTheme = true) {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+        ) {
             ProgressBar(currentIntakeMl = 2000, targetIntakeMl = 2000)
         }
     }
