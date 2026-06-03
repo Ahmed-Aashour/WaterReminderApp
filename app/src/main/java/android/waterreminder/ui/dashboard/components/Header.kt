@@ -2,15 +2,15 @@ package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.ui.core.components.SettingsButton
 import android.waterreminder.ui.theme.ErtawyTheme
+import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun Header(
@@ -21,7 +21,7 @@ fun Header(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(42.dp), // Figma height configuration
+            .height(45.dp), // Figma height configuration
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -41,11 +41,13 @@ fun Header(
 @Composable
 fun HeaderPreview() {
     ErtawyTheme {
-        Header(
-            title = "Ertawy",
-            actionButton = {
-                SettingsButton(onClick = {})
-            }
-        )
+        Box(modifier = Modifier.padding(16.dp)) {
+            Header(
+                title = "Ertawy",
+                actionButton = {
+                    SettingsButton(onClick = {})
+                }
+            )
+        }
     }
 }

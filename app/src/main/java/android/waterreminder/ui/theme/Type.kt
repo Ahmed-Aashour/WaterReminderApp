@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import android.waterreminder.R
+import androidx.compose.ui.text.style.BaselineShift
 
 val AgbalumoFont = FontFamily(
     Font(resId = R.font.agbalumo_regular, weight = FontWeight.Normal)
