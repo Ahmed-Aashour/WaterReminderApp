@@ -101,9 +101,16 @@ fun ProgressBar(
                 }
 
                 // Displaying the dynamic percentage string inside the circle
+                val isGoalReached = currentIntakeMl >= targetIntakeMl
+
                 Text(
-                    text = "$progressPercentage%",
-                    style = MaterialTheme.typography.headlineLarge, // Replaced with theme token
+                    text = if (isGoalReached && progressPercentage == 100) "✓" else "$progressPercentage%",
+                    style = if (isGoalReached && progressPercentage == 100) {
+                        // Boost font size slightly for the checkmark icon so it fills the inner circle nicely
+                        MaterialTheme.typography.displayLarge
+                    } else {
+                        MaterialTheme.typography.headlineLarge
+                    },
                     color = primaryColor
                 )
             }
@@ -111,7 +118,7 @@ fun ProgressBar(
             // --- RIGHT SIDE: Quantity Target Tracker ---
             Text(
                 text = "$currentIntakeMl /\n$targetIntakeMl ml",
-                style = MaterialTheme.typography.headlineLarge, // Replaced with theme token
+                style = MaterialTheme.typography.headlineLarge,
                 color = primaryColor,
                 textAlign = TextAlign.Center
             )
