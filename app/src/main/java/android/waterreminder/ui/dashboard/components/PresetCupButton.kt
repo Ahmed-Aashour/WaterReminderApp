@@ -1,9 +1,12 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.content.res.Configuration
 import android.waterreminder.ui.theme.ErtawyTheme
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -49,26 +52,58 @@ fun PresetCupButton(
     }
 }
 
-@Preview(name = "Preset Cup 250", showBackground = true)
+@Preview(name = "Preset Cup 250 - Light Mode", showBackground = true)
 @Composable
-fun PresetCupButtonPreview_250() {
-    ErtawyTheme {
-        PresetCupButton(amountMl = 250, onClick = {})
+fun PresetCupButtonPreview_250_Light() {
+    ErtawyTheme(darkTheme = false) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            PresetCupButton(amountMl = 250, onClick = {})
+        }
     }
 }
 
-@Preview(name = "Preset Cup 350", showBackground = true)
+@Preview(
+    name = "Preset Cup 350 - Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun PresetCupButtonPreview_350() {
-    ErtawyTheme {
-        PresetCupButton(amountMl = 350, onClick = {})
+fun PresetCupButtonPreview_350_Dark() {
+    ErtawyTheme(darkTheme = true) {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+        ) {
+            PresetCupButton(amountMl = 350, onClick = {})
+        }
     }
 }
 
-@Preview(name = "Preset Cup 500", showBackground = true)
+@Preview(name = "Preset Cup 500 - Light Mode", showBackground = true)
 @Composable
-fun PresetCupButtonPreview_500() {
-    ErtawyTheme {
-        PresetCupButton(amountMl = 500, onClick = {})
+fun PresetCupButtonPreview_500_Light() {
+    ErtawyTheme(darkTheme = false) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            PresetCupButton(amountMl = 500, onClick = {})
+        }
+    }
+}
+
+@Preview(
+    name = "Preset Cup 750 - Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun PresetCupButtonPreview_750_Dark() {
+    ErtawyTheme(darkTheme = true) {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+        ) {
+            PresetCupButton(amountMl = 750, onClick = {})
+        }
     }
 }
