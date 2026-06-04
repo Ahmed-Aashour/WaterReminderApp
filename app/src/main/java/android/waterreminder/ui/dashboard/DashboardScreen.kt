@@ -1,6 +1,7 @@
 package android.waterreminder.ui.dashboard
 
 import android.waterreminder.ui.core.components.SettingsButton
+import android.waterreminder.ui.core.components.StreakDayState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -14,6 +15,9 @@ import android.waterreminder.ui.dashboard.components.ProgressBar
 import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
 import android.waterreminder.ui.dashboard.components.TodayHistorySection
 import android.waterreminder.ui.dashboard.components.DrunkCupHistory
+import android.waterreminder.ui.dashboard.components.HydrationStreakSection
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 
 @Composable
@@ -21,6 +25,8 @@ fun DashboardScreen(
     currentIntake: Int,
     targetIntake: Int,
     historyLogs: List<DrunkCupHistory>,
+    streakDays: List<StreakDayState>,
+    streakCountText: String,
     onAddWater: (Int) -> Unit,
     onCustomAddTrigger: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -33,7 +39,8 @@ fun DashboardScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
+                .padding(horizontal = 24.dp, vertical = 24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Header(
@@ -60,6 +67,13 @@ fun DashboardScreen(
             TodayHistorySection(
                 historyItems = historyLogs
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            HydrationStreakSection(
+                streakDays = streakDays,
+                streakCountText = streakCountText
+            )
         }
     }
 }
@@ -76,11 +90,24 @@ fun DashboardScreenLightPreview() {
         DrunkCupHistory(amountMl = 500, count = 1)
     )
 
+    // Mocking standard layout tracking data
+    val mockStreak = listOf(
+        StreakDayState("S", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("M", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("Tu", progress = 0.0f, isCurrentDay = false),
+        StreakDayState("W", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("Th", progress = 0.4f, isCurrentDay = true),
+        StreakDayState("F", progress = 0.0f, isCurrentDay = false),
+        StreakDayState("S", progress = 0.0f, isCurrentDay = false)
+    )
+
     ErtawyTheme(darkTheme = false) {
         DashboardScreen(
             currentIntake = 1000,
             targetIntake = 2500,
             historyLogs = mockHistory,
+            streakDays = mockStreak,
+            streakCountText = "365 days hydrated!",
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
@@ -102,11 +129,23 @@ fun DashboardScreenDarkPreview() {
         DrunkCupHistory(amountMl = 750, count = 1)
     )
 
+    val mockStreak = listOf(
+        StreakDayState("S", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("M", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("Tu", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("W", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("Th", progress = 1.0f, isCurrentDay = false),
+        StreakDayState("F", progress = 0.1f, isCurrentDay = true),
+        StreakDayState("S", progress = 0.0f, isCurrentDay = false)
+    )
+
     ErtawyTheme(darkTheme = true) {
         DashboardScreen(
             currentIntake = 1850,
             targetIntake = 3000,
             historyLogs = mockHistory,
+            streakDays = mockStreak,
+            streakCountText = "5 days hydrated!",
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
