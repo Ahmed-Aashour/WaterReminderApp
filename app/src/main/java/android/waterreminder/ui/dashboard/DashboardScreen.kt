@@ -14,6 +14,7 @@ import android.waterreminder.ui.dashboard.components.ProgressBar
 import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
 import android.waterreminder.ui.dashboard.components.TodayHistorySection
 import android.waterreminder.ui.dashboard.components.DrunkCupHistory
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun DashboardScreen(
@@ -27,7 +28,7 @@ fun DashboardScreen(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = androidx.compose.ui.graphics.Color.White
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = modifier
@@ -90,7 +91,8 @@ fun DashboardScreenLightPreview() {
 @Preview(
     name = "Dashboard - Dark Mode",
     showBackground = true,
-    showSystemUi = true
+    showSystemUi = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
 fun DashboardScreenDarkPreview() {
