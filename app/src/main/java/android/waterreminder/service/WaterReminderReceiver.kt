@@ -63,7 +63,7 @@ class WaterReminderReceiver : BroadcastReceiver() {
 
         // 3. BUILD THE INTERACTIVE BANNER
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_hydra_logo)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Time to Hydrate your body! 💧")
             .setContentText("Go drink glass of water and enter the amount")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
