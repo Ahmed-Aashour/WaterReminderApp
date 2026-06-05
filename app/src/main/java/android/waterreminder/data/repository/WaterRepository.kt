@@ -64,6 +64,22 @@ class WaterRepository @Inject constructor(
         dashboardDao.deleteLog(log)
     }
 
+    /**
+     * Streams all history logs recorded since a specific number of days ago.
+     * Useful for calculating streaks and generating weekly performance nodes.
+     */
+    fun getHistoryForPastDays(daysBefore: Int): Flow<List<WaterHistoryEntity>> {
+        val calculateSinceTimestamp = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, -daysBefore)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+
+        return dashboardDao.getHistorySinceFlow(calculateSinceTimestamp)
+    }
+
 
     // --- Internal Time Math Helper Logic ---
 
