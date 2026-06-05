@@ -34,7 +34,8 @@ abstract class HydrationDatabase : RoomDatabase() {
                     HydrationDatabase::class.java,
                     "hydration_database" // The actual filename on disk
                 )
-                    .addCallback(HydrationDatabaseCallback(scope)) // Attaches our default data loader
+                    // Pass a lambda that looks up the DAO dynamically when called
+                    .addCallback(HydrationDatabaseCallback(scope) { INSTANCE!!.dashboardDao() })
                     .build()
 
                 INSTANCE = instance
@@ -45,24 +46,20 @@ abstract class HydrationDatabase : RoomDatabase() {
 
     // A callback class to run tasks when the database events occur
     private class HydrationDatabaseCallback(
-        private val scope: CoroutineScope
+        private val scope: CoroutineScope,
+        private val daoProvider: () -> DashboardDao // Lazy provider prevents race conditions
     ) : Callback() {
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-            // onCreate triggers ONLY the very first time the app runs and creates the database tables
-            INSTANCE?.let { database ->
-                scope.launch(Dispatchers.IO) {
-                    populateDefaultCupsCatalog(database.dashboardDao())
-                }
-            }
-        }
 
-        // Seeds your database with your initial custom cup sizes catalog profile
-        suspend fun populateDefaultCupsCatalog(dashboardDao: DashboardDao) {
-            dashboardDao.insertCup(CupsCatalogEntity(amountMl = 250))
-            dashboardDao.insertCup(CupsCatalogEntity(amountMl = 350))
-            dashboardDao.insertCup(CupsCatalogEntity(amountMl = 500))
+            // Safe execution
+            scope.launch(Dispatchers.IO) {
+                val dao = daoProvider()
+                dao.insertCup(CupsCatalogEntity(amountMl = 250))
+                dao.insertCup(CupsCatalogEntity(amountMl = 350))
+                dao.insertCup(CupsCatalogEntity(amountMl = 500))
+            }
         }
     }
 }
