@@ -39,4 +39,9 @@ interface DashboardDao {
 
     @Query("SELECT * FROM cups_catalog ORDER BY amountMl ASC")
     fun getCupsCatalogFlow(): Flow<List<CupsCatalogEntity>>
+
+    // --- Daily Streak Actions ---
+
+    @Query("SELECT * FROM water_history WHERE timestamp >= :sinceTimestamp ORDER BY timestamp ASC")
+    fun getHistorySinceFlow(sinceTimestamp: Long): Flow<List<WaterHistoryEntity>>
 }
