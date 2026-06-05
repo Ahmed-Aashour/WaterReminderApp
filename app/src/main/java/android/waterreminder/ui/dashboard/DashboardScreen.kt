@@ -28,7 +28,7 @@ fun DashboardScreen(
     targetIntake: Int,
     historyLogs: List<DrunkCupHistory>,
     streakDays: List<StreakDayState>,
-    streakCountText: String,
+    streakCount: Int,
     onAddWater: (Int) -> Unit,
     onCustomAddTrigger: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -74,7 +74,7 @@ fun DashboardScreen(
 
             HydrationStreakSection(
                 streakDays = streakDays,
-                streakCountText = streakCountText
+                streakCount = streakCount
             )
         }
     }
@@ -100,7 +100,7 @@ fun DashboardScreenLightPreview(
             targetIntake = 2500,
             historyLogs = mockHistory,
             streakDays = mockStreak,
-            streakCountText = "365 days hydrated!",
+            streakCount = 365,
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
@@ -130,7 +130,7 @@ fun DashboardScreenDarkPreview(
             targetIntake = 3000,
             historyLogs = mockHistory,
             streakDays = mockStreak,
-            streakCountText = "5 days hydrated!",
+            streakCount = 5,
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}

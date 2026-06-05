@@ -2,7 +2,6 @@ package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.ui.core.components.SettingsButton
 import android.waterreminder.ui.theme.ErtawyTheme
-import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

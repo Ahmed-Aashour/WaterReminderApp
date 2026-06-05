@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HydrationStreakSection(
     streakDays: List<StreakDayState>,
-    streakCountText: String, // e.g., "365 days hydrated!"
+    streakCount: Int,
     modifier: Modifier = Modifier
 ) {
     DashboardSection(
@@ -46,7 +46,7 @@ fun HydrationStreakSection(
         ) {
 
             // --- Component 1: Days-Hydrated Label Pill ---
-            LabelPill(text = streakCountText)
+            LabelPill(text = "$streakCount days hydrated!")
 
             // --- Component 2: 7-Day Tracker Row Layout ---
             Row(
@@ -76,7 +76,7 @@ fun HydrationStreakLightPreview(
                 .padding(16.dp)
         ) {
             HydrationStreakSection(
-                streakCountText = "365 days hydrated!",
+                streakCount = 365,
                 streakDays = mockStreak
             )
         }
@@ -95,7 +95,7 @@ fun HydrationStreakDarkModePreview(
                 .padding(16.dp)
         ) {
             HydrationStreakSection(
-                streakCountText = "5 days hydrated!",
+                streakCount = 5,
                 streakDays = mockStreak
             )
         }
