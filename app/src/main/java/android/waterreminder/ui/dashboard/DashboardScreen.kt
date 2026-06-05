@@ -16,9 +16,11 @@ import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
 import android.waterreminder.ui.dashboard.components.TodayHistorySection
 import android.waterreminder.ui.dashboard.components.DrunkCupHistory
 import android.waterreminder.ui.dashboard.components.HydrationStreakSection
+import android.waterreminder.ui.dashboard.preview.StreakDaysProvider
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 fun DashboardScreen(
@@ -84,21 +86,12 @@ fun DashboardScreen(
     showSystemUi = true
 )
 @Composable
-fun DashboardScreenLightPreview() {
+fun DashboardScreenLightPreview(
+    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+) {
     val mockHistory = listOf(
         DrunkCupHistory(amountMl = 250, count = 2),
         DrunkCupHistory(amountMl = 500, count = 1)
-    )
-
-    // Mocking standard layout tracking data
-    val mockStreak = listOf(
-        StreakDayState("S", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("M", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("Tu", progress = 0.0f, isCurrentDay = false),
-        StreakDayState("W", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("Th", progress = 0.4f, isCurrentDay = true),
-        StreakDayState("F", progress = 0.0f, isCurrentDay = false),
-        StreakDayState("S", progress = 0.0f, isCurrentDay = false)
     )
 
     ErtawyTheme(darkTheme = false) {
@@ -122,21 +115,13 @@ fun DashboardScreenLightPreview() {
     uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
-fun DashboardScreenDarkPreview() {
+fun DashboardScreenDarkPreview(
+    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+) {
     val mockHistory = listOf(
         DrunkCupHistory(amountMl = 250, count = 3),
         DrunkCupHistory(amountMl = 350, count = 1),
         DrunkCupHistory(amountMl = 750, count = 1)
-    )
-
-    val mockStreak = listOf(
-        StreakDayState("S", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("M", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("Tu", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("W", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("Th", progress = 1.0f, isCurrentDay = false),
-        StreakDayState("F", progress = 0.1f, isCurrentDay = true),
-        StreakDayState("S", progress = 0.0f, isCurrentDay = false)
     )
 
     ErtawyTheme(darkTheme = true) {

@@ -4,6 +4,7 @@ import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.core.components.HydrationNode
 import android.waterreminder.ui.core.components.LabelPill
 import android.waterreminder.ui.core.components.StreakDayState
+import android.waterreminder.ui.dashboard.preview.StreakDaysProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -64,7 +66,9 @@ fun HydrationStreakSection(
 
 @Preview(name = "Streak Full Container - Light Mode", showBackground = true)
 @Composable
-fun HydrationStreakLightPreview() {
+fun HydrationStreakLightPreview(
+    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+) {
     ErtawyTheme(darkTheme = false) {
         Box(
             modifier = Modifier
@@ -73,15 +77,7 @@ fun HydrationStreakLightPreview() {
         ) {
             HydrationStreakSection(
                 streakCountText = "365 days hydrated!",
-                streakDays = listOf(
-                    StreakDayState("S", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("M", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("Tu", progress = 0.0f, isCurrentDay = false),
-                    StreakDayState("W", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("Th", progress = 0.4f, isCurrentDay = true),
-                    StreakDayState("F", progress = 0.0f, isCurrentDay = false),
-                    StreakDayState("S", progress = 0.0f, isCurrentDay = false)
-                )
+                streakDays = mockStreak
             )
         }
     }
@@ -89,7 +85,9 @@ fun HydrationStreakLightPreview() {
 
 @Preview(name = "Streak Full Container - Dark Mode", showBackground = true)
 @Composable
-fun HydrationStreakDarkModePreview() {
+fun HydrationStreakDarkModePreview(
+    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+) {
     ErtawyTheme(darkTheme = true) {
         Box(
             modifier = Modifier
@@ -98,15 +96,7 @@ fun HydrationStreakDarkModePreview() {
         ) {
             HydrationStreakSection(
                 streakCountText = "5 days hydrated!",
-                streakDays = listOf(
-                    StreakDayState("S", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("M", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("Tu", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("W", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("Th", progress = 1.0f, isCurrentDay = false),
-                    StreakDayState("F", progress = 0.1f, isCurrentDay = true),
-                    StreakDayState("S", progress = 0.0f, isCurrentDay = false)
-                )
+                streakDays = mockStreak
             )
         }
     }
