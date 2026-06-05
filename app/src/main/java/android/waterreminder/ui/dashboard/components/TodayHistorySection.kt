@@ -1,6 +1,7 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.ui.core.components.DashboardSection
+import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -140,64 +142,30 @@ private fun HistoryCupChip(
     }
 }
 
-@Preview(name = "Empty State - Light Mode", showBackground = true)
+@Preview(name = "Light Mode", showBackground = true)
 @Composable
-fun TodayHistoryEmptyPreview() {
+fun TodayHistoryActivePreview(
+    @PreviewParameter(HistoryLogsProvider ::class) mockHistory: List<DrunkCupHistory>
+) {
     ErtawyTheme(darkTheme = false) {
         Box(modifier = Modifier.padding(16.dp)) {
-            TodayHistorySection(historyItems = emptyList())
+            TodayHistorySection(historyItems = mockHistory)
         }
     }
 }
 
-@Preview(name = "Active Items - Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", showBackground = true)
 @Composable
-fun TodayHistoryActivePreview() {
-    ErtawyTheme(darkTheme = false) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            TodayHistorySection(
-                historyItems = listOf(
-                    DrunkCupHistory(amountMl = 250, count = 5),
-                    DrunkCupHistory(amountMl = 350, count = 1)
-                )
-            )
-        }
-    }
-}
-
-@Preview(name = "Scroll Overflow Cap Check", showBackground = true)
-@Composable
-fun TodayHistoryOverflowPreview() {
-    ErtawyTheme(darkTheme = false) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            TodayHistorySection(
-                historyItems = listOf(
-                    DrunkCupHistory(amountMl = 250, count = 3),
-                    DrunkCupHistory(amountMl = 350, count = 1),
-                    DrunkCupHistory(amountMl = 500, count = 2),
-                    DrunkCupHistory(amountMl = 750, count = 1),
-                    DrunkCupHistory(amountMl = 1000, count = 4)
-                )
-            )
-        }
-    }
-}
-
-@Preview(name = "Active Items - Dark Mode", showBackground = true)
-@Composable
-fun TodayHistoryDarkModePreview() {
+fun TodayHistoryDarkModePreview(
+    @PreviewParameter(HistoryLogsProvider ::class) mockHistory: List<DrunkCupHistory>
+) {
     ErtawyTheme(darkTheme = true) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            TodayHistorySection(
-                historyItems = listOf(
-                    DrunkCupHistory(amountMl = 250, count = 4),
-                    DrunkCupHistory(amountMl = 500, count = 2)
-                )
-            )
+            TodayHistorySection(historyItems = mockHistory)
         }
     }
 }

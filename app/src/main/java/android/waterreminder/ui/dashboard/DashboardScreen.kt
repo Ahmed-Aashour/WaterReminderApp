@@ -2,25 +2,21 @@ package android.waterreminder.ui.dashboard
 
 import android.waterreminder.ui.core.components.SettingsButton
 import android.waterreminder.ui.core.components.StreakDayState
+import android.waterreminder.ui.dashboard.components.*
+import android.waterreminder.ui.dashboard.preview.DashboardPreviewState
+import android.waterreminder.ui.dashboard.preview.DashboardScreenStateProvider
+import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import android.waterreminder.ui.theme.ErtawyTheme
-import android.waterreminder.ui.dashboard.components.Header
-import android.waterreminder.ui.dashboard.components.ProgressBar
-import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
-import android.waterreminder.ui.dashboard.components.TodayHistorySection
-import android.waterreminder.ui.dashboard.components.DrunkCupHistory
-import android.waterreminder.ui.dashboard.components.HydrationStreakSection
-import android.waterreminder.ui.dashboard.preview.StreakDaysProvider
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun DashboardScreen(
@@ -87,20 +83,15 @@ fun DashboardScreen(
 )
 @Composable
 fun DashboardScreenLightPreview(
-    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardPreviewState
 ) {
-    val mockHistory = listOf(
-        DrunkCupHistory(amountMl = 250, count = 2),
-        DrunkCupHistory(amountMl = 500, count = 1)
-    )
-
     ErtawyTheme(darkTheme = false) {
         DashboardScreen(
-            currentIntake = 1000,
-            targetIntake = 2500,
-            historyLogs = mockHistory,
-            streakDays = mockStreak,
-            streakCount = 365,
+            currentIntake = state.currentIntake,
+            targetIntake = state.targetIntake,
+            historyLogs = state.historyLogs,
+            streakDays = state.streakDays,
+            streakCount = state.streakCount,
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
@@ -116,21 +107,15 @@ fun DashboardScreenLightPreview(
 )
 @Composable
 fun DashboardScreenDarkPreview(
-    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardPreviewState
 ) {
-    val mockHistory = listOf(
-        DrunkCupHistory(amountMl = 250, count = 3),
-        DrunkCupHistory(amountMl = 350, count = 1),
-        DrunkCupHistory(amountMl = 750, count = 1)
-    )
-
     ErtawyTheme(darkTheme = true) {
         DashboardScreen(
-            currentIntake = 1850,
-            targetIntake = 3000,
-            historyLogs = mockHistory,
-            streakDays = mockStreak,
-            streakCount = 5,
+            currentIntake = state.currentIntake,
+            targetIntake = state.targetIntake,
+            historyLogs = state.historyLogs,
+            streakDays = state.streakDays,
+            streakCount = state.streakCount,
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
