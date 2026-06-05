@@ -1,6 +1,6 @@
 package android.waterreminder.ui.dashboard.preview
 
-import android.waterreminder.ui.core.components.StreakDayState
+import android.waterreminder.ui.dashboard.StreakDayState
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class StreakDaysProvider : PreviewParameterProvider<List<StreakDayState>> {

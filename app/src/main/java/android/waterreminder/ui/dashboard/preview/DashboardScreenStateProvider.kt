@@ -1,17 +1,10 @@
 package android.waterreminder.ui.dashboard.preview
 
-import android.waterreminder.ui.core.components.StreakDayState
-import android.waterreminder.ui.dashboard.components.DrunkCupHistory
+import android.waterreminder.ui.dashboard.DashboardPreviewState
+import android.waterreminder.ui.dashboard.StreakDayState
+import android.waterreminder.ui.model.DrunkCupHistory
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
-// A clean wrapper mapping all varying data combinations together
-data class DashboardPreviewState(
-    val streakDays: List<StreakDayState>,
-    val historyLogs: List<DrunkCupHistory>,
-    val currentIntake: Int,
-    val targetIntake: Int,
-    val streakCount: Int
-)
 
 class DashboardScreenStateProvider : PreviewParameterProvider<DashboardPreviewState> {
     override val values: Sequence<DashboardPreviewState> = sequenceOf(

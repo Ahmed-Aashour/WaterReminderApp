@@ -1,6 +1,6 @@
 package android.waterreminder.ui.dashboard.preview
 
-import android.waterreminder.ui.dashboard.components.DrunkCupHistory
+import android.waterreminder.ui.model.DrunkCupHistory
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kotlin.collections.listOf
 

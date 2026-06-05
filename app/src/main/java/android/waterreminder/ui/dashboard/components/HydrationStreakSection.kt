@@ -3,7 +3,7 @@ package android.waterreminder.ui.dashboard.components
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.core.components.HydrationNode
 import android.waterreminder.ui.core.components.LabelPill
-import android.waterreminder.ui.core.components.StreakDayState
+import android.waterreminder.ui.dashboard.StreakDayState
 import android.waterreminder.ui.dashboard.preview.StreakDaysProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background

@@ -2,6 +2,7 @@ package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
+import android.waterreminder.ui.model.DrunkCupHistory
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,14 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-/**
- * Data representation matching the grouped preset structure identified in the Figma spec.
- */
-data class DrunkCupHistory(
-    val amountMl: Int,
-    val count: Int
-)
 
 @Composable
 fun TodayHistorySection(

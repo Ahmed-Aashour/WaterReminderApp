@@ -1,10 +1,9 @@
 package android.waterreminder.ui.dashboard
 
 import android.waterreminder.ui.core.components.SettingsButton
-import android.waterreminder.ui.core.components.StreakDayState
 import android.waterreminder.ui.dashboard.components.*
-import android.waterreminder.ui.dashboard.preview.DashboardPreviewState
 import android.waterreminder.ui.dashboard.preview.DashboardScreenStateProvider
+import android.waterreminder.ui.model.DrunkCupHistory
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState

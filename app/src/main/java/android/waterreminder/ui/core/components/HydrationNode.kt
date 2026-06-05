@@ -1,5 +1,6 @@
 package android.waterreminder.ui.core.components
 
+import android.waterreminder.ui.dashboard.StreakDayState
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,12 +16,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-data class StreakDayState(
-    val dayLabel: String,     // "S", "M", "Tu", "W", "Th", "F", "S"
-    val progress: Float,      // 0.0f to 1.0f+
-    val isCurrentDay: Boolean
-)
 
 @Composable
 fun HydrationNode(
