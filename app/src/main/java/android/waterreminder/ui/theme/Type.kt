@@ -1,50 +1,36 @@
-/*
- * Copyright (C) 2022 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package android.waterreminder.ui.theme
 
+import android.waterreminder.R
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
+val AgbalumoFont = FontFamily(
+    Font(resId = R.font.agbalumo_regular, weight = FontWeight.Normal)
+)
+
+object ErtawyTypography {
+    val logoStyle = TextStyle(fontFamily = AgbalumoFont, fontSize = 64.sp)
+    val titleStyle = TextStyle(fontFamily = AgbalumoFont, fontSize = 32.sp)
+    val sectionStyle = TextStyle(fontFamily = AgbalumoFont, fontSize = 20.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        platformStyle = PlatformTextStyle(
+            includeFontPadding = false
+        )
     )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+    val normalStyle = TextStyle(fontFamily = AgbalumoFont, fontSize = 14.sp)
+    val smallStyle = TextStyle(fontFamily = AgbalumoFont, fontSize = 10.sp)
+}
+
+// Maps your custom definitions directly into Material3 structural presets
+val Material3TypographyBridge = Typography(
+    displayLarge = ErtawyTypography.logoStyle,
+    headlineLarge = ErtawyTypography.titleStyle,
+    titleLarge = ErtawyTypography.sectionStyle,
+    bodyLarge = ErtawyTypography.normalStyle,
+    labelSmall = ErtawyTypography.smallStyle
 )

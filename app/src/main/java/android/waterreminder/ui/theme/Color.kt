@@ -1,27 +1,16 @@
-/*
- * Copyright (C) 2022 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package android.waterreminder.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Core Theme Palette
+val WaterPrimary = Color(0xFF2EA9EB)
+val WaterLight = Color(0xFFA5F0FF)
+val WaterDark = Color(0xFF046CA4)
+val WaterInactive = Color(0x40246D95) // 25% Opacity applied to hex alpha channel
+val WaterWhite = Color(0xFFFFFFFF)
+val WaterProgress = Color(0xFF8FECFF)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Dark Theme Variants
+val WaterBackgroundDark = Color(0xFF0B141A) // Deep midnight navy canvas
+val WaterSurfaceDark = Color(0xFF16252E)    // Slightly lighter dark container surface
+val WaterOnSurfaceDark = Color(0xFFE2F4FF)  // High-contrast ice white text
