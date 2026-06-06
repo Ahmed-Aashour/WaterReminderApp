@@ -1,6 +1,8 @@
 package android.waterreminder.ui.core.components
 
 import android.waterreminder.ui.dashboard.StreakDayState
+import android.waterreminder.ui.dashboard.preview.HydrationNodeStateProvider
+import android.waterreminder.ui.dashboard.preview.NodePreviewScenario
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -86,42 +89,25 @@ fun HydrationNode(
     }
 }
 
-@Preview(name = "Node Component - All States Breakdown", showBackground = true)
+@Preview(name = "Node - Light Mode", group = "Themes", showBackground = true)
+@Preview(name = "Node - Dark Mode", group = "Themes", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HydrationNodeStatesPreview() {
-    ErtawyTheme(darkTheme = false) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                // State A: Past completed day with check mark
-                HydrationNode(
-                    state = StreakDayState(
-                        dayLabel = "M",
-                        progress = 1.0f,
-                    ),
-                    isCurrentDay = false,
-                )
+fun HydrationNodeParameterPreview(
+    @PreviewParameter(HydrationNodeStateProvider::class) scenario: NodePreviewScenario
+) {
+    // Dynamically checks if the current preview configuration context is set to night mode
+    val isDarkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
-                // State B: Current active day with 40% partial water wave fill
-                HydrationNode(
-                    state = StreakDayState(
-                        dayLabel = "Tu",
-                        progress = 0.4f,
-                    ),
-                    isCurrentDay = true,
-                )
-
-                // State C: Future day with empty baseline state
-                HydrationNode(
-                    state = StreakDayState(
-                        dayLabel = "W",
-                        progress = 0.0f,
-                    ),
-                    isCurrentDay = false,
-                )
-            }
+    ErtawyTheme(darkTheme = isDarkMode) {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(24.dp)
+        ) {
+            HydrationNode(
+                state = scenario.state,
+                isCurrentDay = scenario.isCurrentDay
+            )
         }
     }
 }
