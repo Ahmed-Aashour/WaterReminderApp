@@ -1,8 +1,8 @@
 package android.waterreminder.ui.dashboard.preview
 
 import android.waterreminder.ui.dashboard.DashboardState
+import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.StreakDayState
-import android.waterreminder.ui.model.DrunkCupHistory
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
-import android.waterreminder.ui.model.DrunkCupHistory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted

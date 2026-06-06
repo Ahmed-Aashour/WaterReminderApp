@@ -1,8 +1,8 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.ui.core.components.DashboardSection
+import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
-import android.waterreminder.ui.model.DrunkCupHistory
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
