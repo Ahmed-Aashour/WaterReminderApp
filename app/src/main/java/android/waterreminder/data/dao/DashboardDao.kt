@@ -17,8 +17,8 @@ interface DashboardDao {
     @Insert
     suspend fun insertLog(log: WaterHistoryEntity)
 
-    @Delete
-    suspend fun deleteLog(log: WaterHistoryEntity)
+    @Query("DELETE FROM water_history WHERE id = :logId")
+    suspend fun deleteLogById(logId: Long)
 
     // Using Flow means your UI will instantly update when a user adds or deletes a cup
     @Query("SELECT * FROM water_history ORDER BY timestamp DESC")

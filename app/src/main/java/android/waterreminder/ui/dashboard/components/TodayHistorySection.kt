@@ -103,7 +103,7 @@ private fun HistoryCupChip(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${item.count}×",
+                text = "${item.id}",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center

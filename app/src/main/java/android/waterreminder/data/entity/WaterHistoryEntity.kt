@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "water_history")
 data class WaterHistoryEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0L,
     val amountMl: Int,
     val timestamp: Long = System.currentTimeMillis() // Saves exact date + time automatically
 )

@@ -60,8 +60,8 @@ class WaterRepository @Inject constructor(
     /**
      * Deletes a water consumption entry from the history table.
      */
-    suspend fun deleteWaterLog(log: WaterHistoryEntity) {
-        dashboardDao.deleteLog(log)
+    suspend fun deleteWaterLog(logId: Long) {
+        dashboardDao.deleteLogById(logId)
     }
 
     /**
