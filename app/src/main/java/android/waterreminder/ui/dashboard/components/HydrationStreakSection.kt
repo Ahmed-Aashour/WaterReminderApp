@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun HydrationStreakSection(
     streakDays: List<StreakDayState>,
     streakCount: Int,
+    currentDayIndex: Int,
     modifier: Modifier = Modifier
 ) {
     DashboardSection(
@@ -56,8 +57,11 @@ fun HydrationStreakSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom // Keeps tracking text labels baseline-aligned
             ) {
-                streakDays.take(7).forEach { day ->
-                    HydrationNode(state = day, isCurrentDay = false)
+                streakDays.take(7).forEachIndexed { index, day ->
+                    HydrationNode(
+                        state = day,
+                        isCurrentDay = (index == currentDayIndex)
+                    )
                 }
             }
         }
@@ -77,7 +81,8 @@ fun HydrationStreakLightPreview(
         ) {
             HydrationStreakSection(
                 streakCount = 365,
-                streakDays = mockStreak
+                streakDays = mockStreak,
+                currentDayIndex = 2
             )
         }
     }
@@ -96,7 +101,8 @@ fun HydrationStreakDarkModePreview(
         ) {
             HydrationStreakSection(
                 streakCount = 5,
-                streakDays = mockStreak
+                streakDays = mockStreak,
+                currentDayIndex = 2
             )
         }
     }

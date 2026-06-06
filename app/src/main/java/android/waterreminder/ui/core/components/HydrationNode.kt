@@ -50,8 +50,8 @@ fun HydrationNode(
                     }
                 )
                 .border(
-                    2.dp,
-                    if (isCurrentDay) {
+                    width = if (isCurrentDay) 3.dp else 2.dp,
+                    color = if (isCurrentDay) {
                         MaterialTheme.colorScheme.onPrimaryContainer
                     } else {
                         MaterialTheme.colorScheme.primary
