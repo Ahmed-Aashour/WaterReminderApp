@@ -52,7 +52,8 @@ fun DashboardScreen(
             )
 
             TodayHistorySection(
-                historyItems = state.historyLogs
+                historyItems = state.historyLogs,
+                onDeleteLog = { item -> /* Route back up to the view model channel delete operations */ }
             )
 
             HydrationStreakSection(

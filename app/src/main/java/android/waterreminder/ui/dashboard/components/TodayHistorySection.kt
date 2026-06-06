@@ -4,18 +4,27 @@ import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -25,6 +34,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TodayHistorySection(
     historyItems: List<DrunkCupHistory>,
+    onDeleteLog: (DrunkCupHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -69,11 +79,72 @@ fun TodayHistorySection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     historyItems.forEach { item ->
-                        HistoryCupChip(item = item)
+                        DismissibleHistoryCupChip(
+                            item = item,
+                            onDismissed = { onDeleteLog(item) }
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+/**
+ * A wrapper container that handles swipe physics, threshold states, and background colors.
+ */
+@Composable
+fun DismissibleHistoryCupChip(
+    item: DrunkCupHistory,
+    onDismissed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { positionalValue ->
+            if (positionalValue == SwipeToDismissBoxValue.EndToStart) {
+                onDismissed()
+                true
+            } else {
+                false
+            }
+        }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        modifier = modifier.clip(RoundedCornerShape(8.dp)),
+        enableDismissFromStartToEnd = false, // 🌟 Only allow swiping left (EndToStart) to prevent layout clipping
+        backgroundContent = {
+            // Animate color transition based on swipe target state thresholds
+            val backgroundColor by animateColorAsState(
+                targetValue = when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                    else -> Color.Transparent
+                },
+                label = "DeleteBackgroundAnimation"
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor)
+                    .padding(end = 8.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Log",
+                    tint = if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.error
+                    }
+                )
+            }
+        }
+    ) {
+        // The foreground content remains your original static design component
+        HistoryCupChip(item = item)
     }
 }
 
@@ -92,6 +163,7 @@ private fun HistoryCupChip(
             .width(80.dp)
             .height(55.dp)
             .border(2.dp, MaterialTheme.colorScheme.primary, shapeToken)
+            .background(MaterialTheme.colorScheme.surface) // Ensure opacity over background actions
             .clip(shapeToken),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -142,7 +214,7 @@ fun TodayHistoryActivePreview(
 ) {
     ErtawyTheme(darkTheme = false) {
         Box(modifier = Modifier.padding(16.dp)) {
-            TodayHistorySection(historyItems = mockHistory)
+            TodayHistorySection(historyItems = mockHistory, onDeleteLog = {})
         }
     }
 }
@@ -158,7 +230,7 @@ fun TodayHistoryDarkModePreview(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            TodayHistorySection(historyItems = mockHistory)
+            TodayHistorySection(historyItems = mockHistory, onDeleteLog = {})
         }
     }
 }
