@@ -82,7 +82,7 @@ fun DashboardScreen(
 )
 @Composable
 fun DashboardScreenLightPreview(
-    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardPreviewState
+    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardState
 ) {
     ErtawyTheme(darkTheme = false) {
         DashboardScreen(
@@ -106,7 +106,7 @@ fun DashboardScreenLightPreview(
 )
 @Composable
 fun DashboardScreenDarkPreview(
-    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardPreviewState
+    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardState
 ) {
     ErtawyTheme(darkTheme = true) {
         DashboardScreen(

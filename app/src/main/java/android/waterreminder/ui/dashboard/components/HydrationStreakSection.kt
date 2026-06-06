@@ -57,7 +57,7 @@ fun HydrationStreakSection(
                 verticalAlignment = Alignment.Bottom // Keeps tracking text labels baseline-aligned
             ) {
                 streakDays.take(7).forEach { day ->
-                    HydrationNode(state = day)
+                    HydrationNode(state = day, isCurrentDay = false)
                 }
             }
         }

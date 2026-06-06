@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HydrationNode(
     state: StreakDayState,
+    isCurrentDay: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -50,7 +51,7 @@ fun HydrationNode(
                 )
                 .border(
                     2.dp,
-                    if (state.isCurrentDay) {
+                    if (isCurrentDay) {
                         MaterialTheme.colorScheme.onPrimaryContainer
                     } else {
                         MaterialTheme.colorScheme.primary
@@ -74,7 +75,7 @@ fun HydrationNode(
         Text(
             text = state.dayLabel,
             style = MaterialTheme.typography.labelSmall,
-            color = if (state.isCurrentDay) {
+            color = if (isCurrentDay) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.primary
@@ -99,8 +100,8 @@ fun HydrationNodeStatesPreview() {
                     state = StreakDayState(
                         dayLabel = "M",
                         progress = 1.0f,
-                        isCurrentDay = false,
-                    )
+                    ),
+                    isCurrentDay = false,
                 )
 
                 // State B: Current active day with 40% partial water wave fill
@@ -108,8 +109,8 @@ fun HydrationNodeStatesPreview() {
                     state = StreakDayState(
                         dayLabel = "Tu",
                         progress = 0.4f,
-                        isCurrentDay = true,
-                    )
+                    ),
+                    isCurrentDay = true,
                 )
 
                 // State C: Future day with empty baseline state
@@ -117,8 +118,8 @@ fun HydrationNodeStatesPreview() {
                     state = StreakDayState(
                         dayLabel = "W",
                         progress = 0.0f,
-                        isCurrentDay = false,
-                    )
+                    ),
+                    isCurrentDay = false,
                 )
             }
         }
