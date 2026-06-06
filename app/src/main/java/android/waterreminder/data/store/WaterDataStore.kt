@@ -7,7 +7,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-// Global context delegate property
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "water_tracker_prefs")
 
 class WaterDataStore(private val context: Context) {
@@ -15,6 +14,7 @@ class WaterDataStore(private val context: Context) {
     companion object {
         // Core Target and Metrics Keys
         val DAILY_GOAL_ML = intPreferencesKey("daily_goal_ml")
+        val MEASUREMENT_UNIT = stringPreferencesKey("measurement_unit")
         val IS_FASTING = booleanPreferencesKey("is_fasting")
 
         // Polling Window & Engine Keys
@@ -34,6 +34,7 @@ class WaterDataStore(private val context: Context) {
         .map { preferences ->
             UserPreferences(
                 dailyGoalMl = preferences[DAILY_GOAL_ML] ?: 2000,
+                measurementUnit = preferences[MEASUREMENT_UNIT] ?: "ml",
                 isFasting = preferences[IS_FASTING] ?: false,
                 notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: 60,
                 theme = preferences[THEME] ?: "System",
@@ -47,6 +48,12 @@ class WaterDataStore(private val context: Context) {
 
     suspend fun updateDailyGoal(newGoalMl: Int) {
         context.dataStore.edit { prefs -> prefs[DAILY_GOAL_ML] = newGoalMl }
+    }
+
+    suspend fun updateMeasurementUnit(unit: String) {
+        if (unit in listOf("ml", "oz")) {
+            context.dataStore.edit { prefs -> prefs[MEASUREMENT_UNIT] = unit }
+        }
     }
 
     suspend fun updateFastingState(isFasting: Boolean) {
@@ -85,6 +92,7 @@ class WaterDataStore(private val context: Context) {
  */
 data class UserPreferences(
     val dailyGoalMl: Int,
+    val measurementUnit: String,
     val isFasting: Boolean,
     val notificationInterval: Int,
     val theme: String,
