@@ -4,7 +4,7 @@ package android.waterreminder.data.store
  * 🎛️ Central App Settings Configuration Control Panel
  * Modify these centralized fields to dynamically shift global app rules instantly!
  */
-object WaterSettingsConfig {
+object SettingsConfig {
     // Default Fallback Configurations
     const val DEFAULT_DAILY_GOAL_ML = 2000
     const val DEFAULT_MEASUREMENT_UNIT = "ml"

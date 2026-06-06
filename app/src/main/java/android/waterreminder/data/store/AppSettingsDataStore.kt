@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "water_tracker_prefs")
 
-class WaterDataStore(private val context: Context) {
+class AppSettingsDataStore(private val context: Context) {
 
     companion object {
         // Core Target and Metrics Keys
@@ -30,13 +30,13 @@ class WaterDataStore(private val context: Context) {
     /**
      * Aggregated Settings State Model containing all user configurations.
      */
-    val settingsFlow: Flow<UserPreferences> = context.dataStore.data
+    val settingsFlow: Flow<SettingsState> = context.dataStore.data
         .map { preferences ->
-            val isFastingActive = preferences[IS_FASTING] ?: WaterSettingsConfig.DEFAULT_IS_FASTING
+            val isFastingActive = preferences[IS_FASTING] ?: SettingsConfig.DEFAULT_IS_FASTING
 
             // Fetch baseline disk states safely
-            val originalStart = preferences[REMINDER_START_TIME] ?: WaterSettingsConfig.DEFAULT_START_TIME
-            val originalEnd = preferences[REMINDER_END_TIME] ?: WaterSettingsConfig.DEFAULT_END_TIME
+            val originalStart = preferences[REMINDER_START_TIME] ?: SettingsConfig.DEFAULT_START_TIME
+            val originalEnd = preferences[REMINDER_END_TIME] ?: SettingsConfig.DEFAULT_END_TIME
 
             // 🌟 Compute operational bounds dynamically
             val operationalStart: String
@@ -51,13 +51,13 @@ class WaterDataStore(private val context: Context) {
                 operationalEnd = originalEnd
             }
 
-            UserPreferences(
-                dailyGoalMl = preferences[DAILY_GOAL_ML] ?: WaterSettingsConfig.DEFAULT_DAILY_GOAL_ML,
-                measurementUnit = preferences[MEASUREMENT_UNIT] ?: WaterSettingsConfig.DEFAULT_MEASUREMENT_UNIT,
+            SettingsState(
+                dailyGoalMl = preferences[DAILY_GOAL_ML] ?: SettingsConfig.DEFAULT_DAILY_GOAL_ML,
+                measurementUnit = preferences[MEASUREMENT_UNIT] ?: SettingsConfig.DEFAULT_MEASUREMENT_UNIT,
                 isFasting = isFastingActive,
-                notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: WaterSettingsConfig.DEFAULT_NOTIFICATION_INTERVAL_MIN,
-                theme = preferences[THEME] ?: WaterSettingsConfig.DEFAULT_THEME,
-                language = preferences[LANGUAGE] ?: WaterSettingsConfig.DEFAULT_LANGUAGE,
+                notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: SettingsConfig.DEFAULT_NOTIFICATION_INTERVAL_MIN,
+                theme = preferences[THEME] ?: SettingsConfig.DEFAULT_THEME,
+                language = preferences[LANGUAGE] ?: SettingsConfig.DEFAULT_LANGUAGE,
                 savedStartHour = originalStart, // Kept safe & unchanged
                 savedEndHour = originalEnd,     // Kept safe & unchanged
                 activeStartHour = operationalStart, // Used by notification workers
@@ -72,7 +72,7 @@ class WaterDataStore(private val context: Context) {
     }
 
     suspend fun updateMeasurementUnit(unit: String) {
-        if (unit in WaterSettingsConfig.SUPPORTED_UNITS) {
+        if (unit in SettingsConfig.SUPPORTED_UNITS) {
             context.dataStore.edit { prefs -> prefs[MEASUREMENT_UNIT] = unit }
         }
     }
@@ -83,8 +83,8 @@ class WaterDataStore(private val context: Context) {
 
     suspend fun updateNotificationInterval(minutes: Int) {
         val sanitizedMinutes = minutes.coerceIn(
-            WaterSettingsConfig.MIN_NOTIFICATION_INTERVAL_MIN,
-            WaterSettingsConfig.MAX_NOTIFICATION_INTERVAL_MIN
+            SettingsConfig.MIN_NOTIFICATION_INTERVAL_MIN,
+            SettingsConfig.MAX_NOTIFICATION_INTERVAL_MIN
         )
         context.dataStore.edit { prefs ->
             prefs[NOTIFICATION_INTERVAL] = sanitizedMinutes
@@ -92,13 +92,13 @@ class WaterDataStore(private val context: Context) {
     }
 
     suspend fun updateTheme(newTheme: String) {
-        if (newTheme in WaterSettingsConfig.SUPPORTED_THEMES) {
+        if (newTheme in SettingsConfig.SUPPORTED_THEMES) {
             context.dataStore.edit { prefs -> prefs[THEME] = newTheme }
         }
     }
 
     suspend fun updateLanguage(newLanguage: String) {
-        if (newLanguage in WaterSettingsConfig.SUPPORTED_LANGUAGES) {
+        if (newLanguage in SettingsConfig.SUPPORTED_LANGUAGES) {
             context.dataStore.edit { prefs -> prefs[LANGUAGE] = newLanguage }
         }
     }

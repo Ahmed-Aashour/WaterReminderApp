@@ -3,7 +3,7 @@ package android.waterreminder.data.store
 /**
  * Read-only state snapshot model representing the application preferences framework.
  */
-data class UserPreferences(
+data class SettingsState(
     val dailyGoalMl: Int,
     val measurementUnit: String,
     val isFasting: Boolean,
