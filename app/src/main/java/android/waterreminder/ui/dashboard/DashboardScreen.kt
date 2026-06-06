@@ -37,34 +37,27 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp, vertical = 24.dp)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             Header(
                 title = "Ertawy",
                 actionButton = { SettingsButton(onClick = onNavigateToSettings) }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             ProgressBar(
                 currentIntakeMl = currentIntake,
                 targetIntakeMl = targetIntake
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             DrinkButtonsSection(
                 onPresetClick = onAddWater,
                 onCustomAddClick = onCustomAddTrigger
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-
             TodayHistorySection(
                 historyItems = historyLogs
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             HydrationStreakSection(
                 streakDays = streakDays,

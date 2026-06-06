@@ -37,7 +37,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge() // Instantly unlocks transparent status/navigation bars
+        // Instantly unlocks transparent status/navigation bars
+        enableEdgeToEdge()
         // Let the scheduler handle the setup implicitly
         notificationScheduler.scheduleRepeatingReminders()
 
