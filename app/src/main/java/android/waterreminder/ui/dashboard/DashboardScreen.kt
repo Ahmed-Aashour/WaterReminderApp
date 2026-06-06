@@ -18,11 +18,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DashboardScreen(
-    currentIntake: Int,
-    targetIntake: Int,
-    historyLogs: List<DrunkCupHistory>,
-    streakDays: List<StreakDayState>,
-    streakCount: Int,
+    state: DashboardState,
     onAddWater: (Int) -> Unit,
     onCustomAddTrigger: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -46,8 +42,8 @@ fun DashboardScreen(
             )
 
             ProgressBar(
-                currentIntakeMl = currentIntake,
-                targetIntakeMl = targetIntake
+                currentIntakeMl = state.currentIntake,
+                targetIntakeMl = state.targetIntake
             )
 
             DrinkButtonsSection(
@@ -56,12 +52,11 @@ fun DashboardScreen(
             )
 
             TodayHistorySection(
-                historyItems = historyLogs
+                historyItems = state.historyLogs
             )
 
             HydrationStreakSection(
-                streakDays = streakDays,
-                streakCount = streakCount
+                state = state.streakSection
             )
         }
     }
@@ -78,11 +73,7 @@ fun DashboardScreenLightPreview(
 ) {
     ErtawyTheme(darkTheme = false) {
         DashboardScreen(
-            currentIntake = state.currentIntake,
-            targetIntake = state.targetIntake,
-            historyLogs = state.historyLogs,
-            streakDays = state.streakDays,
-            streakCount = state.streakCount,
+            state = state,
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
@@ -102,11 +93,7 @@ fun DashboardScreenDarkPreview(
 ) {
     ErtawyTheme(darkTheme = true) {
         DashboardScreen(
-            currentIntake = state.currentIntake,
-            targetIntake = state.targetIntake,
-            historyLogs = state.historyLogs,
-            streakDays = state.streakDays,
-            streakCount = state.streakCount,
+            state = state,
             onAddWater = {},
             onCustomAddTrigger = {},
             onNavigateToSettings = {}
