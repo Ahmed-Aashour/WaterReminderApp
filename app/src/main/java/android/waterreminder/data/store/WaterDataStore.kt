@@ -82,8 +82,9 @@ class WaterDataStore(private val context: Context) {
     }
 
     suspend fun updateNotificationInterval(minutes: Int) {
-        if (minutes in listOf(30, 60, 90)) {
-            context.dataStore.edit { prefs -> prefs[NOTIFICATION_INTERVAL] = minutes }
+        val sanitizedMinutes = minutes.coerceIn(15, 180)
+        context.dataStore.edit { prefs ->
+            prefs[NOTIFICATION_INTERVAL] = sanitizedMinutes
         }
     }
 
