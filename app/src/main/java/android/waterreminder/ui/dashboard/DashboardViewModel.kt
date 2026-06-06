@@ -31,7 +31,7 @@ class DashboardViewModel @Inject constructor(
     val uiState: StateFlow<DashboardState> = combine(
         repository.getCupsCatalog(),
         repository.getHistoryForPastDays(daysBefore = 7),  // For the weekly nodes UI
-        repository.getHistoryForPastDays(daysBefore = 35)  // Efficient 5-week lookback window for streak calculation
+        repository.getHistoryForPastDays(daysBefore = 35)  // Efficient 5-week look-back window for streak calculation
     ) { catalog, currentWeekLogs, longTermLogs ->
 
         val now = Calendar.getInstance()
@@ -64,12 +64,14 @@ class DashboardViewModel @Inject constructor(
 
         // Return the clean, fully calculated UI State
         DashboardState(
-            streakDays = weeklyNodes,
+            streakSection = StreakSectionState(
+                count = computedStreak,
+                dayIndex = todayIndex,
+                days = weeklyNodes
+            ),
             historyLogs = mappedHistory,
             currentIntake = currentIntakeSum,
-            targetIntake = targetIntakeGoal,
-            streakCount = computedStreak,
-            currentDayIndex = todayIndex // Added to highlight "Today" in Compose
+            targetIntake = targetIntakeGoal
         )
     }
         .flowOn(Dispatchers.Default) // Ensures math calculations never run on the UI thread!
@@ -77,12 +79,14 @@ class DashboardViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = DashboardState(
-                streakDays = emptyList(),
+                streakSection = StreakSectionState(
+                    count = 0,
+                    dayIndex = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1,
+                    days = emptyList()
+                ),
                 historyLogs = emptyList(),
                 currentIntake = 0,
-                targetIntake = 2000,
-                streakCount = 0,
-                currentDayIndex = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
+                targetIntake = 2000
             )
         )
 
@@ -138,7 +142,7 @@ class DashboardViewModel @Inject constructor(
         var streak = 0
         val checkCalendar = Calendar.getInstance()
 
-        // Group all logs within our lookback window into a quick-access map grouped by local day representation
+        // Group all logs within our look-back window into a quick-access map grouped by local day representation
         val dailyTotalsMap = logs.groupBy { entity ->
             val cal = Calendar.getInstance().apply { timeInMillis = entity.timestamp }
             "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.DAY_OF_YEAR)}"

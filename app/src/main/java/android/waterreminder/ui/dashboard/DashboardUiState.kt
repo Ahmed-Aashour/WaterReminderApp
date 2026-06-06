@@ -2,12 +2,16 @@ package android.waterreminder.ui.dashboard
 
 // A clean wrapper mapping all varying data combinations together
 data class DashboardState(
-    val streakDays: List<StreakDayState>,
+    val streakSection: StreakSectionState,
     val historyLogs: List<DrunkCupHistory>,
     val currentIntake: Int,
-    val targetIntake: Int,
-    val streakCount: Int,
-    val currentDayIndex: Int,
+    val targetIntake: Int
+)
+
+data class StreakSectionState(
+    val count: Int,
+    val dayIndex: Int,
+    val days: List<StreakDayState>
 )
 
 data class StreakDayState(
