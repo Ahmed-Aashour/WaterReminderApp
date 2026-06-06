@@ -32,6 +32,25 @@ class WaterDataStore(private val context: Context) {
      */
     val settingsFlow: Flow<UserPreferences> = context.dataStore.data
         .map { preferences ->
+            val isFastingActive = preferences[IS_FASTING] ?: false
+
+            // Fetch baseline disk states safely
+            val originalStart = preferences[REMINDER_START_TIME] ?: "07:00 AM"
+            val originalEnd = preferences[REMINDER_END_TIME] ?: "09:00 PM"
+
+            // 🌟 Compute operational bounds dynamically
+            val operationalStart: String
+            val operationalEnd: String
+
+            if (isFastingActive) {
+                // TODO: Fetch these dynamically from a PrayerTimes calculation library based on device GPS location
+                operationalStart = fetchTodayMaghribTime() // e.g., "06:45 PM"
+                operationalEnd = fetchTomorrowFajrTime()    // e.g., "04:15 AM"
+            } else {
+                operationalStart = originalStart
+                operationalEnd = originalEnd
+            }
+
             UserPreferences(
                 dailyGoalMl = preferences[DAILY_GOAL_ML] ?: 2000,
                 measurementUnit = preferences[MEASUREMENT_UNIT] ?: "ml",
@@ -39,8 +58,10 @@ class WaterDataStore(private val context: Context) {
                 notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: 60,
                 theme = preferences[THEME] ?: "System",
                 language = preferences[LANGUAGE] ?: "English",
-                startHour = preferences[REMINDER_START_TIME] ?: "07:00 AM",
-                endHour = preferences[REMINDER_END_TIME] ?: "09:00 PM"
+                savedStartHour = originalStart, // Kept safe & unchanged
+                savedEndHour = originalEnd,     // Kept safe & unchanged
+                activeStartHour = operationalStart, // Used by notification workers
+                activeEndHour = operationalEnd      // Used by notification workers
             )
         }
 
@@ -85,6 +106,10 @@ class WaterDataStore(private val context: Context) {
             prefs[REMINDER_END_TIME] = endHour
         }
     }
+
+    // --- Helper calculation placeholders ---
+    private fun fetchTodayMaghribTime(): String = "06:45 PM"
+    private fun fetchTomorrowFajrTime(): String = "04:15 AM"
 }
 
 /**
@@ -97,6 +122,10 @@ data class UserPreferences(
     val notificationInterval: Int,
     val theme: String,
     val language: String,
-    val startHour: String,
-    val endHour: String
+
+    val savedStartHour: String,
+    val savedEndHour: String,
+
+    val activeStartHour: String,
+    val activeEndHour: String
 )
