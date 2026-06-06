@@ -19,6 +19,8 @@ package android.waterreminder.ui
 import android.os.Bundle
 import android.waterreminder.data.WaterDataStore
 import android.waterreminder.service.WaterNotificationScheduler
+import android.waterreminder.ui.dashboard.DashboardRoute
+import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,13 +45,13 @@ class MainActivity : ComponentActivity() {
         notificationScheduler.scheduleRepeatingReminders()
 
         setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    WaterDashboardScreen(waterDataStore)
-                }
+            ErtawyTheme {
+                DashboardRoute(
+                    onNavigateToSettings = {
+                        // Handle your navigation routing to settings panel here
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
