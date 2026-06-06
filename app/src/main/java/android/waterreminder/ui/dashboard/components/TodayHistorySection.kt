@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -93,27 +94,24 @@ fun TodayHistorySection(
 /**
  * A wrapper container that handles swipe physics, threshold states, and background colors.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DismissibleHistoryCupChip(
     item: DrunkCupHistory,
     onDismissed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { positionalValue ->
-            if (positionalValue == SwipeToDismissBoxValue.EndToStart) {
-                onDismissed()
-                true
-            } else {
-                false
-            }
-        }
-    )
+    val dismissState = rememberSwipeToDismissBoxState()
 
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier.clip(RoundedCornerShape(8.dp)),
         enableDismissFromStartToEnd = false, // 🌟 Only allow swiping left (EndToStart) to prevent layout clipping
+        onDismiss = { dismissValue ->
+            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                onDismissed()
+            }
+        },
         backgroundContent = {
             // Animate color transition based on swipe target state thresholds
             val backgroundColor by animateColorAsState(
