@@ -21,6 +21,7 @@ import android.waterreminder.data.WaterDataStore
 import android.waterreminder.service.WaterNotificationScheduler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge() // Instantly unlocks transparent status/navigation bars
         // Let the scheduler handle the setup implicitly
         notificationScheduler.scheduleRepeatingReminders()
 
