@@ -21,6 +21,7 @@ fun DashboardScreen(
     state: DashboardState,
     onAddWater: (Int) -> Unit,
     onCustomAddTrigger: () -> Unit,
+    onDeleteLog: (DrunkCupHistory) -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -53,7 +54,7 @@ fun DashboardScreen(
 
             TodayHistorySection(
                 historyItems = state.historyLogs,
-                onDeleteLog = { item -> /* Route back up to the view model channel delete operations */ }
+                onDeleteLog = onDeleteLog
             )
 
             HydrationStreakSection(
@@ -77,6 +78,7 @@ fun DashboardScreenLightPreview(
             state = state,
             onAddWater = {},
             onCustomAddTrigger = {},
+            onDeleteLog = {},
             onNavigateToSettings = {}
         )
     }
@@ -97,6 +99,7 @@ fun DashboardScreenDarkPreview(
             state = state,
             onAddWater = {},
             onCustomAddTrigger = {},
+            onDeleteLog = {},
             onNavigateToSettings = {}
         )
     }

@@ -98,9 +98,9 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun deleteLog(id: Long) {
+    fun deleteWaterLog(log: DrunkCupHistory) {
         viewModelScope.launch {
-            repository.deleteWaterLog(id)
+            repository.deleteWaterLog(log.id)
         }
     }
 

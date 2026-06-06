@@ -25,6 +25,7 @@ fun DashboardRoute(
         state = uiState,
         onAddWater = { amount -> viewModel.logWater(amount) },
         onCustomAddTrigger = { showCustomDialog = true }, // Toggle state open
+        onDeleteLog = { log -> viewModel.deleteWaterLog(log) },
         onNavigateToSettings = onNavigateToSettings,
         modifier = modifier
     )
