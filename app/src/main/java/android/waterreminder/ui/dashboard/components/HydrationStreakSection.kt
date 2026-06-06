@@ -3,8 +3,8 @@ package android.waterreminder.ui.dashboard.components
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.core.components.HydrationNode
 import android.waterreminder.ui.core.components.LabelPill
-import android.waterreminder.ui.dashboard.StreakDayState
-import android.waterreminder.ui.dashboard.preview.StreakDaysProvider
+import android.waterreminder.ui.dashboard.StreakSectionState
+import android.waterreminder.ui.dashboard.preview.StreakSectionProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,8 +19,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HydrationStreakSection(
-    streakDays: List<StreakDayState>,
-    streakCount: Int,
+    state: StreakSectionState,
     modifier: Modifier = Modifier
 ) {
     DashboardSection(
@@ -46,7 +45,7 @@ fun HydrationStreakSection(
         ) {
 
             // --- Component 1: Days-Hydrated Label Pill ---
-            LabelPill(text = "$streakCount days hydrated!")
+            LabelPill(text = "${state.count} days hydrated!")
 
             // --- Component 2: 7-Day Tracker Row Layout ---
             Row(
@@ -56,8 +55,11 @@ fun HydrationStreakSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom // Keeps tracking text labels baseline-aligned
             ) {
-                streakDays.take(7).forEach { day ->
-                    HydrationNode(state = day)
+                state.days.take(7).forEachIndexed { index, day ->
+                    HydrationNode(
+                        state = day,
+                        isCurrentDay = (index == state.dayIndex)
+                    )
                 }
             }
         }
@@ -67,7 +69,7 @@ fun HydrationStreakSection(
 @Preview(name = "Streak Full Container - Light Mode", showBackground = true)
 @Composable
 fun HydrationStreakLightPreview(
-    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+    @PreviewParameter(StreakSectionProvider::class) mockState: StreakSectionState
 ) {
     ErtawyTheme(darkTheme = false) {
         Box(
@@ -75,10 +77,7 @@ fun HydrationStreakLightPreview(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            HydrationStreakSection(
-                streakCount = 365,
-                streakDays = mockStreak
-            )
+            HydrationStreakSection(state = mockState)
         }
     }
 }
@@ -86,7 +85,7 @@ fun HydrationStreakLightPreview(
 @Preview(name = "Streak Full Container - Dark Mode", showBackground = true)
 @Composable
 fun HydrationStreakDarkModePreview(
-    @PreviewParameter(StreakDaysProvider::class) mockStreak: List<StreakDayState>
+    @PreviewParameter(StreakSectionProvider::class) mockState: StreakSectionState
 ) {
     ErtawyTheme(darkTheme = true) {
         Box(
@@ -94,10 +93,7 @@ fun HydrationStreakDarkModePreview(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            HydrationStreakSection(
-                streakCount = 5,
-                streakDays = mockStreak
-            )
+            HydrationStreakSection(state = mockState)
         }
     }
 }
