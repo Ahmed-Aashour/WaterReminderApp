@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import android.waterreminder.ui.dashboard.DashboardRoute
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 
 @Composable
 fun WaterTrackerNavHost(
@@ -48,8 +50,8 @@ private fun SettingsRoutePlaceholder(onNavigateBack: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = androidx.compose.ui.Alignment.Center
     ) {
-        androidx.compose.material3.Button(onClick = onNavigateBack) {
-            androidx.compose.material3.Text("Placeholder Settings Screen: Go Back")
+        Button(onClick = onNavigateBack) {
+            Text("Placeholder Settings Screen: Go Back")
         }
     }
 }
