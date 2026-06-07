@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
+import android.waterreminder.data.store.AppSettingsDataStore
+import android.waterreminder.data.store.SettingsConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val repository: WaterRepository
+    private val repository: WaterRepository,
+    private val appSettingsDataStore: AppSettingsDataStore
 ) : ViewModel() {
 
     // Define a hardcoded target intake goal for now (2000ml)
@@ -31,8 +34,11 @@ class DashboardViewModel @Inject constructor(
     val uiState: StateFlow<DashboardState> = combine(
         repository.getCupsCatalog(),
         repository.getHistoryForPastDays(daysBefore = 7),  // For the weekly nodes UI
-        repository.getHistoryForPastDays(daysBefore = 35)  // Efficient 5-week look-back window for streak calculation
-    ) { catalog, currentWeekLogs, longTermLogs ->
+        repository.getHistoryForPastDays(daysBefore = 35), // Efficient 5-week look-back window for streak calculation
+        appSettingsDataStore.settingsFlow
+    ) { catalog, currentWeekLogs, longTermLogs, settingsState ->
+
+        val targetIntakeGoal = settingsState.dailyGoalMl
 
         val now = Calendar.getInstance()
         val todayIndex = now.get(Calendar.DAY_OF_WEEK) - 1 // Sunday = 0, Monday = 1, etc.
@@ -86,7 +92,7 @@ class DashboardViewModel @Inject constructor(
                 ),
                 historyLogs = emptyList(),
                 currentIntake = 0,
-                targetIntake = 2000
+                targetIntake = SettingsConfig.DEFAULT_DAILY_GOAL_ML
             )
         )
 
