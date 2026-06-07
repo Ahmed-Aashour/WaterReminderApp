@@ -25,9 +25,6 @@ class DashboardViewModel @Inject constructor(
     private val appSettingsDataStore: AppSettingsDataStore
 ) : ViewModel() {
 
-    // Define a hardcoded target intake goal for now (2000ml)
-    private val targetIntakeGoal = 2000
-
     // Time-formatter for converting raw timestamps into clean UI strings
     private val timeFormatter = SimpleDateFormat("hh:mm A", Locale.getDefault())
 
