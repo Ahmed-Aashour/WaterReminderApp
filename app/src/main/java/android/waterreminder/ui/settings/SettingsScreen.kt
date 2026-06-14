@@ -1,10 +1,13 @@
 package android.waterreminder.ui.settings
 
+import android.content.res.Configuration
 import android.waterreminder.data.store.SettingsState
 import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
 import android.waterreminder.ui.settings.components.PreferencesFrame
+import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
+import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,6 +18,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,5 +116,26 @@ fun SettingsScreen(
                 textAlign = TextAlign.Center
             )
         }
+    }
+}
+
+@Preview(name = "Light Mode", group = "Themes", showBackground = true)
+@Preview(name = "Dark Mode", group = "Themes", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SettingsScreenPreview(
+    @PreviewParameter(SettingsScreenStateProvider::class) state: SettingsState
+) {
+    ErtawyTheme {
+        SettingsScreen(
+            state = state,
+            onNavigateBack = {},
+            onUpdateDailyGoal = {},
+            onUpdateMeasurementUnit = {},
+            onUpdateFastingState = {},
+            onUpdateNotificationInterval = {},
+            onUpdateReminderWindow = { _, _ -> },
+            onUpdateTheme = {},
+            onUpdateLanguage = {}
+        )
     }
 }
