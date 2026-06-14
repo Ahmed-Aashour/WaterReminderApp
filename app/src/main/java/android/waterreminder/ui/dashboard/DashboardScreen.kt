@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard
 
+import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SettingsButton
 import android.waterreminder.ui.dashboard.components.*
 import android.waterreminder.ui.dashboard.preview.DashboardScreenStateProvider
