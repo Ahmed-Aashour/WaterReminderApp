@@ -2,6 +2,8 @@ package android.waterreminder.ui.core.components
 
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +45,11 @@ fun HeaderPreview() {
             Header(
                 title = "Ertawy",
                 actionButton = {
-                    SettingsButton(onClick = {})
+                    SquareIconButton(
+                        icon = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        onClick = {}
+                    )
                 }
             )
         }

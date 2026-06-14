@@ -1,13 +1,15 @@
 package android.waterreminder.ui.dashboard
 
 import android.waterreminder.ui.core.components.Header
-import android.waterreminder.ui.core.components.SettingsButton
+import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.dashboard.components.*
 import android.waterreminder.ui.dashboard.preview.DashboardScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -40,7 +42,13 @@ fun DashboardScreen(
         ) {
             Header(
                 title = "Ertawy",
-                actionButton = { SettingsButton(onClick = onNavigateToSettings) }
+                actionButton = {
+                    SquareIconButton(
+                        icon = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        onClick = onNavigateToSettings
+                    )
+                }
             )
 
             ProgressBar(

@@ -3,6 +3,7 @@ package android.waterreminder.ui.settings
 import android.content.res.Configuration
 import android.waterreminder.data.store.SettingsState
 import android.waterreminder.ui.core.components.Header
+import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
@@ -52,18 +53,13 @@ fun SettingsScreen(
             Header(
                 title = "Settings",
                 actionButton = {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Return Button",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                    SquareIconButton(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Return Button",
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        onClick = onNavigateBack
+                    )
                 }
             )
 
