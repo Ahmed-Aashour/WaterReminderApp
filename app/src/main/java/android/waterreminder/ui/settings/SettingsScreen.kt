@@ -1,19 +1,21 @@
 package android.waterreminder.ui.settings
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import android.waterreminder.data.store.SettingsState
+import android.waterreminder.ui.settings.components.HydrationFrame
+import android.waterreminder.ui.settings.components.LegalLinksFrame
+import android.waterreminder.ui.settings.components.NotificationsFrame
+import android.waterreminder.ui.settings.components.PreferencesFrame
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import android.waterreminder.data.store.SettingsState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,34 +26,90 @@ fun SettingsScreen(
     onUpdateMeasurementUnit: (String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
     onUpdateNotificationInterval: (Int) -> Unit,
+    onUpdateReminderWindow: (String, String) -> Unit,
     onUpdateTheme: (String) -> Unit,
     onUpdateLanguage: (String) -> Unit,
-    onUpdateReminderWindow: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = {
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate Back"
+                            contentDescription = "Navigate Back",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
+                .padding(start = 30.dp, end = 30.dp, top = 24.dp, bottom = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            // 🌟 This is your canvas! Your visual settings cards, inputs, and controls
-            // will reside inside this block next, backed cleanly by live data values.
+            HydrationFrame(
+                dailyGoal = state.dailyGoalMl,
+                unit = state.measurementUnit,
+                onGoalClick = { /* Launch integer input choice sheet */ },
+                onUnitClick = {
+                    val nextUnit = if(state.measurementUnit == "ml") "oz" else "ml"
+                    onUpdateMeasurementUnit(nextUnit)
+                }
+            )
+
+            NotificationsFrame(
+                isNotificationEnabled = true, // TODO: Add the toggle setting
+                frequencyMinutes = state.notificationInterval,
+                reminderWindow = "${state.activeStartHour} - ${state.activeEndHour}",
+                isFastingMode = state.isFasting,
+                onIntervalToggle = { enabled -> onUpdateNotificationInterval(if(enabled) 60 else 0) },
+                onFrequencyClick = { /* Launch frequency dialog options */ },
+                onWindowClick = { onUpdateReminderWindow("08:00", "22:00") },
+                onFastingToggle = onUpdateFastingState
+            )
+
+            PreferencesFrame(
+                theme = state.theme,
+                language = state.language,
+                onThemeClick = { /* Open theme picker menu */ },
+                onLanguageClick = { /* Open language selector */ }
+            )
+
+            LegalLinksFrame(
+                onAboutClick = { },
+                onFeedbackClick = { },
+                onTermsClick = { },
+                onAcknowledgementsClick = { }
+            )
+
+            Text(
+                text = "version 1.0.1",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
