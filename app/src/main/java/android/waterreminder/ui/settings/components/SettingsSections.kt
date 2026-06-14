@@ -1,5 +1,6 @@
 package android.waterreminder.ui.settings.components
 
+import android.waterreminder.ui.core.components.ClickableTarget
 import android.waterreminder.ui.core.components.SettingsItemRow
 import android.waterreminder.ui.core.components.SettingsSectionHeader
 import androidx.compose.foundation.layout.Column
@@ -113,9 +114,25 @@ fun LegalLinksFrame(
             .fillMaxWidth()
             .padding(vertical = 16.dp)
     ) {
-        SettingsItemRow(title = "About", description = "Learn more about the application", onClick = onAboutClick)
-        SettingsItemRow(title = "Feedback", description = "Report issues or suggest ideas", onClick = onFeedbackClick)
-        SettingsItemRow(title = "Terms & Policies", description = "Privacy policy and legal regulations", onClick = onTermsClick)
-        SettingsItemRow(title = "Acknowledgements", description = "Third-party open source licenses", onClick = onAcknowledgementsClick)
+        SettingsItemRow(
+            title = "About",
+            clickableTarget = ClickableTarget.TextOnly,
+            onClick = onAboutClick
+        )
+        SettingsItemRow(
+            title = "Feedback",
+            clickableTarget = ClickableTarget.TextOnly,
+            onClick = onFeedbackClick
+        )
+        SettingsItemRow(
+            title = "Terms & Policies",
+            clickableTarget = ClickableTarget.TextOnly,
+            onClick = onTermsClick
+        )
+        SettingsItemRow(
+            title = "Acknowledgements",
+            clickableTarget = ClickableTarget.TextOnly,
+            onClick = onAcknowledgementsClick
+        )
     }
 }
