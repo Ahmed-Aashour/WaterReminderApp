@@ -6,10 +6,7 @@ import android.waterreminder.ui.settings.GoalOptionUiModel
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,9 +47,44 @@ fun DailyGoalDialog(
         title = "Goal",
         onDismissRequest = onDismiss,
         modifier = modifier,
+        options = {
+            // Render pre-defined selections loop safely
+            predefinedOptions.forEach { option ->
+                val displayLabel = if (currentUnit == "ml") option.displayLabelMl else option.displayLabelOz
+                SelectionRow(
+                    label = displayLabel,
+                    isSelected = selectedGoalMl == option.amountMl,
+                    onClick = {
+                        selectedGoalMl = option.amountMl
+                        customInputString = ""
+                        errorMessage = null
+                    }
+                )
+            }
+        },
+        inputField = {
+            TextInputField(
+                value = customInputString,
+                onValueChange = { input ->
+                    customInputString = input
+                    selectedGoalMl = null
+                    errorMessage = null
+                },
+                isError = errorMessage != null
+            )
+
+            // Error message readout trace
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                )
+            }
+        },
         buttons = {
             CancelButton(onClick = onDismiss)
-            Spacer(modifier = Modifier.width(10.dp))
             ConfirmButton(
                 onClick = {
                     errorMessage = null
@@ -65,43 +97,7 @@ fun DailyGoalDialog(
                 }
             )
         }
-    ) {
-        // Render pre-defined selections loop safely
-        predefinedOptions.forEach { option ->
-            val displayLabel = if (currentUnit == "ml") option.displayLabelMl else option.displayLabelOz
-            SelectionRow(
-                label = displayLabel,
-                isSelected = selectedGoalMl == option.amountMl,
-                onClick = {
-                    selectedGoalMl = option.amountMl
-                    customInputString = ""
-                    errorMessage = null
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        TextInputField(
-            value = customInputString,
-            onValueChange = { input ->
-                customInputString = input
-                selectedGoalMl = null
-                errorMessage = null
-            },
-            isError = errorMessage != null
-        )
-
-        // Error message readout trace
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage!!,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(start = 4.dp, top = 2.dp)
-            )
-        }
-    }
+    )
 }
 
 @Preview(name = "Light Mode", group = "Themes", showBackground = true)

@@ -17,8 +17,9 @@ fun BaseDialog(
     title: String,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    options: @Composable ColumnScope.() -> Unit,
+    inputField: @Composable (ColumnScope.() -> Unit)? = null,
     buttons: @Composable RowScope.() -> Unit,
-    content: @Composable ColumnScope.() -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
@@ -44,19 +45,28 @@ fun BaseDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Central Component Content Zone
+                // Options Zone
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    content()
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    content = options
+                )
+
+                // Input Field Zone
+                if (inputField != null) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp), // Spacing between input field and error text
+                        horizontalAlignment = Alignment.Start,
+                        content = inputField
+                    )
                 }
 
-                // Bottom Action Button Bar
+                // Action Buttons Zone
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End),
                     verticalAlignment = Alignment.CenterVertically,
                     content = buttons
                 )
