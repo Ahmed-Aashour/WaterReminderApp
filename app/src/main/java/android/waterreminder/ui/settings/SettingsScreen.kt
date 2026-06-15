@@ -3,6 +3,7 @@ package android.waterreminder.ui.settings
 import android.content.res.Configuration
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
+import android.waterreminder.ui.settings.components.DailyGoalDialog
 import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
@@ -19,19 +20,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
+    validationEvents: SharedFlow<String>,
     onNavigateBack: () -> Unit,
     onUpdateDailyGoal: (Int) -> Unit,
+    onUpdateCustomDailyGoalString: (String) -> Unit,
     onUpdateMeasurementUnit: (String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
     onUpdateNotificationInterval: (Int) -> Unit,
@@ -40,6 +49,26 @@ fun SettingsScreen(
     onUpdateLanguage: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showGoalDialog by remember { mutableStateOf(false) }
+
+    if (showGoalDialog) {
+        DailyGoalDialog(
+            predefinedOptions = state.predefinedGoalOptions,
+            currentGoalMl = state.dailyGoalMl,
+            currentUnit = state.measurementUnit,
+            validationEvents = validationEvents,
+            onDismiss = { showGoalDialog = false },
+            onConfirm = { selectedGoal ->
+                onUpdateDailyGoal(selectedGoal)
+                showGoalDialog = false // Clean options are safe to dismiss immediately
+            },
+            onConfirmCustomString = { customString ->
+                onUpdateCustomDailyGoalString(customString)
+                // Do not auto-dismiss! If validation passes, uiState updates close context via parent checks if desired,
+                // or user can click out. If it fails, error stays up for rectification.
+            }
+        )
+    }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -68,7 +97,7 @@ fun SettingsScreen(
             HydrationFrame(
                 dailyGoal = state.dailyGoalMl,
                 unit = state.measurementUnit,
-                onGoalClick = { /* Launch integer input choice sheet */ },
+                onGoalClick = { showGoalDialog = true },
                 onUnitClick = {
                     val nextUnit = if(state.measurementUnit == "ml") "oz" else "ml"
                     onUpdateMeasurementUnit(nextUnit)
@@ -122,8 +151,10 @@ fun SettingsScreenPreview(
     ErtawyTheme {
         SettingsScreen(
             state = state,
+            validationEvents = MutableSharedFlow(),
             onNavigateBack = {},
             onUpdateDailyGoal = {},
+            onUpdateCustomDailyGoalString = {},
             onUpdateMeasurementUnit = {},
             onUpdateFastingState = {},
             onUpdateNotificationInterval = {},
