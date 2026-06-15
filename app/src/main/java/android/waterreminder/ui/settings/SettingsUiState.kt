@@ -1,7 +1,7 @@
 package android.waterreminder.ui.settings
 
 /**
- * UI-specific state snapshot representing everything the SettingsScreen
+ * UI-specific state snapshot representing everything the [SettingsScreen]
  * needs to display.
  */
 data class SettingsUiState(
@@ -11,10 +11,10 @@ data class SettingsUiState(
     val frequency: Int,
     val theme: String,
     val language: String,
-    val savedStartHour: String,
-    val savedEndHour: String,
-    val activeStartHour: String,
-    val activeEndHour: String,
+    val startTime: String,
+    val endTime: String,
+    val activeStartTime: String,
+    val activeEndTime: String,
     val predefinedGoals: List<GoalOptionUiModel> = emptyList(),
     val supportedUnits: List<String> = emptyList(),
     val supportedFrequencies: List<FrequencyOptionUiModel> = emptyList(),

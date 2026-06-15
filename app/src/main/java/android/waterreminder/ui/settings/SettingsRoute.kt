@@ -10,7 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun SettingsRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = hiltViewModel() // 🌟 Instantiated automatically via Hilt
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     // Collect the user preference state safely, pausing emissions when the app goes background
     val settingsState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -24,7 +24,7 @@ fun SettingsRoute(
         onUpdateUnit = { unit -> viewModel.updateMeasurementUnit(unit) },
         onUpdateFastingState = { isFasting -> viewModel.updateFastingState(isFasting) },
         onUpdateFrequency = { mins -> viewModel.updateFrequency(mins) },
-        onUpdateReminderWindow = { start, end -> viewModel.updateReminderWindow(start, end) },
+        onUpdateStartAndEndTimes = { start, end -> viewModel.updateStartAndEndTimes(start, end) },
         onUpdateTheme = { themeStr -> viewModel.updateTheme(themeStr) },
         onUpdateLanguage = { langStr -> viewModel.updateLanguage(langStr) },
         modifier = modifier

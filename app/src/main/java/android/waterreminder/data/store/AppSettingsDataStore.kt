@@ -13,19 +13,19 @@ class AppSettingsDataStore(private val context: Context) {
 
     companion object {
         val DAILY_GOAL_ML = intPreferencesKey("daily_goal_ml")
-        val MEASUREMENT_UNIT = stringPreferencesKey("measurement_unit")
+        val UNIT = stringPreferencesKey("unit")
         val IS_FASTING = booleanPreferencesKey("is_fasting")
-        val NOTIFICATION_INTERVAL = intPreferencesKey("notification_interval")
+        val FREQUENCY_MINUTES = intPreferencesKey("frequency_minutes")
         val THEME = stringPreferencesKey("theme")
         val LANGUAGE = stringPreferencesKey("language")
-        val REMINDER_START_TIME = stringPreferencesKey("reminder_start_time")
-        val REMINDER_END_TIME = stringPreferencesKey("reminder_end_time")
+        val START_TIME = stringPreferencesKey("start_time")
+        val END_TIME = stringPreferencesKey("end_time")
 
 
         const val DEFAULT_DAILY_GOAL_ML = 2000
-        const val DEFAULT_MEASUREMENT_UNIT = "ml"
+        const val DEFAULT_UNIT = "ml"
         const val DEFAULT_IS_FASTING = false
-        const val DEFAULT_NOTIFICATION_INTERVAL_MIN = 60
+        const val DEFAULT_FREQUENCY_MINUTES = 60
         const val DEFAULT_THEME = "System"
         const val DEFAULT_LANGUAGE = "English"
         const val DEFAULT_START_TIME = "07:00 AM"
@@ -37,7 +37,7 @@ class AppSettingsDataStore(private val context: Context) {
         const val ML_TO_OZ_FACTOR = 0.0338140227
 
         val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
-        val SUPPORTED_INTERVALS_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
+        val SUPPORTED_FREQUENCIES_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
         val SUPPORTED_THEMES = listOf("Light", "Dark", "System")
         val SUPPORTED_LANGUAGES = listOf("English", "Arabic", "German", "French", "Italian")
         val SUPPORTED_UNITS = listOf("ml", "fl oz")
@@ -50,13 +50,13 @@ class AppSettingsDataStore(private val context: Context) {
         .map { preferences ->
             UserPreferences(
                 dailyGoalMl = preferences[DAILY_GOAL_ML] ?: DEFAULT_DAILY_GOAL_ML,
-                measurementUnit = preferences[MEASUREMENT_UNIT] ?: DEFAULT_MEASUREMENT_UNIT,
+                unit = preferences[UNIT] ?: DEFAULT_UNIT,
                 isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
-                notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: DEFAULT_NOTIFICATION_INTERVAL_MIN,
+                frequency = preferences[FREQUENCY_MINUTES] ?: DEFAULT_FREQUENCY_MINUTES,
                 theme = preferences[THEME] ?: DEFAULT_THEME,
                 language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
-                savedStartHour = preferences[REMINDER_START_TIME] ?: DEFAULT_START_TIME,
-                savedEndHour = preferences[REMINDER_END_TIME] ?: DEFAULT_END_TIME
+                startTime = preferences[START_TIME] ?: DEFAULT_START_TIME,
+                endTime = preferences[END_TIME] ?: DEFAULT_END_TIME
             )
         }
 
@@ -72,7 +72,7 @@ class AppSettingsDataStore(private val context: Context) {
 
     suspend fun updateMeasurementUnit(unit: String) {
         if (unit in SUPPORTED_UNITS) {
-            context.dataStore.edit { prefs -> prefs[MEASUREMENT_UNIT] = unit }
+            context.dataStore.edit { prefs -> prefs[UNIT] = unit }
         }
     }
 
@@ -81,8 +81,8 @@ class AppSettingsDataStore(private val context: Context) {
     }
 
     suspend fun updateFrequency(minutes: Int) {
-        if (minutes in SUPPORTED_INTERVALS_MINUTES) {
-            context.dataStore.edit { prefs -> prefs[NOTIFICATION_INTERVAL] = minutes }
+        if (minutes in SUPPORTED_FREQUENCIES_MINUTES) {
+            context.dataStore.edit { prefs -> prefs[FREQUENCY_MINUTES] = minutes }
         }
     }
 
@@ -98,10 +98,10 @@ class AppSettingsDataStore(private val context: Context) {
         }
     }
 
-    suspend fun updateReminderWindow(startHour: String, endHour: String) {
+    suspend fun updateStartAndEndTimes(startHour: String, endHour: String) {
         context.dataStore.edit { prefs ->
-            prefs[REMINDER_START_TIME] = startHour
-            prefs[REMINDER_END_TIME] = endHour
+            prefs[START_TIME] = startHour
+            prefs[END_TIME] = endHour
         }
     }
 }

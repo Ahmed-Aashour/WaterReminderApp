@@ -46,7 +46,7 @@ fun SettingsScreen(
     onUpdateUnit: (String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
     onUpdateFrequency: (Int) -> Unit,
-    onUpdateReminderWindow: (String, String) -> Unit,
+    onUpdateStartAndEndTimes: (String, String) -> Unit,
     onUpdateTheme: (String) -> Unit,
     onUpdateLanguage: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -129,11 +129,11 @@ fun SettingsScreen(
             NotificationsFrame(
                 isNotificationEnabled = true, // TODO: Add the toggle setting
                 frequencyMinutes = state.frequency,
-                reminderWindow = "${state.activeStartHour} - ${state.activeEndHour}",
+                reminderWindow = "${state.activeStartTime} - ${state.activeEndTime}",
                 isFastingMode = state.isFasting,
                 onNotificationToggle = { enabled -> onUpdateFrequency(if(enabled) 60 else 0) },
                 onFrequencyClick = { showFrequencyDialog = true },
-                onWindowClick = { onUpdateReminderWindow("08:00", "22:00") },
+                onWindowClick = { onUpdateStartAndEndTimes("08:00", "22:00") },
                 onFastingToggle = onUpdateFastingState
             )
 
@@ -181,7 +181,7 @@ fun SettingsScreenPreview(
             onUpdateUnit = {},
             onUpdateFastingState = {},
             onUpdateFrequency = {},
-            onUpdateReminderWindow = { _, _ -> },
+            onUpdateStartAndEndTimes = { _, _ -> },
             onUpdateTheme = {},
             onUpdateLanguage = {}
         )

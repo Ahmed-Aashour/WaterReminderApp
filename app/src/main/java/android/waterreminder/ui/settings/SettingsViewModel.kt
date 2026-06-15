@@ -20,7 +20,7 @@ class SettingsViewModel @Inject constructor(
     )
 
     val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
-    private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_INTERVALS_MINUTES.toFrequencyUiModels()
+    private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -35,21 +35,21 @@ class SettingsViewModel @Inject constructor(
                 operationalStart = fetchTodayMaghribTime()
                 operationalEnd = fetchTomorrowFajrTime()
             } else {
-                operationalStart = prefs.savedStartHour
-                operationalEnd = prefs.savedEndHour
+                operationalStart = prefs.startTime
+                operationalEnd = prefs.endTime
             }
 
             SettingsUiState(
                 dailyGoalMl = prefs.dailyGoalMl,
-                unit = prefs.measurementUnit,
+                unit = prefs.unit,
                 isFasting = prefs.isFasting,
-                frequency = prefs.notificationInterval,
+                frequency = prefs.frequency,
                 theme = prefs.theme,
                 language = prefs.language,
-                savedStartHour = prefs.savedStartHour,
-                savedEndHour = prefs.savedEndHour,
-                activeStartHour = operationalStart,
-                activeEndHour = operationalEnd,
+                startTime = prefs.startTime,
+                endTime = prefs.endTime,
+                activeStartTime = operationalStart,
+                activeEndTime = operationalEnd,
                 predefinedGoals = predefinedGoalOptions,
                 supportedUnits = supportedUnits,
                 supportedFrequencies = supportedFrequencies
@@ -60,15 +60,15 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = SettingsUiState(
                 dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
-                unit = AppSettingsDataStore.DEFAULT_MEASUREMENT_UNIT,
+                unit = AppSettingsDataStore.DEFAULT_UNIT,
                 isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
-                frequency = AppSettingsDataStore.DEFAULT_NOTIFICATION_INTERVAL_MIN,
+                frequency = AppSettingsDataStore.DEFAULT_FREQUENCY_MINUTES,
                 theme = AppSettingsDataStore.DEFAULT_THEME,
                 language = AppSettingsDataStore.DEFAULT_LANGUAGE,
-                savedStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
-                savedEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
-                activeStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
-                activeEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
+                startTime = AppSettingsDataStore.DEFAULT_START_TIME,
+                endTime = AppSettingsDataStore.DEFAULT_END_TIME,
+                activeStartTime = AppSettingsDataStore.DEFAULT_START_TIME,
+                activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
                 predefinedGoals = predefinedGoalOptions,
                 supportedUnits = supportedUnits,
                 supportedFrequencies = supportedFrequencies
@@ -129,14 +129,14 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateReminderWindow(startHour: String, endHour: String) {
+    fun updateStartAndEndTimes(startHour: String, endHour: String) {
         viewModelScope.launch {
-            appSettingsDataStore.updateReminderWindow(startHour, endHour)
+            appSettingsDataStore.updateStartAndEndTimes(startHour, endHour)
         }
     }
 
     // --- Helper calculation placeholders ---
-    // TODO: Inject PrayerTimesRepository Implementation
+    // TODO: Embed PrayerTimesService Implementation
     private fun fetchTodayMaghribTime(): String = "06:45 PM"
     private fun fetchTomorrowFajrTime(): String = "04:15 AM"
 }
