@@ -1,10 +1,9 @@
 package android.waterreminder.ui.settings
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.data.store.SettingsState
-import android.waterreminder.data.store.SettingsConfig
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,16 +25,16 @@ class SettingsViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = SettingsState(
-                dailyGoalMl = SettingsConfig.DEFAULT_DAILY_GOAL_ML,
-                measurementUnit = SettingsConfig.DEFAULT_MEASUREMENT_UNIT,
-                isFasting = SettingsConfig.DEFAULT_IS_FASTING,
-                notificationInterval = SettingsConfig.DEFAULT_NOTIFICATION_INTERVAL_MIN,
-                theme = SettingsConfig.DEFAULT_THEME,
-                language = SettingsConfig.DEFAULT_LANGUAGE,
-                savedStartHour = SettingsConfig.DEFAULT_START_TIME,
-                savedEndHour = SettingsConfig.DEFAULT_END_TIME,
-                activeStartHour = SettingsConfig.DEFAULT_START_TIME,
-                activeEndHour = SettingsConfig.DEFAULT_END_TIME
+                dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
+                measurementUnit = AppSettingsDataStore.DEFAULT_MEASUREMENT_UNIT,
+                isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
+                notificationInterval = AppSettingsDataStore.DEFAULT_NOTIFICATION_INTERVAL_MIN,
+                theme = AppSettingsDataStore.DEFAULT_THEME,
+                language = AppSettingsDataStore.DEFAULT_LANGUAGE,
+                savedStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
+                savedEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
+                activeStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
+                activeEndHour = AppSettingsDataStore.DEFAULT_END_TIME
             )
         )
 
