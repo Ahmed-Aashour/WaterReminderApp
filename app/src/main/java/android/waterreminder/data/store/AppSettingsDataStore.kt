@@ -41,7 +41,7 @@ class AppSettingsDataStore(private val context: Context) {
         val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
         val SUPPORTED_THEMES = listOf("Light", "Dark", "System")
         val SUPPORTED_LANGUAGES = listOf("English", "Arabic", "German", "French", "Italian")
-        val SUPPORTED_UNITS = listOf("ml", "oz")
+        val SUPPORTED_UNITS = listOf("ml", "fl oz")
     }
 
     /**

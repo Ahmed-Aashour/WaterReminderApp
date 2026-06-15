@@ -14,7 +14,8 @@ data class SettingsUiState(
     val savedEndHour: String,
     val activeStartHour: String, // 🌟 Dynamically computed for UI layout visibility
     val activeEndHour: String,   // 🌟 Dynamically computed for UI layout visibility
-    val predefinedGoalOptions: List<GoalOptionUiModel> = emptyList() // Co-located for easy extraction
+    val predefinedGoalOptions: List<GoalOptionUiModel> = emptyList(), // Co-located for easy extraction
+    val supportedUnits: List<String> = emptyList()
 )
 
 /**
