@@ -1,28 +1,54 @@
 package android.waterreminder.ui.settings
 
 /**
- * UI-specific state snapshot representing everything the screen needs to display.
+ * UI-specific state snapshot representing everything the SettingsScreen
+ * needs to display.
  */
 data class SettingsUiState(
     val dailyGoalMl: Int,
-    val measurementUnit: String,
+    val unit: String,
     val isFasting: Boolean,
-    val notificationInterval: Int,
+    val frequency: Int,
     val theme: String,
     val language: String,
     val savedStartHour: String,
     val savedEndHour: String,
-    val activeStartHour: String, // 🌟 Dynamically computed for UI layout visibility
-    val activeEndHour: String,   // 🌟 Dynamically computed for UI layout visibility
-    val predefinedGoalOptions: List<GoalOptionUiModel> = emptyList(), // Co-located for easy extraction
-    val supportedUnits: List<String> = emptyList()
+    val activeStartHour: String,
+    val activeEndHour: String,
+    val predefinedGoals: List<GoalOptionUiModel> = emptyList(),
+    val supportedUnits: List<String> = emptyList(),
+    val supportedFrequencies: List<FrequencyOptionUiModel> = emptyList(),
 )
 
-/**
- * Pre-calculated packaging model for rendering selection choices inside the dialogue.
- */
 data class GoalOptionUiModel(
     val amountMl: Int,
     val displayLabelMl: String,
     val displayLabelOz: String
 )
+
+fun List<Int>.toGoalUiModels(mlToOzFactor: Double): List<GoalOptionUiModel> {
+    return this.map { ml ->
+        GoalOptionUiModel(
+            amountMl = ml,
+            displayLabelMl = "$ml ml",
+            displayLabelOz = "${(ml * mlToOzFactor).toInt()} fl oz"
+        )
+    }
+}
+
+data class FrequencyOptionUiModel(
+    val minutes: Int,
+    val displayLabel: String
+)
+
+fun List<Int>.toFrequencyUiModels(): List<FrequencyOptionUiModel> {
+    return this.map { mins ->
+        val label = when {
+            mins < 60 -> "Every $mins min"
+            mins == 60 -> "Every 1 hour"
+            mins % 60 == 0 -> "Every ${mins / 60} hours"
+            else -> "Every ${mins / 60.0} hours" // Handles 90 mins -> 1.5 hours flawlessly
+        }
+        FrequencyOptionUiModel(minutes = mins, displayLabel = label)
+    }
+}

@@ -41,7 +41,7 @@ fun NotificationsFrame(
     frequencyMinutes: Int,
     reminderWindow: String,
     isFastingMode: Boolean,
-    onIntervalToggle: (Boolean) -> Unit,
+    onNotificationToggle: (Boolean) -> Unit,
     onFrequencyClick: () -> Unit,
     onWindowClick: () -> Unit,
     onFastingToggle: (Boolean) -> Unit,
@@ -54,7 +54,7 @@ fun NotificationsFrame(
             title = "Scheduled Push Notifications",
             description = if (isNotificationEnabled) "Enabled" else "Disabled",
             controlSlot = {
-                Switch(checked = isNotificationEnabled, onCheckedChange = onIntervalToggle)
+                Switch(checked = isNotificationEnabled, onCheckedChange = onNotificationToggle)
             }
         )
         SettingsItemRow(

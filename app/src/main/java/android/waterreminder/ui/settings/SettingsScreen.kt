@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.settings.components.DailyGoalDialog
+import android.waterreminder.ui.settings.components.FrequencyDialog
 import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
@@ -44,7 +45,7 @@ fun SettingsScreen(
     onUpdateCustomDailyGoalString: (String) -> Unit,
     onUpdateUnit: (String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
-    onUpdateNotificationInterval: (Int) -> Unit,
+    onUpdateFrequency: (Int) -> Unit,
     onUpdateReminderWindow: (String, String) -> Unit,
     onUpdateTheme: (String) -> Unit,
     onUpdateLanguage: (String) -> Unit,
@@ -52,12 +53,13 @@ fun SettingsScreen(
 ) {
     var showGoalDialog by remember { mutableStateOf(false) }
     var showUnitDialog by remember { mutableStateOf(false) }
+    var showFrequencyDialog by remember { mutableStateOf(false) }
 
     if (showGoalDialog) {
         DailyGoalDialog(
-            predefinedOptions = state.predefinedGoalOptions,
             currentGoalMl = state.dailyGoalMl,
-            currentUnit = state.measurementUnit,
+            currentUnit = state.unit,
+            predefinedOptions = state.predefinedGoals,
             validationEvents = validationEvents,
             onDismiss = { showGoalDialog = false },
             onConfirm = { selectedGoal ->
@@ -74,10 +76,21 @@ fun SettingsScreen(
 
     if (showUnitDialog) {
         UnitDialog(
-            currentUnit = state.measurementUnit,
+            currentUnit = state.unit,
             supportedUnits = state.supportedUnits,
             onUnitSelected = { selectedUnit -> onUpdateUnit(selectedUnit) },
             onDismiss = { showUnitDialog = false }
+        )
+    }
+
+    if (showFrequencyDialog) {
+        FrequencyDialog(
+            currentFrequency = state.frequency,
+            frequencyOptions = state.supportedFrequencies,
+            onFrequencySelected = { selectedMinutes ->
+                onUpdateFrequency(selectedMinutes)
+            },
+            onDismiss = { showFrequencyDialog = false }
         )
     }
 
@@ -108,18 +121,18 @@ fun SettingsScreen(
 
             HydrationFrame(
                 dailyGoal = state.dailyGoalMl,
-                unit = state.measurementUnit,
+                unit = state.unit,
                 onGoalClick = { showGoalDialog = true },
                 onUnitClick = { showUnitDialog = true }
             )
 
             NotificationsFrame(
                 isNotificationEnabled = true, // TODO: Add the toggle setting
-                frequencyMinutes = state.notificationInterval,
+                frequencyMinutes = state.frequency,
                 reminderWindow = "${state.activeStartHour} - ${state.activeEndHour}",
                 isFastingMode = state.isFasting,
-                onIntervalToggle = { enabled -> onUpdateNotificationInterval(if(enabled) 60 else 0) },
-                onFrequencyClick = { /* Launch frequency dialog options */ },
+                onNotificationToggle = { enabled -> onUpdateFrequency(if(enabled) 60 else 0) },
+                onFrequencyClick = { showFrequencyDialog = true },
                 onWindowClick = { onUpdateReminderWindow("08:00", "22:00") },
                 onFastingToggle = onUpdateFastingState
             )
@@ -167,7 +180,7 @@ fun SettingsScreenPreview(
             onUpdateCustomDailyGoalString = {},
             onUpdateUnit = {},
             onUpdateFastingState = {},
-            onUpdateNotificationInterval = {},
+            onUpdateFrequency = {},
             onUpdateReminderWindow = { _, _ -> },
             onUpdateTheme = {},
             onUpdateLanguage = {}

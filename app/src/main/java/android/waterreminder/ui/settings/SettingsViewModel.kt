@@ -7,7 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -16,15 +15,12 @@ class SettingsViewModel @Inject constructor(
 
     private val _validationErrorChannel = MutableSharedFlow<String>()
     val validationErrorChannel: SharedFlow<String> = _validationErrorChannel.asSharedFlow()
-    val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.map { ml ->
-        val ozCalculated = (ml * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt()
-        GoalOptionUiModel(
-            amountMl = ml,
-            displayLabelMl = "$ml ml",
-            displayLabelOz = "$ozCalculated fl oz"
-        )
-    }
+    val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.toGoalUiModels(
+        AppSettingsDataStore.ML_TO_OZ_FACTOR
+    )
+
     val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
+    private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_INTERVALS_MINUTES.toFrequencyUiModels()
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -45,17 +41,18 @@ class SettingsViewModel @Inject constructor(
 
             SettingsUiState(
                 dailyGoalMl = prefs.dailyGoalMl,
-                measurementUnit = prefs.measurementUnit,
+                unit = prefs.measurementUnit,
                 isFasting = prefs.isFasting,
-                notificationInterval = prefs.notificationInterval,
+                frequency = prefs.notificationInterval,
                 theme = prefs.theme,
                 language = prefs.language,
                 savedStartHour = prefs.savedStartHour,
                 savedEndHour = prefs.savedEndHour,
                 activeStartHour = operationalStart,
                 activeEndHour = operationalEnd,
-                predefinedGoalOptions = predefinedGoalOptions,
-                supportedUnits = supportedUnits
+                predefinedGoals = predefinedGoalOptions,
+                supportedUnits = supportedUnits,
+                supportedFrequencies = supportedFrequencies
             )
         }
         .stateIn(
@@ -63,17 +60,18 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = SettingsUiState(
                 dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
-                measurementUnit = AppSettingsDataStore.DEFAULT_MEASUREMENT_UNIT,
+                unit = AppSettingsDataStore.DEFAULT_MEASUREMENT_UNIT,
                 isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
-                notificationInterval = AppSettingsDataStore.DEFAULT_NOTIFICATION_INTERVAL_MIN,
+                frequency = AppSettingsDataStore.DEFAULT_NOTIFICATION_INTERVAL_MIN,
                 theme = AppSettingsDataStore.DEFAULT_THEME,
                 language = AppSettingsDataStore.DEFAULT_LANGUAGE,
                 savedStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
                 savedEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
                 activeStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
                 activeEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
-                predefinedGoalOptions = predefinedGoalOptions,
-                supportedUnits = supportedUnits
+                predefinedGoals = predefinedGoalOptions,
+                supportedUnits = supportedUnits,
+                supportedFrequencies = supportedFrequencies
             )
         )
 
@@ -113,9 +111,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateNotificationInterval(minutes: Int) {
+    fun updateFrequency(minutes: Int) {
         viewModelScope.launch {
-            appSettingsDataStore.updateNotificationInterval(minutes)
+            appSettingsDataStore.updateFrequency(minutes)
         }
     }
 

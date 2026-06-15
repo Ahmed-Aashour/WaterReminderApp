@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyGoalDialog(
-    predefinedOptions: List<GoalOptionUiModel>,
     currentGoalMl: Int,
     currentUnit: String,
+    predefinedOptions: List<GoalOptionUiModel>,
     validationEvents: SharedFlow<String>,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
@@ -108,9 +108,9 @@ fun DailyGoalDialogPreview(
 ) {
     ErtawyTheme {
         DailyGoalDialog(
-            predefinedOptions = state.predefinedGoalOptions,
             currentGoalMl = state.dailyGoalMl,
-            currentUnit = state.measurementUnit,
+            currentUnit = state.unit,
+            predefinedOptions = state.predefinedGoals,
             validationEvents = MutableSharedFlow(),
             onDismiss = {},
             onConfirm = {},

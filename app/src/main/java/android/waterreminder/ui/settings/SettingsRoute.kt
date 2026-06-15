@@ -23,7 +23,7 @@ fun SettingsRoute(
         onUpdateCustomDailyGoalString = { amountMl -> viewModel.updateCustomDailyGoalString(amountMl) },
         onUpdateUnit = { unit -> viewModel.updateMeasurementUnit(unit) },
         onUpdateFastingState = { isFasting -> viewModel.updateFastingState(isFasting) },
-        onUpdateNotificationInterval = { mins -> viewModel.updateNotificationInterval(mins) },
+        onUpdateFrequency = { mins -> viewModel.updateFrequency(mins) },
         onUpdateReminderWindow = { start, end -> viewModel.updateReminderWindow(start, end) },
         onUpdateTheme = { themeStr -> viewModel.updateTheme(themeStr) },
         onUpdateLanguage = { langStr -> viewModel.updateLanguage(langStr) },

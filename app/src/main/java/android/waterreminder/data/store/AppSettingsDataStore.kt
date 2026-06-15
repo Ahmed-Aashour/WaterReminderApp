@@ -31,14 +31,13 @@ class AppSettingsDataStore(private val context: Context) {
         const val DEFAULT_START_TIME = "07:00 AM"
         const val DEFAULT_END_TIME = "09:00 PM"
 
-        const val MIN_NOTIFICATION_INTERVAL_MIN = 15
-        const val MAX_NOTIFICATION_INTERVAL_MIN = 180
         const val MIN_DAILY_GOAL_ML = 1000
         const val MAX_DAILY_GOAL_ML = 8000
 
         const val ML_TO_OZ_FACTOR = 0.0338140227
 
         val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
+        val SUPPORTED_INTERVALS_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
         val SUPPORTED_THEMES = listOf("Light", "Dark", "System")
         val SUPPORTED_LANGUAGES = listOf("English", "Arabic", "German", "French", "Italian")
         val SUPPORTED_UNITS = listOf("ml", "fl oz")
@@ -81,14 +80,9 @@ class AppSettingsDataStore(private val context: Context) {
         context.dataStore.edit { prefs -> prefs[IS_FASTING] = isFasting }
     }
 
-    suspend fun updateNotificationInterval(minutes: Int) {
-        // Safe internal sanitization using co-located boundary constraints
-        val sanitizedMinutes = minutes.coerceIn(
-            MIN_NOTIFICATION_INTERVAL_MIN,
-            MAX_NOTIFICATION_INTERVAL_MIN
-        )
-        context.dataStore.edit { prefs ->
-            prefs[NOTIFICATION_INTERVAL] = sanitizedMinutes
+    suspend fun updateFrequency(minutes: Int) {
+        if (minutes in SUPPORTED_INTERVALS_MINUTES) {
+            context.dataStore.edit { prefs -> prefs[NOTIFICATION_INTERVAL] = minutes }
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.waterreminder.ui.core.components.BaseDialog
 import android.waterreminder.ui.core.components.CancelButton
 import android.waterreminder.ui.core.components.SelectionRow
+import android.waterreminder.ui.settings.FrequencyOptionUiModel
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
@@ -13,28 +14,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
-fun UnitDialog(
-    currentUnit: String,
-    supportedUnits: List<String>,
-    onUnitSelected: (String) -> Unit,
+fun FrequencyDialog(
+    currentFrequency: Int,
+    frequencyOptions: List<FrequencyOptionUiModel>,
+    onFrequencySelected: (Int) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BaseDialog(
-        title = "Unit",
+        title = "Frequency",
         onDismissRequest = onDismiss,
         modifier = modifier,
         buttons = {
             CancelButton(onClick = onDismiss)
         },
         options = {
-            supportedUnits.forEach { unitLabel ->
+            frequencyOptions.forEach { option ->
                 SelectionRow(
-                    label = unitLabel,
-                    isSelected = currentUnit == unitLabel,
+                    label = option.displayLabel,
+                    isSelected = currentFrequency == option.minutes,
                     onClick = {
-                        onUnitSelected(unitLabel)
-                        onDismiss() // Auto-dismiss upon selection change for a crisp UX
+                        onFrequencySelected(option.minutes)
+                        onDismiss() // Fluid auto-dismiss upon selecting a row choice
                     }
                 )
             }
@@ -45,14 +46,14 @@ fun UnitDialog(
 @Preview(name = "Light Mode", showBackground = true)
 @Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun UnitDialogPreview(
+fun FrequencyDialogPreview(
     @PreviewParameter(SettingsScreenStateProvider::class) state: SettingsUiState
 ) {
     ErtawyTheme {
-        UnitDialog(
-            currentUnit = state.unit,
-            supportedUnits = state.supportedUnits,
-            onUnitSelected = {},
+        FrequencyDialog(
+            currentFrequency = state.frequency,
+            frequencyOptions = state.supportedFrequencies,
+            onFrequencySelected = {},
             onDismiss = {}
         )
     }
