@@ -12,19 +12,42 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "wa
 class AppSettingsDataStore(private val context: Context) {
 
     companion object {
-        // Core Target and Metrics Keys
+        // =================================================================
+        // 🔑 DATASTORE STORAGE KEYS
+        // =================================================================
         val DAILY_GOAL_ML = intPreferencesKey("daily_goal_ml")
         val MEASUREMENT_UNIT = stringPreferencesKey("measurement_unit")
         val IS_FASTING = booleanPreferencesKey("is_fasting")
-
-        // Polling Window & Engine Keys
         val NOTIFICATION_INTERVAL = intPreferencesKey("notification_interval")
         val THEME = stringPreferencesKey("theme")
         val LANGUAGE = stringPreferencesKey("language")
-
-        // Reminder Frame Boundary Constraints (e.g. "07:00 AM")
         val REMINDER_START_TIME = stringPreferencesKey("reminder_start_time")
         val REMINDER_END_TIME = stringPreferencesKey("reminder_end_time")
+
+        // =================================================================
+        // 🎛️ DEFAULT FALLBACK CONFIGURATIONS
+        // =================================================================
+        const val DEFAULT_DAILY_GOAL_ML = 2000
+        const val DEFAULT_MEASUREMENT_UNIT = "ml"
+        const val DEFAULT_IS_FASTING = false
+        const val DEFAULT_NOTIFICATION_INTERVAL_MIN = 60
+        const val DEFAULT_THEME = "System"
+        const val DEFAULT_LANGUAGE = "English"
+        const val DEFAULT_START_TIME = "07:00 AM"
+        const val DEFAULT_END_TIME = "09:00 PM"
+
+        // =================================================================
+        // 🛡️ RUNTIME BUSINESS GUARDRAILS & RANGE CONSTRAINTS
+        // =================================================================
+        const val MIN_NOTIFICATION_INTERVAL_MIN = 15
+        const val MAX_NOTIFICATION_INTERVAL_MIN = 180
+
+        // =================================================================
+        // 📦 VALIDATION COLLECTIONS
+        // =================================================================
+        val SUPPORTED_THEMES = listOf("Light", "Dark", "System")
+        val SUPPORTED_LANGUAGES = listOf("English", "Arabic", "German", "French", "Italian")
+        val SUPPORTED_UNITS = listOf("ml", "oz")
     }
 
     /**
@@ -32,11 +55,11 @@ class AppSettingsDataStore(private val context: Context) {
      */
     val settingsFlow: Flow<SettingsState> = context.dataStore.data
         .map { preferences ->
-            val isFastingActive = preferences[IS_FASTING] ?: SettingsConfig.DEFAULT_IS_FASTING
+            val isFastingActive = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING
 
             // Fetch baseline disk states safely
-            val originalStart = preferences[REMINDER_START_TIME] ?: SettingsConfig.DEFAULT_START_TIME
-            val originalEnd = preferences[REMINDER_END_TIME] ?: SettingsConfig.DEFAULT_END_TIME
+            val originalStart = preferences[REMINDER_START_TIME] ?: DEFAULT_START_TIME
+            val originalEnd = preferences[REMINDER_END_TIME] ?: DEFAULT_END_TIME
 
             // 🌟 Compute operational bounds dynamically
             val operationalStart: String
@@ -52,12 +75,12 @@ class AppSettingsDataStore(private val context: Context) {
             }
 
             SettingsState(
-                dailyGoalMl = preferences[DAILY_GOAL_ML] ?: SettingsConfig.DEFAULT_DAILY_GOAL_ML,
-                measurementUnit = preferences[MEASUREMENT_UNIT] ?: SettingsConfig.DEFAULT_MEASUREMENT_UNIT,
+                dailyGoalMl = preferences[DAILY_GOAL_ML] ?: DEFAULT_DAILY_GOAL_ML,
+                measurementUnit = preferences[MEASUREMENT_UNIT] ?: DEFAULT_MEASUREMENT_UNIT,
                 isFasting = isFastingActive,
-                notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: SettingsConfig.DEFAULT_NOTIFICATION_INTERVAL_MIN,
-                theme = preferences[THEME] ?: SettingsConfig.DEFAULT_THEME,
-                language = preferences[LANGUAGE] ?: SettingsConfig.DEFAULT_LANGUAGE,
+                notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: DEFAULT_NOTIFICATION_INTERVAL_MIN,
+                theme = preferences[THEME] ?: DEFAULT_THEME,
+                language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
                 savedStartHour = originalStart, // Kept safe & unchanged
                 savedEndHour = originalEnd,     // Kept safe & unchanged
                 activeStartHour = operationalStart, // Used by notification workers
@@ -72,7 +95,7 @@ class AppSettingsDataStore(private val context: Context) {
     }
 
     suspend fun updateMeasurementUnit(unit: String) {
-        if (unit in SettingsConfig.SUPPORTED_UNITS) {
+        if (unit in SUPPORTED_UNITS) {
             context.dataStore.edit { prefs -> prefs[MEASUREMENT_UNIT] = unit }
         }
     }
@@ -82,9 +105,10 @@ class AppSettingsDataStore(private val context: Context) {
     }
 
     suspend fun updateNotificationInterval(minutes: Int) {
+        // Safe internal sanitization using co-located boundary constraints
         val sanitizedMinutes = minutes.coerceIn(
-            SettingsConfig.MIN_NOTIFICATION_INTERVAL_MIN,
-            SettingsConfig.MAX_NOTIFICATION_INTERVAL_MIN
+            MIN_NOTIFICATION_INTERVAL_MIN,
+            MAX_NOTIFICATION_INTERVAL_MIN
         )
         context.dataStore.edit { prefs ->
             prefs[NOTIFICATION_INTERVAL] = sanitizedMinutes
@@ -92,13 +116,13 @@ class AppSettingsDataStore(private val context: Context) {
     }
 
     suspend fun updateTheme(newTheme: String) {
-        if (newTheme in SettingsConfig.SUPPORTED_THEMES) {
+        if (newTheme in SUPPORTED_THEMES) {
             context.dataStore.edit { prefs -> prefs[THEME] = newTheme }
         }
     }
 
     suspend fun updateLanguage(newLanguage: String) {
-        if (newLanguage in SettingsConfig.SUPPORTED_LANGUAGES) {
+        if (newLanguage in SUPPORTED_LANGUAGES) {
             context.dataStore.edit { prefs -> prefs[LANGUAGE] = newLanguage }
         }
     }
