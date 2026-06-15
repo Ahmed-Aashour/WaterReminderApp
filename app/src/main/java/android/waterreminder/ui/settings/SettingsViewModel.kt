@@ -5,16 +5,32 @@ import android.waterreminder.data.store.SettingsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val appSettingsDataStore: AppSettingsDataStore
 ) : ViewModel() {
+
+    private val _goalValidationErrorChannel = MutableSharedFlow<String>()
+    val goalValidationErrorChannel: SharedFlow<String> = _goalValidationErrorChannel.asSharedFlow()
+
+    val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.map { ml ->
+        val ozCalculated = (ml * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt()
+        GoalOptionUiModel(
+            amountMl = ml,
+            displayLabelMl = "$ml ml",
+            displayLabelOz = "$ozCalculated fl oz"
+        )
+    }
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -40,9 +56,25 @@ class SettingsViewModel @Inject constructor(
 
     // --- Dynamic User Settings Action Setters ---
 
+    fun updateCustomDailyGoalString(inputString: String) {
+        val parsedInt = inputString.trim().toIntOrNull()
+        if (parsedInt == null) {
+            viewModelScope.launch {
+                _goalValidationErrorChannel.emit("Please enter a valid numeric value.")
+            }
+            return
+        }
+        updateDailyGoal(parsedInt)
+    }
+
     fun updateDailyGoal(goalMl: Int) {
         viewModelScope.launch {
-            appSettingsDataStore.updateDailyGoal(goalMl)
+            val wasSaved = appSettingsDataStore.updateDailyGoal(goalMl)
+            if (!wasSaved) {
+                _goalValidationErrorChannel.emit(
+                    "Goal must be between ${AppSettingsDataStore.MIN_DAILY_GOAL_ML}ml and ${AppSettingsDataStore.MAX_DAILY_GOAL_ML}ml."
+                )
+            }
         }
     }
 
