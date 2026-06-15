@@ -1,17 +1,24 @@
 package android.waterreminder.ui.settings.components
 
+import android.content.res.Configuration
 import android.waterreminder.ui.core.components.BaseDialog
 import android.waterreminder.ui.core.components.SelectionRow
+import android.waterreminder.ui.settings.GoalOptionUiModel
+import android.waterreminder.ui.settings.SettingsUiState
+import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
+import android.waterreminder.ui.theme.ErtawyTheme
+import android.waterreminder.ui.theme.ErtawyTypography
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import android.waterreminder.ui.settings.GoalOptionUiModel
-import android.waterreminder.ui.theme.ErtawyTypography
-import androidx.compose.foundation.BorderStroke
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -130,5 +137,24 @@ fun DailyGoalDialog(
                 modifier = Modifier.padding(start = 4.dp, top = 2.dp)
             )
         }
+    }
+}
+
+@Preview(name = "Light Mode", group = "Themes", showBackground = true)
+@Preview(name = "Dark Mode", group = "Themes", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DailyGoalDialogPreview(
+    @PreviewParameter(SettingsScreenStateProvider::class) state: SettingsUiState
+) {
+    ErtawyTheme {
+        DailyGoalDialog(
+            predefinedOptions = state.predefinedGoalOptions,
+            currentGoalMl = state.dailyGoalMl,
+            currentUnit = state.measurementUnit,
+            validationEvents = MutableSharedFlow(),
+            onDismiss = {},
+            onConfirm = {},
+            onConfirmCustomString = {}
+        )
     }
 }
