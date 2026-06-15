@@ -47,38 +47,17 @@ class AppSettingsDataStore(private val context: Context) {
     /**
      * Aggregated Settings State Model containing all user configurations.
      */
-    val settingsFlow: Flow<SettingsState> = context.dataStore.data
+    val settingsFlow: Flow<UserPreferences> = context.dataStore.data
         .map { preferences ->
-            val isFastingActive = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING
-
-            // Fetch baseline disk states safely
-            val originalStart = preferences[REMINDER_START_TIME] ?: DEFAULT_START_TIME
-            val originalEnd = preferences[REMINDER_END_TIME] ?: DEFAULT_END_TIME
-
-            // 🌟 Compute operational bounds dynamically
-            val operationalStart: String
-            val operationalEnd: String
-
-            if (isFastingActive) {
-                // TODO: Fetch these dynamically from a PrayerTimes calculation library based on device GPS location
-                operationalStart = fetchTodayMaghribTime() // e.g., "06:45 PM"
-                operationalEnd = fetchTomorrowFajrTime()    // e.g., "04:15 AM"
-            } else {
-                operationalStart = originalStart
-                operationalEnd = originalEnd
-            }
-
-            SettingsState(
+            UserPreferences(
                 dailyGoalMl = preferences[DAILY_GOAL_ML] ?: DEFAULT_DAILY_GOAL_ML,
                 measurementUnit = preferences[MEASUREMENT_UNIT] ?: DEFAULT_MEASUREMENT_UNIT,
-                isFasting = isFastingActive,
+                isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
                 notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: DEFAULT_NOTIFICATION_INTERVAL_MIN,
                 theme = preferences[THEME] ?: DEFAULT_THEME,
                 language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
-                savedStartHour = originalStart, // Kept safe & unchanged
-                savedEndHour = originalEnd,     // Kept safe & unchanged
-                activeStartHour = operationalStart, // Used by notification workers
-                activeEndHour = operationalEnd      // Used by notification workers
+                savedStartHour = preferences[REMINDER_START_TIME] ?: DEFAULT_START_TIME,
+                savedEndHour = preferences[REMINDER_END_TIME] ?: DEFAULT_END_TIME
             )
         }
 
@@ -131,8 +110,4 @@ class AppSettingsDataStore(private val context: Context) {
             prefs[REMINDER_END_TIME] = endHour
         }
     }
-
-    // --- Helper calculation placeholders ---
-    private fun fetchTodayMaghribTime(): String = "06:45 PM"
-    private fun fetchTomorrowFajrTime(): String = "04:15 AM"
 }

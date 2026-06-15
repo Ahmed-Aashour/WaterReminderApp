@@ -1,16 +1,10 @@
 package android.waterreminder.ui.settings
 
 import android.waterreminder.data.store.AppSettingsDataStore
-import android.waterreminder.data.store.SettingsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -36,11 +30,37 @@ class SettingsViewModel @Inject constructor(
      * Exposes the current read-only snapshot of user settings.
      * Automatically stops active collection when the screen is placed in the background.
      */
-    val uiState: StateFlow<SettingsState> = appSettingsDataStore.settingsFlow
+    val uiState: StateFlow<SettingsUiState> = appSettingsDataStore.settingsFlow
+        .map { prefs ->
+            val operationalStart: String
+            val operationalEnd: String
+
+            if (prefs.isFasting) {
+                operationalStart = fetchTodayMaghribTime()
+                operationalEnd = fetchTomorrowFajrTime()
+            } else {
+                operationalStart = prefs.savedStartHour
+                operationalEnd = prefs.savedEndHour
+            }
+
+            SettingsUiState(
+                dailyGoalMl = prefs.dailyGoalMl,
+                measurementUnit = prefs.measurementUnit,
+                isFasting = prefs.isFasting,
+                notificationInterval = prefs.notificationInterval,
+                theme = prefs.theme,
+                language = prefs.language,
+                savedStartHour = prefs.savedStartHour,
+                savedEndHour = prefs.savedEndHour,
+                activeStartHour = operationalStart,
+                activeEndHour = operationalEnd,
+                predefinedGoalOptions = predefinedGoalOptions
+            )
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = SettingsState(
+            initialValue = SettingsUiState(
                 dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
                 measurementUnit = AppSettingsDataStore.DEFAULT_MEASUREMENT_UNIT,
                 isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
@@ -50,7 +70,8 @@ class SettingsViewModel @Inject constructor(
                 savedStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
                 savedEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
                 activeStartHour = AppSettingsDataStore.DEFAULT_START_TIME,
-                activeEndHour = AppSettingsDataStore.DEFAULT_END_TIME
+                activeEndHour = AppSettingsDataStore.DEFAULT_END_TIME,
+                predefinedGoalOptions = predefinedGoalOptions
             )
         )
 
@@ -113,4 +134,9 @@ class SettingsViewModel @Inject constructor(
             appSettingsDataStore.updateReminderWindow(startHour, endHour)
         }
     }
+
+    // --- Helper calculation placeholders ---
+    // TODO: Inject PrayerTimesRepository Implementation
+    private fun fetchTodayMaghribTime(): String = "06:45 PM"
+    private fun fetchTomorrowFajrTime(): String = "04:15 AM"
 }
