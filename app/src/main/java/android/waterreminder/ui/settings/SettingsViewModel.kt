@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val appSettingsDataStore: AppSettingsDataStore,
-    @ApplicationContext private val context: Context // To control the scheduler
+    @param:ApplicationContext private val context: Context // To control the scheduler
 ) : ViewModel() {
 
     private val _validationErrorChannel = MutableSharedFlow<String>()
