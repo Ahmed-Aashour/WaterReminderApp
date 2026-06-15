@@ -15,52 +15,55 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
         // Scenario 1: Clean Baseline System Configuration (Out-of-the-box Default State)
         SettingsUiState(
             dailyGoalMl = 2000,
+            predefinedGoals = defaultGoalOptions,
             unit = "ml",
-            isFasting = false,
+            supportedUnits = supportedUnitsOptions,
+            areNotificationsEnabled = true,
             frequency = 60,
-            theme = "System",
-            language = "English",
+            supportedFrequencies = supportedFrequencies,
             startTime = "07:00 AM",
             endTime = "09:00 PM",
             activeStartTime = "07:00 AM",
             activeEndTime = "09:00 PM",
-            predefinedGoals = defaultGoalOptions,
-            supportedUnits = supportedUnitsOptions,
-            supportedFrequencies = supportedFrequencies
+            isFasting = false,
+            theme = "System",
+            language = "English",
         ),
 
         // Scenario 2: Alternate Metric Setup (Fluid Ounces, Custom Guardrail Interval, Dark Theme)
         SettingsUiState(
             dailyGoalMl = 2500,
+            predefinedGoals = defaultGoalOptions,
             unit = "fl oz",
-            isFasting = false,
+            supportedUnits = supportedUnitsOptions,
+            areNotificationsEnabled = true,
             frequency = 15,
-            theme = "Dark",
-            language = "German",
+            supportedFrequencies = supportedFrequencies,
             startTime = "06:00 AM",
             endTime = "11:30 PM",
             activeStartTime = "06:00 AM",
             activeEndTime = "11:30 PM",
-            predefinedGoals = defaultGoalOptions,
-            supportedUnits = supportedUnitsOptions,
-            supportedFrequencies = supportedFrequencies
+            isFasting = false,
+            theme = "Dark",
+            language = "German",
         ),
 
         // Scenario 3: Ramadan/Fasting Operational Mode Window (Calculated Dynamic Active Hours)
         SettingsUiState(
             dailyGoalMl = 1800,
+            predefinedGoals = defaultGoalOptions,
             unit = "ml",
-            isFasting = true,
+            supportedUnits = supportedUnitsOptions,
+            areNotificationsEnabled = false,
             frequency = 90,
-            theme = "Light",
-            language = "Arabic",
+            supportedFrequencies = supportedFrequencies,
             startTime = "07:00 AM",
             endTime = "09:00 PM",
             activeStartTime = "06:45 PM",
             activeEndTime = "04:15 AM",
-            predefinedGoals = defaultGoalOptions,
-            supportedUnits = supportedUnitsOptions,
-            supportedFrequencies = supportedFrequencies
+            isFasting = true,
+            theme = "Light",
+            language = "Arabic",
         )
     ).asSequence()
 }

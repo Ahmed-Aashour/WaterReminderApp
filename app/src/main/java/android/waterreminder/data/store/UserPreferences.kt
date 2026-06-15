@@ -7,10 +7,11 @@ package android.waterreminder.data.store
 data class UserPreferences(
     val dailyGoalMl: Int,
     val unit: String,
-    val isFasting: Boolean,
+    val areNotificationsEnabled: Boolean,
     val frequency: Int,
+    val startTime: String,
+    val endTime: String,
+    val isFasting: Boolean,
     val theme: String,
     val language: String,
-    val startTime: String,
-    val endTime: String
 )

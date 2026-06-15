@@ -44,9 +44,10 @@ fun SettingsScreen(
     onUpdateDailyGoal: (Int) -> Unit,
     onUpdateCustomDailyGoalString: (String) -> Unit,
     onUpdateUnit: (String) -> Unit,
-    onUpdateFastingState: (Boolean) -> Unit,
+    onUpdateNotificationToggle: (Boolean) -> Unit,
     onUpdateFrequency: (Int) -> Unit,
     onUpdateStartAndEndTimes: (String, String) -> Unit,
+    onUpdateFastingState: (Boolean) -> Unit,
     onUpdateTheme: (String) -> Unit,
     onUpdateLanguage: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -127,11 +128,11 @@ fun SettingsScreen(
             )
 
             NotificationsFrame(
-                isNotificationEnabled = true, // TODO: Add the toggle setting
+                isNotificationEnabled = state.areNotificationsEnabled,
                 frequencyMinutes = state.frequency,
                 reminderWindow = "${state.activeStartTime} - ${state.activeEndTime}",
                 isFastingMode = state.isFasting,
-                onNotificationToggle = { enabled -> onUpdateFrequency(if(enabled) 60 else 0) },
+                onNotificationToggle = onUpdateNotificationToggle,
                 onFrequencyClick = { showFrequencyDialog = true },
                 onWindowClick = { onUpdateStartAndEndTimes("08:00", "22:00") },
                 onFastingToggle = onUpdateFastingState
@@ -179,11 +180,12 @@ fun SettingsScreenPreview(
             onUpdateDailyGoal = {},
             onUpdateCustomDailyGoalString = {},
             onUpdateUnit = {},
-            onUpdateFastingState = {},
+            onUpdateNotificationToggle = {},
             onUpdateFrequency = {},
             onUpdateStartAndEndTimes = { _, _ -> },
+            onUpdateFastingState = {},
             onUpdateTheme = {},
-            onUpdateLanguage = {}
+            onUpdateLanguage = {},
         )
     }
 }

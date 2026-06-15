@@ -6,18 +6,21 @@ package android.waterreminder.ui.settings
  */
 data class SettingsUiState(
     val dailyGoalMl: Int,
+    val predefinedGoals: List<GoalOptionUiModel> = emptyList(),
     val unit: String,
-    val isFasting: Boolean,
+    val supportedUnits: List<String> = emptyList(),
+
+    val areNotificationsEnabled: Boolean = true,
     val frequency: Int,
-    val theme: String,
-    val language: String,
+    val supportedFrequencies: List<FrequencyOptionUiModel> = emptyList(),
     val startTime: String,
     val endTime: String,
     val activeStartTime: String,
     val activeEndTime: String,
-    val predefinedGoals: List<GoalOptionUiModel> = emptyList(),
-    val supportedUnits: List<String> = emptyList(),
-    val supportedFrequencies: List<FrequencyOptionUiModel> = emptyList(),
+    val isFasting: Boolean,
+
+    val theme: String,
+    val language: String,
 )
 
 data class GoalOptionUiModel(

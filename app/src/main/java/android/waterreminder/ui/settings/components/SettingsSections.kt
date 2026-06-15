@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -47,6 +48,8 @@ fun NotificationsFrame(
     onFastingToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val configurationAlpha = if (isNotificationEnabled) 1.0f else 0.45f
+
     Column(modifier = modifier) {
         SettingsSectionHeader(title = "Notifications")
 
@@ -60,19 +63,26 @@ fun NotificationsFrame(
         SettingsItemRow(
             title = "Frequency",
             description = "Every $frequencyMinutes minutes",
-            onClick = onFrequencyClick
+            onClick = if (isNotificationEnabled) onFrequencyClick else null,
+            modifier = Modifier.alpha(configurationAlpha)
         )
         SettingsItemRow(
             title = "Period",
             description = reminderWindow,
-            onClick = onWindowClick
+            onClick = if (isNotificationEnabled) onWindowClick else null,
+            modifier = Modifier.alpha(configurationAlpha)
         )
         SettingsItemRow(
             title = "Fasting Mode",
             description = if (isFastingMode) "Active" else "Inactive",
             controlSlot = {
-                Switch(checked = isFastingMode, onCheckedChange = onFastingToggle)
-            }
+                Switch(
+                    checked = isFastingMode,
+                    onCheckedChange = onFastingToggle,
+                    enabled = isNotificationEnabled,
+                )
+            },
+            modifier = Modifier.alpha(configurationAlpha)
         )
     }
 }

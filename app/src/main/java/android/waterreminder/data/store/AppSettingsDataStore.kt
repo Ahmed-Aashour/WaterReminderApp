@@ -14,22 +14,24 @@ class AppSettingsDataStore(private val context: Context) {
     companion object {
         val DAILY_GOAL_ML = intPreferencesKey("daily_goal_ml")
         val UNIT = stringPreferencesKey("unit")
-        val IS_FASTING = booleanPreferencesKey("is_fasting")
+        val ARE_NOTIFICATIONS_ENABLED = booleanPreferencesKey("are_notifications_enabled")
         val FREQUENCY_MINUTES = intPreferencesKey("frequency_minutes")
-        val THEME = stringPreferencesKey("theme")
-        val LANGUAGE = stringPreferencesKey("language")
         val START_TIME = stringPreferencesKey("start_time")
         val END_TIME = stringPreferencesKey("end_time")
+        val IS_FASTING = booleanPreferencesKey("is_fasting")
+        val THEME = stringPreferencesKey("theme")
+        val LANGUAGE = stringPreferencesKey("language")
 
 
         const val DEFAULT_DAILY_GOAL_ML = 2000
         const val DEFAULT_UNIT = "ml"
-        const val DEFAULT_IS_FASTING = false
+        const val DEFAULT_ARE_NOTIFICATIONS_ENABLED = true
         const val DEFAULT_FREQUENCY_MINUTES = 60
-        const val DEFAULT_THEME = "System"
-        const val DEFAULT_LANGUAGE = "English"
         const val DEFAULT_START_TIME = "07:00 AM"
         const val DEFAULT_END_TIME = "09:00 PM"
+        const val DEFAULT_IS_FASTING = false
+        const val DEFAULT_THEME = "System"
+        const val DEFAULT_LANGUAGE = "English"
 
         const val MIN_DAILY_GOAL_ML = 1000
         const val MAX_DAILY_GOAL_ML = 8000
@@ -51,12 +53,13 @@ class AppSettingsDataStore(private val context: Context) {
             UserPreferences(
                 dailyGoalMl = preferences[DAILY_GOAL_ML] ?: DEFAULT_DAILY_GOAL_ML,
                 unit = preferences[UNIT] ?: DEFAULT_UNIT,
-                isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
+                areNotificationsEnabled = preferences[ARE_NOTIFICATIONS_ENABLED] ?: DEFAULT_ARE_NOTIFICATIONS_ENABLED,
                 frequency = preferences[FREQUENCY_MINUTES] ?: DEFAULT_FREQUENCY_MINUTES,
+                startTime = preferences[START_TIME] ?: DEFAULT_START_TIME,
+                endTime = preferences[END_TIME] ?: DEFAULT_END_TIME,
+                isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
                 theme = preferences[THEME] ?: DEFAULT_THEME,
                 language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
-                startTime = preferences[START_TIME] ?: DEFAULT_START_TIME,
-                endTime = preferences[END_TIME] ?: DEFAULT_END_TIME
             )
         }
 
@@ -70,20 +73,33 @@ class AppSettingsDataStore(private val context: Context) {
         return true
     }
 
-    suspend fun updateMeasurementUnit(unit: String) {
+    suspend fun updateUnit(unit: String) {
         if (unit in SUPPORTED_UNITS) {
             context.dataStore.edit { prefs -> prefs[UNIT] = unit }
         }
     }
 
-    suspend fun updateFastingState(isFasting: Boolean) {
-        context.dataStore.edit { prefs -> prefs[IS_FASTING] = isFasting }
+    suspend fun updateNotificationToggle(isEnabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[ARE_NOTIFICATIONS_ENABLED] = isEnabled
+        }
     }
 
     suspend fun updateFrequency(minutes: Int) {
         if (minutes in SUPPORTED_FREQUENCIES_MINUTES) {
             context.dataStore.edit { prefs -> prefs[FREQUENCY_MINUTES] = minutes }
         }
+    }
+
+    suspend fun updateStartAndEndTimes(startHour: String, endHour: String) {
+        context.dataStore.edit { prefs ->
+            prefs[START_TIME] = startHour
+            prefs[END_TIME] = endHour
+        }
+    }
+
+    suspend fun updateFastingState(isFasting: Boolean) {
+        context.dataStore.edit { prefs -> prefs[IS_FASTING] = isFasting }
     }
 
     suspend fun updateTheme(newTheme: String) {
@@ -95,13 +111,6 @@ class AppSettingsDataStore(private val context: Context) {
     suspend fun updateLanguage(newLanguage: String) {
         if (newLanguage in SUPPORTED_LANGUAGES) {
             context.dataStore.edit { prefs -> prefs[LANGUAGE] = newLanguage }
-        }
-    }
-
-    suspend fun updateStartAndEndTimes(startHour: String, endHour: String) {
-        context.dataStore.edit { prefs ->
-            prefs[START_TIME] = startHour
-            prefs[END_TIME] = endHour
         }
     }
 }

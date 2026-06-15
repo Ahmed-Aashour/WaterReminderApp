@@ -1,16 +1,20 @@
 package android.waterreminder.ui.settings
 
+import android.content.Context
 import android.waterreminder.data.store.AppSettingsDataStore
+import android.waterreminder.service.WaterNotificationScheduler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val appSettingsDataStore: AppSettingsDataStore
+    private val appSettingsDataStore: AppSettingsDataStore,
+    @ApplicationContext private val context: Context // To control the scheduler
 ) : ViewModel() {
 
     private val _validationErrorChannel = MutableSharedFlow<String>()
@@ -20,6 +24,7 @@ class SettingsViewModel @Inject constructor(
     )
 
     val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
+    private val notificationScheduler = WaterNotificationScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
 
     /**
@@ -41,18 +46,19 @@ class SettingsViewModel @Inject constructor(
 
             SettingsUiState(
                 dailyGoalMl = prefs.dailyGoalMl,
+                predefinedGoals = predefinedGoalOptions,
                 unit = prefs.unit,
-                isFasting = prefs.isFasting,
+                supportedUnits = supportedUnits,
+                areNotificationsEnabled = prefs.areNotificationsEnabled,
                 frequency = prefs.frequency,
-                theme = prefs.theme,
-                language = prefs.language,
+                supportedFrequencies = supportedFrequencies,
                 startTime = prefs.startTime,
                 endTime = prefs.endTime,
                 activeStartTime = operationalStart,
                 activeEndTime = operationalEnd,
-                predefinedGoals = predefinedGoalOptions,
-                supportedUnits = supportedUnits,
-                supportedFrequencies = supportedFrequencies
+                isFasting = prefs.isFasting,
+                theme = prefs.theme,
+                language = prefs.language,
             )
         }
         .stateIn(
@@ -60,18 +66,19 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = SettingsUiState(
                 dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
+                predefinedGoals = predefinedGoalOptions,
                 unit = AppSettingsDataStore.DEFAULT_UNIT,
-                isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
+                supportedUnits = supportedUnits,
+                areNotificationsEnabled = AppSettingsDataStore.DEFAULT_ARE_NOTIFICATIONS_ENABLED,
                 frequency = AppSettingsDataStore.DEFAULT_FREQUENCY_MINUTES,
-                theme = AppSettingsDataStore.DEFAULT_THEME,
-                language = AppSettingsDataStore.DEFAULT_LANGUAGE,
+                supportedFrequencies = supportedFrequencies,
                 startTime = AppSettingsDataStore.DEFAULT_START_TIME,
                 endTime = AppSettingsDataStore.DEFAULT_END_TIME,
                 activeStartTime = AppSettingsDataStore.DEFAULT_START_TIME,
                 activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
-                predefinedGoals = predefinedGoalOptions,
-                supportedUnits = supportedUnits,
-                supportedFrequencies = supportedFrequencies
+                isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
+                theme = AppSettingsDataStore.DEFAULT_THEME,
+                language = AppSettingsDataStore.DEFAULT_LANGUAGE,
             )
         )
 
@@ -99,21 +106,38 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateMeasurementUnit(unit: String) {
+    fun updateUnit(unit: String) {
         viewModelScope.launch {
-            appSettingsDataStore.updateMeasurementUnit(unit)
+            appSettingsDataStore.updateUnit(unit)
         }
     }
 
-    fun updateFastingState(isFasting: Boolean) {
+    fun updateNotificationToggle(isEnabled: Boolean) {
         viewModelScope.launch {
-            appSettingsDataStore.updateFastingState(isFasting)
+            appSettingsDataStore.updateNotificationToggle(isEnabled)
+            if (isEnabled) {
+                notificationScheduler.scheduleRepeatingReminders()
+            } else {
+                notificationScheduler.cancelReminders()
+            }
         }
     }
 
     fun updateFrequency(minutes: Int) {
         viewModelScope.launch {
             appSettingsDataStore.updateFrequency(minutes)
+        }
+    }
+
+    fun updateStartAndEndTimes(startHour: String, endHour: String) {
+        viewModelScope.launch {
+            appSettingsDataStore.updateStartAndEndTimes(startHour, endHour)
+        }
+    }
+
+    fun updateFastingState(isFasting: Boolean) {
+        viewModelScope.launch {
+            appSettingsDataStore.updateFastingState(isFasting)
         }
     }
 
@@ -126,12 +150,6 @@ class SettingsViewModel @Inject constructor(
     fun updateLanguage(language: String) {
         viewModelScope.launch {
             appSettingsDataStore.updateLanguage(language)
-        }
-    }
-
-    fun updateStartAndEndTimes(startHour: String, endHour: String) {
-        viewModelScope.launch {
-            appSettingsDataStore.updateStartAndEndTimes(startHour, endHour)
         }
     }
 

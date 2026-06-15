@@ -21,12 +21,13 @@ fun SettingsRoute(
         onNavigateBack = onNavigateBack,
         onUpdateDailyGoal = { amountMl -> viewModel.updateDailyGoal(amountMl) },
         onUpdateCustomDailyGoalString = { amountMl -> viewModel.updateCustomDailyGoalString(amountMl) },
-        onUpdateUnit = { unit -> viewModel.updateMeasurementUnit(unit) },
-        onUpdateFastingState = { isFasting -> viewModel.updateFastingState(isFasting) },
+        onUpdateUnit = { unit -> viewModel.updateUnit(unit) },
+        onUpdateNotificationToggle = { isEnabled -> viewModel.updateNotificationToggle(isEnabled) },
         onUpdateFrequency = { mins -> viewModel.updateFrequency(mins) },
         onUpdateStartAndEndTimes = { start, end -> viewModel.updateStartAndEndTimes(start, end) },
+        onUpdateFastingState = { isFasting -> viewModel.updateFastingState(isFasting) },
         onUpdateTheme = { themeStr -> viewModel.updateTheme(themeStr) },
         onUpdateLanguage = { langStr -> viewModel.updateLanguage(langStr) },
-        modifier = modifier
+        modifier = modifier,
     )
 }
