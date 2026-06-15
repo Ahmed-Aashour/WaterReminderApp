@@ -8,6 +8,7 @@ import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
 import android.waterreminder.ui.settings.components.PreferencesFrame
+import android.waterreminder.ui.settings.components.UnitDialog
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.*
@@ -41,7 +42,7 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onUpdateDailyGoal: (Int) -> Unit,
     onUpdateCustomDailyGoalString: (String) -> Unit,
-    onUpdateMeasurementUnit: (String) -> Unit,
+    onUpdateUnit: (String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
     onUpdateNotificationInterval: (Int) -> Unit,
     onUpdateReminderWindow: (String, String) -> Unit,
@@ -50,6 +51,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     var showGoalDialog by remember { mutableStateOf(false) }
+    var showUnitDialog by remember { mutableStateOf(false) }
 
     if (showGoalDialog) {
         DailyGoalDialog(
@@ -69,6 +71,16 @@ fun SettingsScreen(
             }
         )
     }
+
+    if (showUnitDialog) {
+        UnitDialog(
+            currentUnit = state.measurementUnit,
+            supportedUnits = state.supportedUnits,
+            onUnitSelected = { selectedUnit -> onUpdateUnit(selectedUnit) },
+            onDismiss = { showUnitDialog = false }
+        )
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -98,10 +110,7 @@ fun SettingsScreen(
                 dailyGoal = state.dailyGoalMl,
                 unit = state.measurementUnit,
                 onGoalClick = { showGoalDialog = true },
-                onUnitClick = {
-                    val nextUnit = if(state.measurementUnit == "ml") "oz" else "ml"
-                    onUpdateMeasurementUnit(nextUnit)
-                }
+                onUnitClick = { showUnitDialog = true }
             )
 
             NotificationsFrame(
@@ -129,6 +138,7 @@ fun SettingsScreen(
                 onAcknowledgementsClick = { }
             )
 
+            // Version label
             Text(
                 text = "version 1.0.1",
                 style = MaterialTheme.typography.bodyLarge,
@@ -155,7 +165,7 @@ fun SettingsScreenPreview(
             onNavigateBack = {},
             onUpdateDailyGoal = {},
             onUpdateCustomDailyGoalString = {},
-            onUpdateMeasurementUnit = {},
+            onUpdateUnit = {},
             onUpdateFastingState = {},
             onUpdateNotificationInterval = {},
             onUpdateReminderWindow = { _, _ -> },

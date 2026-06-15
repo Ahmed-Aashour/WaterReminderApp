@@ -16,9 +16,6 @@ class SettingsViewModel @Inject constructor(
 
     private val _validationErrorChannel = MutableSharedFlow<String>()
     val validationErrorChannel: SharedFlow<String> = _validationErrorChannel.asSharedFlow()
-
-    val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
-
     val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.map { ml ->
         val ozCalculated = (ml * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt()
         GoalOptionUiModel(
@@ -27,6 +24,7 @@ class SettingsViewModel @Inject constructor(
             displayLabelOz = "$ozCalculated fl oz"
         )
     }
+    val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
 
     /**
      * Exposes the current read-only snapshot of user settings.

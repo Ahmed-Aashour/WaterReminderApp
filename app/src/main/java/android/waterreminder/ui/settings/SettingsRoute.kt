@@ -21,7 +21,7 @@ fun SettingsRoute(
         onNavigateBack = onNavigateBack,
         onUpdateDailyGoal = { amountMl -> viewModel.updateDailyGoal(amountMl) },
         onUpdateCustomDailyGoalString = { amountMl -> viewModel.updateCustomDailyGoalString(amountMl) },
-        onUpdateMeasurementUnit = { unit -> viewModel.updateMeasurementUnit(unit) },
+        onUpdateUnit = { unit -> viewModel.updateMeasurementUnit(unit) },
         onUpdateFastingState = { isFasting -> viewModel.updateFastingState(isFasting) },
         onUpdateNotificationInterval = { mins -> viewModel.updateNotificationInterval(mins) },
         onUpdateReminderWindow = { start, end -> viewModel.updateReminderWindow(start, end) },
