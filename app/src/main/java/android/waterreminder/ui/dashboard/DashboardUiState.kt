@@ -1,5 +1,10 @@
 package android.waterreminder.ui.dashboard
 
+sealed interface DashboardUiState {
+    object Loading : DashboardUiState
+    data class Success(val data: DashboardState) : DashboardUiState
+}
+
 // A clean wrapper mapping all varying data combinations together
 data class DashboardState(
     val streakSection: StreakSectionState,
