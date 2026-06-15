@@ -41,7 +41,7 @@ fun SettingsItemRow(
                     if (isTextClickable) {
                         Modifier
                             .wrapContentWidth(Alignment.Start)
-                            .clickable { onClick?.invoke() }
+                            .clickable { onClick.invoke() }
                     } else Modifier
                 )
         ) {

@@ -1,12 +1,12 @@
 package android.waterreminder.ui.settings.preview
 
-import android.waterreminder.data.store.SettingsState
+import android.waterreminder.ui.settings.SettingsUiState
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
-class SettingsScreenStateProvider : PreviewParameterProvider<SettingsState> {
-    override val values: Sequence<SettingsState> = sequenceOf(
+class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
+    override val values: Sequence<SettingsUiState> = sequenceOf(
         // Scenario 1: Clean Baseline System Configuration (Out-of-the-box Default State)
-        SettingsState(
+        SettingsUiState(
             dailyGoalMl = 2000,
             measurementUnit = "ml",
             isFasting = false,
@@ -20,7 +20,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsState> {
         ),
 
         // Scenario 2: Alternate Metric Setup (Fluid Ounces, Custom Guardrail Interval, Dark Theme)
-        SettingsState(
+        SettingsUiState(
             dailyGoalMl = 2500,
             measurementUnit = "oz",
             isFasting = false,
@@ -34,7 +34,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsState> {
         ),
 
         // Scenario 3: Ramadan/Fasting Operational Mode Window (Calculated Dynamic Active Hours)
-        SettingsState(
+        SettingsUiState(
             dailyGoalMl = 1800,
             measurementUnit = "ml",
             isFasting = true,
