@@ -14,8 +14,8 @@ class SettingsViewModel @Inject constructor(
     private val appSettingsDataStore: AppSettingsDataStore
 ) : ViewModel() {
 
-    private val _goalValidationErrorChannel = MutableSharedFlow<String>()
-    val goalValidationErrorChannel: SharedFlow<String> = _goalValidationErrorChannel.asSharedFlow()
+    private val _validationErrorChannel = MutableSharedFlow<String>()
+    val validationErrorChannel: SharedFlow<String> = _validationErrorChannel.asSharedFlow()
 
     val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.map { ml ->
         val ozCalculated = (ml * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt()
@@ -81,7 +81,7 @@ class SettingsViewModel @Inject constructor(
         val parsedInt = inputString.trim().toIntOrNull()
         if (parsedInt == null) {
             viewModelScope.launch {
-                _goalValidationErrorChannel.emit("Please enter a valid numeric value.")
+                _validationErrorChannel.emit("Please enter a valid numeric value.")
             }
             return
         }
@@ -92,7 +92,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val wasSaved = appSettingsDataStore.updateDailyGoal(goalMl)
             if (!wasSaved) {
-                _goalValidationErrorChannel.emit(
+                _validationErrorChannel.emit(
                     "Goal must be between ${AppSettingsDataStore.MIN_DAILY_GOAL_ML}ml and ${AppSettingsDataStore.MAX_DAILY_GOAL_ML}ml."
                 )
             }

@@ -17,7 +17,7 @@ fun SettingsRoute(
 
     SettingsScreen(
         state = settingsState,
-        validationEvents = viewModel.goalValidationErrorChannel,
+        validationEvents = viewModel.validationErrorChannel,
         onNavigateBack = onNavigateBack,
         onUpdateDailyGoal = { amountMl -> viewModel.updateDailyGoal(amountMl) },
         onUpdateCustomDailyGoalString = { amountMl -> viewModel.updateCustomDailyGoalString(amountMl) },
