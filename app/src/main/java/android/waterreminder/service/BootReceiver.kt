@@ -4,30 +4,24 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.waterreminder.data.repository.LocationRepository
-import android.waterreminder.data.repository.PrayerTimesRepository
 import android.waterreminder.data.store.AppSettingsDataStore
+import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class BootReceiver : BroadcastReceiver() {
 
     @Inject lateinit var appSettingsDataStore: AppSettingsDataStore
-    @Inject lateinit var prayerTimesRepository: PrayerTimesRepository
-    @Inject lateinit var locationRepository: LocationRepository
+    @Inject lateinit var resolveTrackingWindowUseCase: ResolveTrackingWindowUseCase
 
     // Use an IO-bound SupervisorJob scope to survive brief asynchronous network/disk tasks
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
     override fun onReceive(context: Context, intent: Intent) {
         // Only proceed if the incoming action matches the official device startup signals
@@ -48,28 +42,11 @@ class BootReceiver : BroadcastReceiver() {
                     }
 
                     // Resolve operational time frames (including dynamic fasting constraints if active)
-                    val operationalStart: String
-                    val operationalEnd: String
+                    val window = resolveTrackingWindowUseCase.execute(prefs)
 
-                    if (prefs.isFasting) {
-                        val locationProfile = locationRepository.getCurrentLocationProfile()
-                        val targetCity = locationProfile?.city ?: "Alexandria"
-                        val targetCountry = locationProfile?.country ?: "Egypt"
-
-                        val todayTimes = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now(), targetCity, targetCountry).getOrNull()
-                        val tomorrowTimes = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now().plusDays(1), targetCity, targetCountry).getOrNull()
-
-                        operationalStart = todayTimes?.maghrib?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_START_TIME
-                        operationalEnd = tomorrowTimes?.fajr?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_END_TIME
-                    } else {
-                        operationalStart = prefs.startTime
-                        operationalEnd = prefs.endTime
-                    }
-
-                    // Hand the resolved parameters directly to AlarmManager
                     scheduler.scheduleNextReminder(
-                        startTime = operationalStart,
-                        endTime = operationalEnd,
+                        startTime = window.startTime,
+                        endTime = window.endTime,
                         intervalMinutes = prefs.frequency
                     )
                     Log.d("BootReceiver", "Hydration reminders successfully restored on boot.")

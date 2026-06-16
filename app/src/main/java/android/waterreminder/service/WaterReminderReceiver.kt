@@ -10,37 +10,42 @@ import android.content.Intent
 import android.os.Build
 import android.waterreminder.R
 import android.waterreminder.data.store.AppSettingsDataStore
+import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint // Critical: Enables field injection inside this BroadcastReceiver
 class WaterReminderReceiver : BroadcastReceiver() {
+
+    @Inject lateinit var appSettingsDataStore: AppSettingsDataStore
+    @Inject lateinit var resolveTrackingWindowUseCase: ResolveTrackingWindowUseCase
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
         val appContext = context.applicationContext
-        val dataStore = AppSettingsDataStore(appContext)
         val scheduler = WaterNotificationScheduler(appContext)
 
         scope.launch {
-            val prefs = dataStore.settingsFlow.first()
+            val prefs = appSettingsDataStore.settingsFlow.first()
 
             if (!prefs.areNotificationsEnabled) {
                 scheduler.cancelReminders()
                 return@launch
             }
 
-            val activeStart = if (prefs.isFasting) "06:45 PM" else prefs.startTime
-            val activeEnd = if (prefs.isFasting) "04:15 AM" else prefs.endTime
+            val window = resolveTrackingWindowUseCase.execute(prefs)
 
             scheduler.scheduleNextReminder(
-                startTime = activeStart,
-                endTime = activeEnd,
+                startTime = window.startTime,
+                endTime = window.endTime,
                 intervalMinutes = prefs.frequency
             )
 

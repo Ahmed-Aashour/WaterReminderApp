@@ -2,11 +2,9 @@ package android.waterreminder.ui.settings
 
 import android.content.Context
 import android.waterreminder.data.entity.DayPrayerTimes
-import android.waterreminder.data.repository.LocationRepository
-import android.waterreminder.data.repository.PrayerTimesRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
-import android.waterreminder.service.utils.TimeUtils.timeFormatter
+import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,14 +12,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val appSettingsDataStore: AppSettingsDataStore,
-    private val prayerTimesRepository: PrayerTimesRepository,
-    private val locationRepository: LocationRepository,
+    private val resolveTrackingWindowUseCase: ResolveTrackingWindowUseCase,
     @param:ApplicationContext private val context: Context // To control the scheduler
 ) : ViewModel() {
 
@@ -51,18 +47,8 @@ class SettingsViewModel @Inject constructor(
         appSettingsDataStore.settingsFlow,
         _todayPrayerTimes,
         _tomorrowPrayerTimes
-    ) { prefs, todayTimes, tomorrowTimes ->
-        val operationalStart = if (prefs.isFasting) {
-            todayTimes?.maghrib?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_START_TIME
-        } else {
-            prefs.startTime
-        }
-
-        val operationalEnd = if (prefs.isFasting) {
-            tomorrowTimes?.fajr?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_END_TIME
-        } else {
-            prefs.endTime
-        }
+    ) { prefs, _, _ ->
+        val window = resolveTrackingWindowUseCase.execute(prefs)
 
         SettingsUiState(
             dailyGoalMl = prefs.dailyGoalMl,
@@ -74,8 +60,8 @@ class SettingsViewModel @Inject constructor(
             supportedFrequencies = supportedFrequencies,
             startTime = prefs.startTime,
             endTime = prefs.endTime,
-            activeStartTime = operationalStart,
-            activeEndTime = operationalEnd,
+            activeStartTime = window.startTime,
+            activeEndTime = window.endTime,
             isFasting = prefs.isFasting,
             theme = prefs.theme,
             language = prefs.language,
@@ -176,32 +162,15 @@ class SettingsViewModel @Inject constructor(
 
     private fun synchronizeScheduler() {
         viewModelScope.launch(Dispatchers.IO) {
-            // 🌟 Always pull the fresh, actual disk value snapshot from source
+            // Thread Safe: Read fresh configuration states directly from data source
             val prefs = appSettingsDataStore.settingsFlow.first()
 
             if (prefs.areNotificationsEnabled) {
-                val operationalStart: String
-                val operationalEnd: String
-
-                if (prefs.isFasting) {
-                    // Read from cache or fetch values matching active StateFlow behavior
-                    val locationProfile = locationRepository.getCurrentLocationProfile()
-                    val targetCity = locationProfile?.city ?: "Alexandria"
-                    val targetCountry = locationProfile?.country ?: "Egypt"
-
-                    val todayTimes = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now(), targetCity, targetCountry).getOrNull()
-                    val tomorrowTimes = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now().plusDays(1), targetCity, targetCountry).getOrNull()
-
-                    operationalStart = todayTimes?.maghrib?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_START_TIME
-                    operationalEnd = tomorrowTimes?.fajr?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_END_TIME
-                } else {
-                    operationalStart = prefs.startTime
-                    operationalEnd = prefs.endTime
-                }
+                val window = resolveTrackingWindowUseCase.execute(prefs)
 
                 notificationScheduler.scheduleNextReminder(
-                    startTime = operationalStart,
-                    endTime = operationalEnd,
+                    startTime = window.startTime,
+                    endTime = window.endTime,
                     intervalMinutes = prefs.frequency
                 )
             } else {
@@ -211,16 +180,10 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun fetchDynamicPrayerTimesPipeline() {
+        // Keeps local UI state properties fresh for initial loading state conditions
         viewModelScope.launch(Dispatchers.IO) {
-            val locationProfile = locationRepository.getCurrentLocationProfile()
-            val targetCity = locationProfile?.city ?: "Alexandria"
-            val targetCountry = locationProfile?.country ?: "Egypt"
-
-            val todayResult = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now(), targetCity, targetCountry)
-            todayResult.onSuccess { _todayPrayerTimes.value = it }
-
-            val tomorrowResult = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now().plusDays(1), targetCity, targetCountry)
-            tomorrowResult.onSuccess { _tomorrowPrayerTimes.value = it }
+            val prefs = appSettingsDataStore.settingsFlow.first()
+            resolveTrackingWindowUseCase.execute(prefs)
         }
     }
 }
