@@ -35,8 +35,6 @@ class AppSettingsDataStore(private val context: Context) {
         const val DEFAULT_IS_FASTING = false
         const val DEFAULT_FASTING_START_TIME = "06:45 PM"
         const val DEFAULT_FASTING_END_TIME = "04:15 AM"
-        const val DEFAULT_CITY = ""
-        const val DEFAULT_COUNTRY = ""
         const val DEFAULT_THEME = "System"
         const val DEFAULT_LANGUAGE = "English"
 
@@ -65,8 +63,8 @@ class AppSettingsDataStore(private val context: Context) {
                 startTime = preferences[START_TIME] ?: DEFAULT_START_TIME,
                 endTime = preferences[END_TIME] ?: DEFAULT_END_TIME,
                 isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
-                city = preferences[CITY] ?: DEFAULT_CITY,
-                country = preferences[COUNTRY] ?: DEFAULT_COUNTRY,
+                city = preferences[CITY] ?: "",
+                country = preferences[COUNTRY] ?: "",
                 theme = preferences[THEME] ?: DEFAULT_THEME,
                 language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
             )
@@ -109,6 +107,13 @@ class AppSettingsDataStore(private val context: Context) {
 
     suspend fun updateFastingState(isFasting: Boolean) {
         context.dataStore.edit { prefs -> prefs[IS_FASTING] = isFasting }
+    }
+
+    suspend fun updateLocationProfile(city: String, country: String) {
+        context.dataStore.edit { prefs ->
+            prefs[CITY] = city
+            prefs[COUNTRY] = country
+        }
     }
 
     suspend fun updateTheme(newTheme: String) {

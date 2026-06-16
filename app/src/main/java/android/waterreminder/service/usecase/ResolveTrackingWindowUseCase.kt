@@ -32,11 +32,23 @@ class ResolveTrackingWindowUseCase @Inject constructor(
             )
         }
 
-        // Fasting state is active: Look up coordinates and request prayer schedule metrics
+        // Fetching the location
         val locationProfile = locationRepository.getCurrentLocationProfile()
-        val targetCity = locationProfile?.city ?: prefs.city
-        val targetCountry = locationProfile?.country ?: prefs.country
 
+        val targetCity = locationProfile?.city?.takeIf { it.isNotEmpty() }
+            ?: prefs.city.takeIf { it.isNotEmpty() }
+
+        val targetCountry = locationProfile?.country?.takeIf { it.isNotEmpty() }
+            ?: prefs.country.takeIf { it.isNotEmpty() }
+
+        if (targetCity == null || targetCountry == null) {
+            return TrackingWindow(
+                startTime = AppSettingsDataStore.DEFAULT_FASTING_START_TIME,
+                endTime = AppSettingsDataStore.DEFAULT_FASTING_END_TIME
+            )
+        }
+
+        // Fetching the start and end times by the location
         val todayTimes = prayerTimesRepository.getPrayerTimesForDate(
             LocalDate.now(), targetCity, targetCountry
         ).getOrNull()
