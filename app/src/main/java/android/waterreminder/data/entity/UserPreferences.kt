@@ -1,4 +1,4 @@
-package android.waterreminder.data.store
+package android.waterreminder.data.entity
 
 /**
  * Pure data-layer snapshot representing exactly what is persisted on disk.

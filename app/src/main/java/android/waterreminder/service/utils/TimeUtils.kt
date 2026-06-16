@@ -2,11 +2,12 @@ package android.waterreminder.service.utils
 
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 object TimeUtils {
-    private val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+    val timeFormatter: DateTimeFormatter? = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
     /**
      * Parses a string like "07:00 AM" or "09:00 PM" into
@@ -46,23 +47,23 @@ object TimeUtils {
 
         // CASE 1: Current time is BEFORE the window opens
         if (now.isBefore(startDateTime)) {
-            return startDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+            return startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
 
         // CASE 2: Current time is AFTER the window closes
         if (now.isAfter(endDateTime)) {
             // Roll forward to schedule for tomorrow's starting opening window
-            return startDateTime.plusDays(1).atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+            return startDateTime.plusDays(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
 
         // CASE 3: Current time is INSIDE the window -> Schedule next interval trigger step
         val nextTriggerInterval = now.plusMinutes(intervalMinutes.toLong())
 
         return if (nextTriggerInterval.isBefore(endDateTime)) {
-            nextTriggerInterval.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+            nextTriggerInterval.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         } else {
             // If the next interval lands past the closing threshold, sleep until tomorrow's opening window
-            startDateTime.plusDays(1).atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+            startDateTime.plusDays(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
     }
 }

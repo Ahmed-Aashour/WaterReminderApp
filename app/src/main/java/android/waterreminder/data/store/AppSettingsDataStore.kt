@@ -1,6 +1,7 @@
 package android.waterreminder.data.store
 
 import android.content.Context
+import android.waterreminder.data.entity.UserPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
@@ -91,10 +92,10 @@ class AppSettingsDataStore(private val context: Context) {
         }
     }
 
-    suspend fun updateStartAndEndTimes(startHour: String, endHour: String) {
+    suspend fun updateStartAndEndTimes(startTime: String, endTime: String) {
         context.dataStore.edit { prefs ->
-            prefs[START_TIME] = startHour
-            prefs[END_TIME] = endHour
+            prefs[START_TIME] = startTime
+            prefs[END_TIME] = endTime
         }
     }
 
