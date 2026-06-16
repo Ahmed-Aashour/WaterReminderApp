@@ -30,14 +30,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val notificationScheduler by lazy { WaterNotificationScheduler(applicationContext) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Instantly unlocks transparent status/navigation bars
         enableEdgeToEdge()
-        // Let the scheduler handle the setup implicitly
-        notificationScheduler.scheduleRepeatingReminders()
 
         setContent {
             ErtawyTheme {
