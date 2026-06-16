@@ -44,8 +44,6 @@ object TimeUtils {
             }
         }
 
-        val currentLocalTime = now.toLocalTime()
-
         // CASE 1: Current time is BEFORE the window opens
         if (now.isBefore(startDateTime)) {
             return startDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
