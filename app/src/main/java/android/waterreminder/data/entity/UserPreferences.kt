@@ -12,6 +12,8 @@ data class UserPreferences(
     val startTime: String,
     val endTime: String,
     val isFasting: Boolean,
+    val city: String,
+    val country: String,
     val theme: String,
     val language: String,
 )
