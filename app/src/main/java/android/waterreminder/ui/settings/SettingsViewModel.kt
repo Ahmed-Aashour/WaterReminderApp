@@ -33,16 +33,8 @@ class SettingsViewModel @Inject constructor(
      */
     val uiState: StateFlow<SettingsUiState> = appSettingsDataStore.settingsFlow
         .map { prefs ->
-            val operationalStart: String
-            val operationalEnd: String
-
-            if (prefs.isFasting) {
-                operationalStart = fetchTodayMaghribTime()
-                operationalEnd = fetchTomorrowFajrTime()
-            } else {
-                operationalStart = prefs.startTime
-                operationalEnd = prefs.endTime
-            }
+            val operationalStart = if (prefs.isFasting) fetchTodayMaghribTime() else prefs.startTime
+            val operationalEnd = if (prefs.isFasting) fetchTomorrowFajrTime() else prefs.endTime
 
             SettingsUiState(
                 dailyGoalMl = prefs.dailyGoalMl,
@@ -122,12 +114,14 @@ class SettingsViewModel @Inject constructor(
     fun updateFrequency(minutes: Int) {
         viewModelScope.launch {
             appSettingsDataStore.updateFrequency(minutes)
+            synchronizeScheduler()
         }
     }
 
     fun updateStartAndEndTimes(startHour: String, endHour: String) {
         viewModelScope.launch {
             appSettingsDataStore.updateStartAndEndTimes(startHour, endHour)
+            synchronizeScheduler()
         }
     }
 
@@ -154,15 +148,12 @@ class SettingsViewModel @Inject constructor(
 
     private fun synchronizeScheduler() {
         viewModelScope.launch {
-            val prefs = appSettingsDataStore.settingsFlow.first()
-            if (prefs.areNotificationsEnabled) {
-                val operationalStart = if (prefs.isFasting) fetchTodayMaghribTime() else prefs.startTime
-                val operationalEnd = if (prefs.isFasting) fetchTomorrowFajrTime() else prefs.endTime
-
+            val currentState = uiState.value
+            if (currentState.areNotificationsEnabled) {
                 notificationScheduler.scheduleNextReminder(
-                    startTime = operationalStart,
-                    endTime = operationalEnd,
-                    intervalMinutes = prefs.frequency
+                    startTime = currentState.activeStartTime,
+                    endTime = currentState.activeEndTime,
+                    intervalMinutes = currentState.frequency
                 )
             } else {
                 notificationScheduler.cancelReminders()
