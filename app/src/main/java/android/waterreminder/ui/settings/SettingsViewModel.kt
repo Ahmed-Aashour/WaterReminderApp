@@ -6,7 +6,6 @@ import android.waterreminder.data.repository.LocationRepository
 import android.waterreminder.data.repository.PrayerTimesRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
-import android.waterreminder.service.utils.TimeUtils
 import android.waterreminder.service.utils.TimeUtils.timeFormatter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -141,6 +141,7 @@ dependencies {
     // The official desugaring dependency
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // Google Play Services location dependency
+    // Google Play Services location dependencies
     implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
 }

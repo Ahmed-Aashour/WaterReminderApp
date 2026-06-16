@@ -7,6 +7,7 @@ import android.waterreminder.data.entity.DeviceLocationEntity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.tasks.await
 import java.util.*
 import javax.inject.Inject
 
