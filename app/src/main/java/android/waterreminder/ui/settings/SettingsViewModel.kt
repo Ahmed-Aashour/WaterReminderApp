@@ -52,13 +52,13 @@ class SettingsViewModel @Inject constructor(
         _tomorrowPrayerTimes
     ) { prefs, todayTimes, tomorrowTimes ->
         val operationalStart = if (prefs.isFasting) {
-            todayTimes?.maghrib?.format(timeFormatter) ?: "06:45 PM"
+            todayTimes?.maghrib?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_START_TIME
         } else {
             prefs.startTime
         }
 
         val operationalEnd = if (prefs.isFasting) {
-            tomorrowTimes?.fajr?.format(timeFormatter) ?: "04:15 AM"
+            tomorrowTimes?.fajr?.format(timeFormatter) ?: AppSettingsDataStore.DEFAULT_FASTING_END_TIME
         } else {
             prefs.endTime
         }

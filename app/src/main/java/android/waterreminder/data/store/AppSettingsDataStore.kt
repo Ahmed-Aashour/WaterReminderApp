@@ -31,6 +31,8 @@ class AppSettingsDataStore(private val context: Context) {
         const val DEFAULT_START_TIME = "07:00 AM"
         const val DEFAULT_END_TIME = "09:00 PM"
         const val DEFAULT_IS_FASTING = false
+        const val DEFAULT_FASTING_START_TIME = "06:45 PM"
+        const val DEFAULT_FASTING_END_TIME = "04:15 AM"
         const val DEFAULT_THEME = "System"
         const val DEFAULT_LANGUAGE = "English"
 
