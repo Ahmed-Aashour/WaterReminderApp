@@ -115,11 +115,7 @@ class SettingsViewModel @Inject constructor(
     fun updateNotificationToggle(isEnabled: Boolean) {
         viewModelScope.launch {
             appSettingsDataStore.updateNotificationToggle(isEnabled)
-            if (isEnabled) {
-                notificationScheduler.scheduleRepeatingReminders()
-            } else {
-                notificationScheduler.cancelReminders()
-            }
+            synchronizeScheduler()
         }
     }
 
@@ -138,6 +134,7 @@ class SettingsViewModel @Inject constructor(
     fun updateFastingState(isFasting: Boolean) {
         viewModelScope.launch {
             appSettingsDataStore.updateFastingState(isFasting)
+            synchronizeScheduler()
         }
     }
 
@@ -154,6 +151,25 @@ class SettingsViewModel @Inject constructor(
     }
 
     // --- Helper calculation placeholders ---
+
+    private fun synchronizeScheduler() {
+        viewModelScope.launch {
+            val prefs = appSettingsDataStore.settingsFlow.first()
+            if (prefs.areNotificationsEnabled) {
+                val operationalStart = if (prefs.isFasting) fetchTodayMaghribTime() else prefs.startTime
+                val operationalEnd = if (prefs.isFasting) fetchTomorrowFajrTime() else prefs.endTime
+
+                notificationScheduler.scheduleNextReminder(
+                    startTime = operationalStart,
+                    endTime = operationalEnd,
+                    intervalMinutes = prefs.frequency
+                )
+            } else {
+                notificationScheduler.cancelReminders()
+            }
+        }
+    }
+
     // TODO: Embed PrayerTimesService Implementation
     private fun fetchTodayMaghribTime(): String = "06:45 PM"
     private fun fetchTomorrowFajrTime(): String = "04:15 AM"
