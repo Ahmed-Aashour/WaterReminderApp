@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.waterreminder.R
 import android.waterreminder.data.store.AppSettingsDataStore
 import androidx.core.app.NotificationCompat
@@ -46,15 +47,17 @@ class WaterReminderReceiver : BroadcastReceiver() {
             val notificationManager = appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "water_reminder_channel"
 
-            val channel = NotificationChannel(
-                channelId,
-                "Hydration Reminders",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Reminders to drink water regularly"
-                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channelId,
+                    "Hydration Reminders",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "Reminders to drink water regularly"
+                    lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                }
+                notificationManager.createNotificationChannel(channel)
             }
-            notificationManager.createNotificationChannel(channel)
 
             // 1. INTENT FOR QUICK DRINK (+250ml) BUTTON
             val quickDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
