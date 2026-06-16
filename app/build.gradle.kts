@@ -39,6 +39,13 @@ android {
         }
     }
 
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -130,4 +137,7 @@ dependencies {
 
     // The core material design icons (including Refresh, Favorite, Share, etc.)
     implementation(libs.androidx.compose.material.icons.core)
+
+    // The official desugaring dependency
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
