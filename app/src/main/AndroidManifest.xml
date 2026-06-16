@@ -11,6 +11,7 @@
     <!-- Required permissions for accessing network-based and cellular location info -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -43,6 +44,14 @@
                 android:name=".service.NotificationActionReceiver"
                 android:enabled="true"
                 android:exported="false" />
+        <!-- Receiver of Boot Completion -->
+        <receiver
+            android:name=".service.BootReceiver"
+            android:enabled="true"
+            android:exported="false"> <intent-filter android:priority="999">
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.QUICKBOOT_POWERON" /> </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
