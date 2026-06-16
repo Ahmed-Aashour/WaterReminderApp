@@ -140,4 +140,7 @@ dependencies {
 
     // The official desugaring dependency
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Google Play Services location dependency
+    implementation(libs.play.services.location)
 }

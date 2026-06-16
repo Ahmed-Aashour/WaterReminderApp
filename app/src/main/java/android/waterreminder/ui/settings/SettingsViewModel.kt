@@ -2,6 +2,7 @@ package android.waterreminder.ui.settings
 
 import android.content.Context
 import android.waterreminder.data.entity.DayPrayerTimes
+import android.waterreminder.data.repository.LocationRepository
 import android.waterreminder.data.repository.PrayerTimesRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val appSettingsDataStore: AppSettingsDataStore,
     private val prayerTimesRepository: PrayerTimesRepository,
+    private val locationRepository: LocationRepository,
     @param:ApplicationContext private val context: Context // To control the scheduler
 ) : ViewModel() {
 
@@ -190,9 +192,9 @@ class SettingsViewModel @Inject constructor(
 
     private fun fetchDynamicPrayerTimesPipeline() {
         viewModelScope.launch(Dispatchers.IO) {
-            // TODO: Extract actual strings dynamically from Location Services or user profile preferences
-            val targetCity = "Alexandria"
-            val targetCountry = "Egypt"
+            val locationProfile = locationRepository.getCurrentLocationProfile()
+            val targetCity = locationProfile?.city ?: "Alexandria"
+            val targetCountry = locationProfile?.country ?: "Egypt"
 
             val todayResult = prayerTimesRepository.getPrayerTimesForDate(LocalDate.now(), targetCity, targetCountry)
             todayResult.onSuccess { _todayPrayerTimes.value = it }
