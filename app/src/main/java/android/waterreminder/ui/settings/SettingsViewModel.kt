@@ -1,7 +1,6 @@
 package android.waterreminder.ui.settings
 
 import android.content.Context
-import android.waterreminder.data.entity.DayPrayerTimes
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
@@ -31,62 +30,51 @@ class SettingsViewModel @Inject constructor(
     private val notificationScheduler = WaterNotificationScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
 
-    // Reactive holder for cached dynamic prayer data fetches
-    private val _todayPrayerTimes = MutableStateFlow<DayPrayerTimes?>(null)
-    private val _tomorrowPrayerTimes = MutableStateFlow<DayPrayerTimes?>(null)
-
-    init {
-        fetchDynamicPrayerTimesPipeline()
-    }
-
     /**
      * Exposes the current read-only snapshot of user settings.
      * Automatically stops active collection when the screen is placed in the background.
      */
-    val uiState: StateFlow<SettingsUiState> = combine(
-        appSettingsDataStore.settingsFlow,
-        _todayPrayerTimes,
-        _tomorrowPrayerTimes
-    ) { prefs, _, _ ->
-        val window = resolveTrackingWindowUseCase.execute(prefs)
+    val uiState: StateFlow<SettingsUiState> = appSettingsDataStore.settingsFlow
+        .map { prefs ->
+            val window = resolveTrackingWindowUseCase.execute(prefs)
 
-        SettingsUiState(
-            dailyGoalMl = prefs.dailyGoalMl,
-            predefinedGoals = predefinedGoalOptions,
-            unit = prefs.unit,
-            supportedUnits = supportedUnits,
-            areNotificationsEnabled = prefs.areNotificationsEnabled,
-            frequency = prefs.frequency,
-            supportedFrequencies = supportedFrequencies,
-            startTime = prefs.startTime,
-            endTime = prefs.endTime,
-            activeStartTime = window.startTime,
-            activeEndTime = window.endTime,
-            isFasting = prefs.isFasting,
-            theme = prefs.theme,
-            language = prefs.language,
+            SettingsUiState(
+                dailyGoalMl = prefs.dailyGoalMl,
+                predefinedGoals = predefinedGoalOptions,
+                unit = prefs.unit,
+                supportedUnits = supportedUnits,
+                areNotificationsEnabled = prefs.areNotificationsEnabled,
+                frequency = prefs.frequency,
+                supportedFrequencies = supportedFrequencies,
+                startTime = prefs.startTime,
+                endTime = prefs.endTime,
+                activeStartTime = window.startTime,
+                activeEndTime = window.endTime,
+                isFasting = prefs.isFasting,
+                theme = prefs.theme,
+                language = prefs.language,
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SettingsUiState(
+                dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
+                predefinedGoals = predefinedGoalOptions,
+                unit = AppSettingsDataStore.DEFAULT_UNIT,
+                supportedUnits = supportedUnits,
+                areNotificationsEnabled = AppSettingsDataStore.DEFAULT_ARE_NOTIFICATIONS_ENABLED,
+                frequency = AppSettingsDataStore.DEFAULT_FREQUENCY_MINUTES,
+                supportedFrequencies = supportedFrequencies,
+                startTime = AppSettingsDataStore.DEFAULT_START_TIME,
+                endTime = AppSettingsDataStore.DEFAULT_END_TIME,
+                activeStartTime = AppSettingsDataStore.DEFAULT_START_TIME,
+                activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
+                isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
+                theme = AppSettingsDataStore.DEFAULT_THEME,
+                language = AppSettingsDataStore.DEFAULT_LANGUAGE,
+            )
         )
-    }
-    .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SettingsUiState(
-            dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
-            predefinedGoals = predefinedGoalOptions,
-            unit = AppSettingsDataStore.DEFAULT_UNIT,
-            supportedUnits = supportedUnits,
-            areNotificationsEnabled = AppSettingsDataStore.DEFAULT_ARE_NOTIFICATIONS_ENABLED,
-            frequency = AppSettingsDataStore.DEFAULT_FREQUENCY_MINUTES,
-            supportedFrequencies = supportedFrequencies,
-            startTime = AppSettingsDataStore.DEFAULT_START_TIME,
-            endTime = AppSettingsDataStore.DEFAULT_END_TIME,
-            activeStartTime = AppSettingsDataStore.DEFAULT_START_TIME,
-            activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
-            isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
-            theme = AppSettingsDataStore.DEFAULT_THEME,
-            language = AppSettingsDataStore.DEFAULT_LANGUAGE,
-        )
-    )
 
     // --- Dynamic User Settings Action Setters ---
 
@@ -176,14 +164,6 @@ class SettingsViewModel @Inject constructor(
             } else {
                 notificationScheduler.cancelReminders()
             }
-        }
-    }
-
-    private fun fetchDynamicPrayerTimesPipeline() {
-        // Keeps local UI state properties fresh for initial loading state conditions
-        viewModelScope.launch(Dispatchers.IO) {
-            val prefs = appSettingsDataStore.settingsFlow.first()
-            resolveTrackingWindowUseCase.execute(prefs)
         }
     }
 }
