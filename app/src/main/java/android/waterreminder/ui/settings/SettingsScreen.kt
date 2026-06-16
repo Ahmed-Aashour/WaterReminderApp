@@ -8,6 +8,7 @@ import android.waterreminder.ui.settings.components.FrequencyDialog
 import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
+import android.waterreminder.ui.settings.components.PeriodDialog
 import android.waterreminder.ui.settings.components.PreferencesFrame
 import android.waterreminder.ui.settings.components.UnitDialog
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
@@ -55,6 +56,7 @@ fun SettingsScreen(
     var showGoalDialog by remember { mutableStateOf(false) }
     var showUnitDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
+    var showPeriodDialog by remember { mutableStateOf(false) }
 
     if (showGoalDialog) {
         DailyGoalDialog(
@@ -92,6 +94,17 @@ fun SettingsScreen(
                 onUpdateFrequency(selectedMinutes)
             },
             onDismiss = { showFrequencyDialog = false }
+        )
+    }
+
+    if (showPeriodDialog) {
+        PeriodDialog(
+            currentStartTime = state.startTime,
+            currentEndTime = state.endTime,
+            onDismiss = { showPeriodDialog = false },
+            onConfirm = { startTime, endTime ->
+                onUpdateStartAndEndTimes(startTime, endTime)
+            }
         )
     }
 
@@ -134,7 +147,7 @@ fun SettingsScreen(
                 isFastingMode = state.isFasting,
                 onNotificationToggle = onUpdateNotificationToggle,
                 onFrequencyClick = { showFrequencyDialog = true },
-                onWindowClick = { onUpdateStartAndEndTimes("08:00", "22:00") },
+                onWindowClick = { showPeriodDialog = true },
                 onFastingToggle = onUpdateFastingState
             )
 
