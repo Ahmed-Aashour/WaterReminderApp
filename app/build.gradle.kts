@@ -144,4 +144,10 @@ dependencies {
     // Google Play Services location dependencies
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)
+
+    // Core Retrofit HTTP Client Engine
+    implementation(libs.retrofit)
+
+    // Gson serialization/deserialization converter factory binding
+    implementation(libs.converter.gson)
 }
