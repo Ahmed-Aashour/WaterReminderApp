@@ -8,7 +8,7 @@ import android.waterreminder.ui.settings.components.FrequencyDialog
 import android.waterreminder.ui.settings.components.HydrationFrame
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
-import android.waterreminder.ui.settings.components.PeriodDialog
+import android.waterreminder.ui.settings.components.ReminderTimesDialog
 import android.waterreminder.ui.settings.components.PreferencesFrame
 import android.waterreminder.ui.settings.components.UnitDialog
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
@@ -98,7 +98,7 @@ fun SettingsScreen(
     }
 
     if (showPeriodDialog) {
-        PeriodDialog(
+        ReminderTimesDialog(
             currentStartTime = state.startTime,
             currentEndTime = state.endTime,
             onDismiss = { showPeriodDialog = false },

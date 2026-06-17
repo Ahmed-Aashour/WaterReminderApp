@@ -4,19 +4,14 @@ import android.content.res.Configuration
 import android.waterreminder.ui.core.components.BaseDialog
 import android.waterreminder.ui.core.components.CancelButton
 import android.waterreminder.ui.core.components.ConfirmButton
-import android.waterreminder.ui.core.components.CustomTimePicker
+import android.waterreminder.ui.core.components.CustomTimeInput
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -27,7 +22,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PeriodDialog(
+fun ReminderTimesDialog(
     currentStartTime: String,
     currentEndTime: String,
     onDismiss: () -> Unit,
@@ -53,32 +48,18 @@ fun PeriodDialog(
     )
 
     BaseDialog(
-        title = "Reminder Period",
+        title = "Reminder Times",
         onDismissRequest = onDismiss,
         modifier = modifier.width(340.dp), // Expanded slightly to provide breathing room for inputs
         options = {
-            // Use a scrollable container so smaller device screens handle dual clock heights easily
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(420.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(28.dp)
-            ) {
-                // Embedded Start Picker instance
-                CustomTimePicker(
-                    label = "Active Start Time",
-                    state = startTimeState
-                )
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-
-                // Embedded End Picker instance
-                CustomTimePicker(
-                    label = "Active End Time",
-                    state = endTimeState
-                )
-            }
+            CustomTimeInput(
+                label = "Active Start Time",
+                state = startTimeState
+            )
+            CustomTimeInput(
+                label = "Active End Time",
+                state = endTimeState
+            )
         },
         buttons = {
             CancelButton(onClick = onDismiss)
@@ -105,11 +86,11 @@ fun PeriodDialog(
 @Preview(name = "Light Mode", group = "Themes", showBackground = true)
 @Preview(name = "Dark Mode", group = "Themes", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun PeriodDialogPreview(
+fun ReminderTimesDialogPreview(
     @PreviewParameter(SettingsScreenStateProvider::class) state: SettingsUiState
 ) {
     ErtawyTheme {
-        PeriodDialog(
+        ReminderTimesDialog(
             currentStartTime = state.startTime,
             currentEndTime = state.endTime,
             onDismiss = {},
