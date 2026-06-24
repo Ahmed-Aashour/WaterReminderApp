@@ -10,6 +10,7 @@ import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
 import android.waterreminder.ui.settings.components.ReminderTimesDialog
 import android.waterreminder.ui.settings.components.PreferencesFrame
+import android.waterreminder.ui.settings.components.ThemeDialog
 import android.waterreminder.ui.settings.components.UnitDialog
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
@@ -57,6 +58,7 @@ fun SettingsScreen(
     var showUnitDialog by remember { mutableStateOf(false) }
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showPeriodDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
 
     if (showGoalDialog) {
         DailyGoalDialog(
@@ -108,6 +110,15 @@ fun SettingsScreen(
         )
     }
 
+    if (showThemeDialog) {
+        ThemeDialog(
+            currentTheme = state.theme,
+            themeOptions = state.supportedThemes,
+            onThemeSelected = { selectedTheme -> onUpdateTheme(selectedTheme) },
+            onDismiss = { showThemeDialog = false }
+        )
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -154,7 +165,7 @@ fun SettingsScreen(
             PreferencesFrame(
                 theme = state.theme,
                 language = state.language,
-                onThemeClick = { /* Open theme picker menu */ },
+                onThemeClick = { showThemeDialog = true },
                 onLanguageClick = { /* Open language selector */ }
             )
 

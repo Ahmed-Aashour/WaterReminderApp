@@ -20,6 +20,7 @@ data class SettingsUiState(
     val isFasting: Boolean,
 
     val theme: String,
+    val supportedThemes: List<String> = emptyList(),
     val language: String,
 )
 

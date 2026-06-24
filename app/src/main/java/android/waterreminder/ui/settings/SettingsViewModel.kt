@@ -29,6 +29,7 @@ class SettingsViewModel @Inject constructor(
     val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
     private val notificationScheduler = WaterNotificationScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
+    val supportedThemes = AppSettingsDataStore.SUPPORTED_THEMES
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -52,6 +53,7 @@ class SettingsViewModel @Inject constructor(
                 activeEndTime = window.endTime,
                 isFasting = prefs.isFasting,
                 theme = prefs.theme,
+                supportedThemes = supportedThemes,
                 language = prefs.language,
             )
         }
@@ -72,6 +74,7 @@ class SettingsViewModel @Inject constructor(
                 activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
                 isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
                 theme = AppSettingsDataStore.DEFAULT_THEME,
+                supportedThemes = supportedThemes,
                 language = AppSettingsDataStore.DEFAULT_LANGUAGE,
             )
         )
