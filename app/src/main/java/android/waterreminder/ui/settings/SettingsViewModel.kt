@@ -30,6 +30,7 @@ class SettingsViewModel @Inject constructor(
     private val notificationScheduler = WaterNotificationScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
     val supportedThemes = AppSettingsDataStore.SUPPORTED_THEMES
+    val supportedLanguages = AppSettingsDataStore.SUPPORTED_LANGUAGES
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -55,6 +56,7 @@ class SettingsViewModel @Inject constructor(
                 theme = prefs.theme,
                 supportedThemes = supportedThemes,
                 language = prefs.language,
+                supportedLanguages = supportedLanguages,
             )
         }
         .stateIn(
@@ -76,6 +78,7 @@ class SettingsViewModel @Inject constructor(
                 theme = AppSettingsDataStore.DEFAULT_THEME,
                 supportedThemes = supportedThemes,
                 language = AppSettingsDataStore.DEFAULT_LANGUAGE,
+                supportedLanguages = supportedLanguages,
             )
         )
 

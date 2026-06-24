@@ -13,28 +13,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
-fun ThemeDialog(
-    currentTheme: String,
-    themeOptions: List<String>,
-    onThemeSelected: (String) -> Unit,
+fun LanguageDialog(
+    currentLanguage: String,
+    languageOptions: List<String>,
+    onLanguageSelected: (String) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BaseDialog(
-        title = "Theme",
+        title = "Language",
         onDismissRequest = onDismiss,
         modifier = modifier,
         buttons = {
             CancelButton(onClick = onDismiss)
         },
         options = {
-            themeOptions.forEach { themeOption ->
+            languageOptions.forEach { languageOption ->
                 SelectionRow(
-                    label = themeOption,
-                    isSelected = currentTheme == themeOption,
+                    label = languageOption,
+                    isSelected = currentLanguage == languageOption,
                     onClick = {
-                        onThemeSelected(themeOption)
-                        onDismiss() // Fluid auto-dismiss matching app requirements
+                        onLanguageSelected(languageOption)
+                        onDismiss() // Fluid auto-dismiss matching app design requirements
                     }
                 )
             }
@@ -45,14 +45,14 @@ fun ThemeDialog(
 @Preview(name = "Light Mode", showBackground = true)
 @Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ThemeDialogPreview(
+fun LanguageDialogPreview(
     @PreviewParameter(SettingsScreenStateProvider::class) state: SettingsUiState
 ) {
     ErtawyTheme {
-        ThemeDialog(
-            currentTheme = state.theme,
-            themeOptions = state.supportedThemes,
-            onThemeSelected = {},
+        LanguageDialog(
+            currentLanguage = state.language,
+            languageOptions = state.supportedLanguages,
+            onLanguageSelected = {},
             onDismiss = {}
         )
     }

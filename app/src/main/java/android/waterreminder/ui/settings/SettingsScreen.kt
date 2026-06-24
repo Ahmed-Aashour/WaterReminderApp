@@ -6,6 +6,7 @@ import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.settings.components.DailyGoalDialog
 import android.waterreminder.ui.settings.components.FrequencyDialog
 import android.waterreminder.ui.settings.components.HydrationFrame
+import android.waterreminder.ui.settings.components.LanguageDialog
 import android.waterreminder.ui.settings.components.LegalLinksFrame
 import android.waterreminder.ui.settings.components.NotificationsFrame
 import android.waterreminder.ui.settings.components.ReminderTimesDialog
@@ -59,6 +60,7 @@ fun SettingsScreen(
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showPeriodDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
     if (showGoalDialog) {
         DailyGoalDialog(
@@ -119,6 +121,15 @@ fun SettingsScreen(
         )
     }
 
+    if (showLanguageDialog) {
+        LanguageDialog(
+            currentLanguage = state.language,
+            languageOptions = state.supportedLanguages,
+            onLanguageSelected = { selectedLanguage -> onUpdateLanguage(selectedLanguage) },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -166,7 +177,7 @@ fun SettingsScreen(
                 theme = state.theme,
                 language = state.language,
                 onThemeClick = { showThemeDialog = true },
-                onLanguageClick = { /* Open language selector */ }
+                onLanguageClick = { showLanguageDialog = true }
             )
 
             LegalLinksFrame(

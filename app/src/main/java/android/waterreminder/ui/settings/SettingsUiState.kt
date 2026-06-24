@@ -22,6 +22,7 @@ data class SettingsUiState(
     val theme: String,
     val supportedThemes: List<String> = emptyList(),
     val language: String,
+    val supportedLanguages: List<String> = emptyList(),
 )
 
 data class GoalOptionUiModel(
