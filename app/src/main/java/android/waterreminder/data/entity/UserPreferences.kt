@@ -15,5 +15,5 @@ data class UserPreferences(
     val city: String,
     val country: String,
     val theme: AppTheme,
-    val language: String,
+    val language: AppLanguage,
 )

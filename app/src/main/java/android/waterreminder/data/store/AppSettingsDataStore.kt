@@ -1,6 +1,7 @@
 package android.waterreminder.data.store
 
 import android.content.Context
+import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.UserPreferences
 import androidx.datastore.core.DataStore
@@ -36,7 +37,6 @@ class AppSettingsDataStore(private val context: Context) {
         const val DEFAULT_IS_FASTING = false
         const val DEFAULT_FASTING_START_TIME = "06:45 PM"
         const val DEFAULT_FASTING_END_TIME = "04:15 AM"
-        const val DEFAULT_LANGUAGE = "English"
 
         const val MIN_DAILY_GOAL_ML = 1000
         const val MAX_DAILY_GOAL_ML = 8000
@@ -46,7 +46,6 @@ class AppSettingsDataStore(private val context: Context) {
         val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
         val SUPPORTED_FREQUENCIES_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
         val SUPPORTED_THEMES = listOf("Light", "Dark", "System")
-        val SUPPORTED_LANGUAGES = listOf("English", "Arabic", "German", "French", "Italian")
         val SUPPORTED_UNITS = listOf("ml", "fl oz")
     }
 
@@ -65,8 +64,8 @@ class AppSettingsDataStore(private val context: Context) {
                 isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
                 city = preferences[CITY] ?: "",
                 country = preferences[COUNTRY] ?: "",
-                theme = AppTheme.fromString(preferences[THEME]),
-                language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
+                theme = AppTheme.fromKey(preferences[THEME]),
+                language = AppLanguage.fromIsoCode(preferences[LANGUAGE]),
             )
         }
 
@@ -118,13 +117,13 @@ class AppSettingsDataStore(private val context: Context) {
 
     suspend fun updateTheme(newTheme: AppTheme) {
         context.dataStore.edit { prefs ->
-            prefs[THEME] = newTheme.string
+            prefs[THEME] = newTheme.key
         }
     }
 
-    suspend fun updateLanguage(newLanguage: String) {
-        if (newLanguage in SUPPORTED_LANGUAGES) {
-            context.dataStore.edit { prefs -> prefs[LANGUAGE] = newLanguage }
+    suspend fun updateLanguage(newLanguage: AppLanguage) {
+        context.dataStore.edit { prefs ->
+            prefs[LANGUAGE] = newLanguage.isoCode
         }
     }
 }

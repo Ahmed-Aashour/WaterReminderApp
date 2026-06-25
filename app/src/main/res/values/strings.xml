@@ -16,9 +16,20 @@
 
 <resources>
     <string name="app_name">Hydra</string>
+
+    <string name="settings_preferences_title">Preferences</string>
+
+    <string name="theme_row_title">Theme</string>
     <string name="theme_dialog_title">Theme</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System</string>
-    <string name="theme_row_title">Theme</string>
+
+    <string name="language_row_title">Language</string>
+    <string name="language_dialog_title">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="language_german">German</string>
+    <string name="language_french">French</string>
+    <string name="language_italian">Italian</string>
 </resources>

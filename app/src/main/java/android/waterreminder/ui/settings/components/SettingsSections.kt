@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings.components
 
 import android.waterreminder.R
+import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.core.components.ClickableTarget
 import android.waterreminder.ui.core.components.SettingsItemRow
@@ -93,13 +94,15 @@ fun NotificationsFrame(
 @Composable
 fun PreferencesFrame(
     theme: AppTheme,
-    language: String,
+    language: AppLanguage,
     onThemeClick: () -> Unit,
     onLanguageClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        SettingsSectionHeader(title = "Preferences")
+        SettingsSectionHeader(
+            title = stringResource(R.string.settings_preferences_title)
+        )
 
         SettingsItemRow(
             title = stringResource(R.string.theme_row_title),
@@ -107,8 +110,8 @@ fun PreferencesFrame(
             onClick = onThemeClick
         )
         SettingsItemRow(
-            title = "Language",
-            description = language,
+            title = stringResource(R.string.language_row_title),
+            description = stringResource(id = language.getDisplayLabelRes()),
             onClick = onLanguageClick
         )
     }

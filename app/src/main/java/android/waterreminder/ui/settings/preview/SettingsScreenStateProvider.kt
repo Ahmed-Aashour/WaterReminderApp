@@ -1,5 +1,6 @@
 package android.waterreminder.ui.settings.preview
 
+import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.toFrequencyUiModels
@@ -11,7 +12,6 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
     private val defaultGoalOptions = listOf(2000, 2250, 2500, 2750, 3000).toGoalUiModels(0.033814)
     private val supportedUnitsOptions = listOf("ml", "fl oz")
     private val supportedFrequencies = listOf(15, 30, 60, 90, 120, 180).toFrequencyUiModels()
-    private val supportedLanguagesOptions = listOf("English", "Arabic", "German")
 
     override val values: Sequence<SettingsUiState> = listOf(
         // Scenario 1: Clean Baseline System Configuration (Out-of-the-box Default State)
@@ -29,8 +29,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             activeEndTime = "09:00 PM",
             isFasting = false,
             theme = AppTheme.SYSTEM,
-            language = "English",
-            supportedLanguages = supportedLanguagesOptions,
+            language = AppLanguage.ENGLISH,
         ),
 
         // Scenario 2: Alternate Metric Setup (Fluid Ounces, Custom Guardrail Interval, Dark Theme)
@@ -48,8 +47,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             activeEndTime = "11:30 PM",
             isFasting = false,
             theme = AppTheme.DARK,
-            language = "German",
-            supportedLanguages = supportedLanguagesOptions,
+            language = AppLanguage.GERMAN,
         ),
 
         // Scenario 3: Ramadan/Fasting Operational Mode Window (Calculated Dynamic Active Hours)
@@ -67,8 +65,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             activeEndTime = "04:15 AM",
             isFasting = true,
             theme = AppTheme.LIGHT,
-            language = "Arabic",
-            supportedLanguages = supportedLanguagesOptions,
+            language = AppLanguage.ARABIC,
         )
     ).asSequence()
 }

@@ -2,10 +2,16 @@ package android.waterreminder.ui.dashboard
 
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
-import android.waterreminder.ui.dashboard.components.*
+import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
+import android.waterreminder.ui.dashboard.components.HydrationStreakSection
+import android.waterreminder.ui.dashboard.components.ProgressBar
+import android.waterreminder.ui.dashboard.components.TodayHistorySection
 import android.waterreminder.ui.dashboard.preview.DashboardScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -78,21 +84,6 @@ fun DashboardScreen(
     showBackground = true,
     showSystemUi = true
 )
-@Composable
-fun DashboardScreenLightPreview(
-    @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardState
-) {
-    ErtawyTheme(darkTheme = false) {
-        DashboardScreen(
-            state = state,
-            onAddWater = {},
-            onCustomAddTrigger = {},
-            onDeleteLog = {},
-            onNavigateToSettings = {}
-        )
-    }
-}
-
 @Preview(
     name = "Dashboard - Dark Mode",
     showBackground = true,
@@ -103,7 +94,7 @@ fun DashboardScreenLightPreview(
 fun DashboardScreenDarkPreview(
     @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardState
 ) {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme {
         DashboardScreen(
             state = state,
             onAddWater = {},

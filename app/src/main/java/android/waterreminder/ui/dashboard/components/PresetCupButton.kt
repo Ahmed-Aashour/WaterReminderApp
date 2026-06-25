@@ -55,7 +55,7 @@ fun PresetCupButton(
 @Preview(name = "Preset Cup 250 - Light Mode", showBackground = true)
 @Composable
 fun PresetCupButtonPreview_250_Light() {
-    ErtawyTheme(darkTheme = false) {
+    ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             PresetCupButton(amountMl = 250, onClick = {})
         }
@@ -69,7 +69,7 @@ fun PresetCupButtonPreview_250_Light() {
 )
 @Composable
 fun PresetCupButtonPreview_350_Dark() {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -83,7 +83,7 @@ fun PresetCupButtonPreview_350_Dark() {
 @Preview(name = "Preset Cup 500 - Light Mode", showBackground = true)
 @Composable
 fun PresetCupButtonPreview_500_Light() {
-    ErtawyTheme(darkTheme = false) {
+    ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
             PresetCupButton(amountMl = 500, onClick = {})
         }
@@ -97,7 +97,7 @@ fun PresetCupButtonPreview_500_Light() {
 )
 @Composable
 fun PresetCupButtonPreview_750_Dark() {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

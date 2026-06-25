@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings
 
 import android.content.res.Configuration
+import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
@@ -53,7 +54,7 @@ fun SettingsScreen(
     onUpdateStartAndEndTimes: (String, String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
     onUpdateTheme: (AppTheme) -> Unit,
-    onUpdateLanguage: (String) -> Unit,
+    onUpdateLanguage: (AppLanguage) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showGoalDialog by remember { mutableStateOf(false) }
@@ -124,7 +125,6 @@ fun SettingsScreen(
     if (showLanguageDialog) {
         LanguageDialog(
             currentLanguage = state.language,
-            languageOptions = state.supportedLanguages,
             onLanguageSelected = { selectedLanguage -> onUpdateLanguage(selectedLanguage) },
             onDismiss = { showLanguageDialog = false }
         )

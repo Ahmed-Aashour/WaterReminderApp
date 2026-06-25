@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings
 
 import android.content.Context
+import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
@@ -30,8 +31,6 @@ class SettingsViewModel @Inject constructor(
     val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
     private val notificationScheduler = WaterNotificationScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
-    val supportedThemes = AppSettingsDataStore.SUPPORTED_THEMES
-    val supportedLanguages = AppSettingsDataStore.SUPPORTED_LANGUAGES
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -56,7 +55,6 @@ class SettingsViewModel @Inject constructor(
                 isFasting = prefs.isFasting,
                 theme = prefs.theme,
                 language = prefs.language,
-                supportedLanguages = supportedLanguages,
             )
         }
         .stateIn(
@@ -76,8 +74,7 @@ class SettingsViewModel @Inject constructor(
                 activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
                 isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
                 theme = AppTheme.SYSTEM,
-                language = AppSettingsDataStore.DEFAULT_LANGUAGE,
-                supportedLanguages = supportedLanguages,
+                language = AppLanguage.ENGLISH,
             )
         )
 
@@ -145,7 +142,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateLanguage(language: String) {
+    fun updateLanguage(language: AppLanguage) {
         viewModelScope.launch {
             appSettingsDataStore.updateLanguage(language)
         }

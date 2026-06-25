@@ -10,7 +10,7 @@ object TimeUtils {
     val timeFormatter: DateTimeFormatter? = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
     /**
-     * Parses a string like "07:00 AM" or "09:00 PM" into
+     * Parses a key like "07:00 AM" or "09:00 PM" into
      * a standard LocalTime object.
      */
     fun parseTimeString(timeStr: String): LocalTime {

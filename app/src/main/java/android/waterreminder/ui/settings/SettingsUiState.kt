@@ -1,5 +1,6 @@
 package android.waterreminder.ui.settings
 
+import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 
 /**
@@ -22,8 +23,7 @@ data class SettingsUiState(
     val isFasting: Boolean,
 
     val theme: AppTheme,
-    val language: String,
-    val supportedLanguages: List<String> = emptyList(),
+    val language: AppLanguage,
 )
 
 data class GoalOptionUiModel(
