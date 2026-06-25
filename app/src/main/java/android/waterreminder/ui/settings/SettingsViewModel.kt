@@ -14,6 +14,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,8 +50,8 @@ class SettingsViewModel @Inject constructor(
                 supportedFrequencies = supportedFrequencies,
                 startTime = prefs.startTime,
                 endTime = prefs.endTime,
-                activeStartTime = window.startTime,
-                activeEndTime = window.endTime,
+                activeStartTime = window.first,
+                activeEndTime = window.second,
                 isFasting = prefs.isFasting,
                 theme = prefs.theme,
                 language = prefs.language,
@@ -120,7 +121,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateStartAndEndTimes(startHour: String, endHour: String) {
+    fun updateStartAndEndTimes(startHour: LocalTime, endHour: LocalTime) {
         viewModelScope.launch {
             appSettingsDataStore.updateStartAndEndTimes(startHour, endHour)
             synchronizeScheduler()
@@ -157,8 +158,8 @@ class SettingsViewModel @Inject constructor(
                 val window = resolveTrackingWindowUseCase.execute(prefs)
 
                 notificationScheduler.scheduleNextReminder(
-                    startTime = window.startTime,
-                    endTime = window.endTime,
+                    startTime = window.first,
+                    endTime = window.second,
                     intervalMinutes = prefs.frequency
                 )
             } else {

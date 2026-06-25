@@ -3,6 +3,7 @@ package android.waterreminder.ui.settings
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.AppUnit
+import java.time.LocalTime
 
 /**
  * UI-specific state snapshot representing everything the [SettingsScreen]
@@ -16,10 +17,10 @@ data class SettingsUiState(
     val areNotificationsEnabled: Boolean = true,
     val frequency: Int,
     val supportedFrequencies: List<Int>,
-    val startTime: String,
-    val endTime: String,
-    val activeStartTime: String,
-    val activeEndTime: String,
+    val startTime: LocalTime,
+    val endTime: LocalTime,
+    val activeStartTime: LocalTime,
+    val activeEndTime: LocalTime,
     val isFasting: Boolean,
 
     val theme: AppTheme,
@@ -28,16 +29,14 @@ data class SettingsUiState(
 
 data class GoalOptionUiModel(
     val amountMl: Int,
-    val displayLabelMl: String,
-    val displayLabelOz: String
+    val amountOz: Int,
 )
 
 fun List<Int>.toGoalUiModels(mlToOzFactor: Double): List<GoalOptionUiModel> {
     return this.map { ml ->
         GoalOptionUiModel(
             amountMl = ml,
-            displayLabelMl = "$ml ml",
-            displayLabelOz = "${(ml * mlToOzFactor).toInt()} fl oz"
+            amountOz = (ml * mlToOzFactor).toInt()
         )
     }
 }

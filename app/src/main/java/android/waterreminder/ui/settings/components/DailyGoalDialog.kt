@@ -53,7 +53,11 @@ fun DailyGoalDialog(
         options = {
             // Render pre-defined selections loop safely
             predefinedOptions.forEach { option ->
-                val displayLabel = if (currentUnit == AppUnit.ML) option.displayLabelMl else option.displayLabelOz
+                val displayLabel = if (currentUnit == AppUnit.ML) {
+                    stringResource(R.string.unit_format_ml, option.amountMl)
+                } else {
+                    stringResource(R.string.unit_format_oz, option.amountOz)
+                }
                 SelectionRow(
                     label = displayLabel,
                     isSelected = selectedGoalMl == option.amountMl,

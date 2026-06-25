@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +56,7 @@ fun SettingsScreen(
     onUpdateUnit: (AppUnit) -> Unit,
     onUpdateNotificationToggle: (Boolean) -> Unit,
     onUpdateFrequency: (Int) -> Unit,
-    onUpdateStartAndEndTimes: (String, String) -> Unit,
+    onUpdateStartAndEndTimes: (LocalTime, LocalTime) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
     onUpdateTheme: (AppTheme) -> Unit,
     onUpdateLanguage: (AppLanguage) -> Unit,

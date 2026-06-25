@@ -6,6 +6,7 @@ import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.toGoalUiModels
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import java.time.LocalTime
 
 class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
 
@@ -21,10 +22,10 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             areNotificationsEnabled = true,
             frequency = 60,
             supportedFrequencies = supportedFrequencies,
-            startTime = "07:00 AM",
-            endTime = "09:00 PM",
-            activeStartTime = "07:00 AM",
-            activeEndTime = "09:00 PM",
+            startTime = LocalTime.of(7, 0),        // 07:00
+            endTime = LocalTime.of(21, 0),         // 21:00
+            activeStartTime = LocalTime.of(7, 0),  // 07:00
+            activeEndTime = LocalTime.of(21, 0),   // 21:00
             isFasting = false,
             theme = AppTheme.SYSTEM,
             language = AppLanguage.ENGLISH,
@@ -38,10 +39,10 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             areNotificationsEnabled = true,
             frequency = 15,
             supportedFrequencies = supportedFrequencies,
-            startTime = "06:00 AM",
-            endTime = "11:30 PM",
-            activeStartTime = "06:00 AM",
-            activeEndTime = "11:30 PM",
+            startTime = LocalTime.of(6, 0),         // 06:00
+            endTime = LocalTime.of(23, 30),        // 23:30
+            activeStartTime = LocalTime.of(6, 0),   // 06:00
+            activeEndTime = LocalTime.of(23, 30),  // 23:30
             isFasting = false,
             theme = AppTheme.DARK,
             language = AppLanguage.GERMAN,
@@ -55,10 +56,10 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             areNotificationsEnabled = false,
             frequency = 90,
             supportedFrequencies = supportedFrequencies,
-            startTime = "07:00 AM",
-            endTime = "09:00 PM",
-            activeStartTime = "06:45 PM",
-            activeEndTime = "04:15 AM",
+            startTime = LocalTime.of(7, 0),         // 07:00
+            endTime = LocalTime.of(21, 0),         // 21:00
+            activeStartTime = LocalTime.of(18, 45), // 18:45 (Maghrib)
+            activeEndTime = LocalTime.of(4, 15),    // 04:15 (Fajr tomorrow)
             isFasting = true,
             theme = AppTheme.LIGHT,
             language = AppLanguage.ARABIC,

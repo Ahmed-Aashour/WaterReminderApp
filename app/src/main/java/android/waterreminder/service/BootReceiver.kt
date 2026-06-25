@@ -45,8 +45,8 @@ class BootReceiver : BroadcastReceiver() {
                     val window = resolveTrackingWindowUseCase.execute(prefs)
 
                     scheduler.scheduleNextReminder(
-                        startTime = window.startTime,
-                        endTime = window.endTime,
+                        startTime = window.first,
+                        endTime = window.second,
                         intervalMinutes = prefs.frequency
                     )
                     Log.d("BootReceiver", "Hydration reminders successfully restored on boot.")

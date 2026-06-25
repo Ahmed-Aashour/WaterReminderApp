@@ -1,35 +1,25 @@
 package android.waterreminder.service.usecase
 
-import android.waterreminder.data.di.TimeFormat12Hour
 import android.waterreminder.data.entity.UserPreferences
 import android.waterreminder.data.repository.LocationRepository
 import android.waterreminder.data.repository.PrayerTimesRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.LocalTime
 import javax.inject.Inject
-
-data class TrackingWindow(
-    val startTime: String,
-    val endTime: String
-)
 
 class ResolveTrackingWindowUseCase @Inject constructor(
     private val locationRepository: LocationRepository,
     private val prayerTimesRepository: PrayerTimesRepository,
-    @param:TimeFormat12Hour
-    private val timeFormatter: DateTimeFormatter,
 ) {
     /**
      * Resolves the active tracking window based on user preferences.
      * Evaluates fasting constraints dynamically via network or cache lookups if enabled.
+     * * @return A [Pair] where the first element is the startTime and the second is the endTime.
      */
-    suspend fun execute(prefs: UserPreferences): TrackingWindow {
+    suspend fun execute(prefs: UserPreferences): Pair<LocalTime, LocalTime> {
         if (!prefs.isFasting) {
-            return TrackingWindow(
-                startTime = prefs.startTime,
-                endTime = prefs.endTime
-            )
+            return Pair(prefs.startTime, prefs.endTime)
         }
 
         // Fetching the location
@@ -42,9 +32,9 @@ class ResolveTrackingWindowUseCase @Inject constructor(
             ?: prefs.country.takeIf { it.isNotEmpty() }
 
         if (targetCity == null || targetCountry == null) {
-            return TrackingWindow(
-                startTime = AppSettingsDataStore.DEFAULT_FASTING_START_TIME,
-                endTime = AppSettingsDataStore.DEFAULT_FASTING_END_TIME
+            return Pair(
+                AppSettingsDataStore.DEFAULT_FASTING_START_TIME,
+                AppSettingsDataStore.DEFAULT_FASTING_END_TIME
             )
         }
 
@@ -57,15 +47,10 @@ class ResolveTrackingWindowUseCase @Inject constructor(
             LocalDate.now().plusDays(1), targetCity, targetCountry
         ).getOrNull()
 
-        val operationalStart = todayTimes?.maghrib?.format(timeFormatter)
-            ?: AppSettingsDataStore.DEFAULT_FASTING_START_TIME
+        // 👈 Directly using LocalTime references instead of formatting to 12-hour strings
+        val operationalStart = todayTimes?.maghrib ?: AppSettingsDataStore.DEFAULT_FASTING_START_TIME
+        val operationalEnd = tomorrowTimes?.fajr ?: AppSettingsDataStore.DEFAULT_FASTING_END_TIME
 
-        val operationalEnd = tomorrowTimes?.fajr?.format(timeFormatter)
-            ?: AppSettingsDataStore.DEFAULT_FASTING_END_TIME
-
-        return TrackingWindow(
-            startTime = operationalStart,
-            endTime = operationalEnd
-        )
+        return Pair(operationalStart, operationalEnd)
     }
 }

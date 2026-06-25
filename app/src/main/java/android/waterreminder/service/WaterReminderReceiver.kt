@@ -44,25 +44,23 @@ class WaterReminderReceiver : BroadcastReceiver() {
             val window = resolveTrackingWindowUseCase.execute(prefs)
 
             scheduler.scheduleNextReminder(
-                startTime = window.startTime,
-                endTime = window.endTime,
+                startTime = window.first,
+                endTime = window.second,
                 intervalMinutes = prefs.frequency
             )
 
             val notificationManager = appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "water_reminder_channel"
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    channelId,
-                    "Hydration Reminders",
-                    NotificationManager.IMPORTANCE_HIGH
-                ).apply {
-                    description = "Reminders to drink water regularly"
-                    lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-                }
-                notificationManager.createNotificationChannel(channel)
+            val channel = NotificationChannel(
+                channelId,
+                "Hydration Reminders",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Reminders to drink water regularly"
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
+            notificationManager.createNotificationChannel(channel)
 
             // 1. INTENT FOR QUICK DRINK (+250ml) BUTTON
             val quickDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {

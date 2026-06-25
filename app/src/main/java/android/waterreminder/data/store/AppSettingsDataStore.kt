@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalTime
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "water_tracker_prefs")
 
@@ -32,11 +33,11 @@ class AppSettingsDataStore(private val context: Context) {
         const val DEFAULT_DAILY_GOAL_ML = 2000
         const val DEFAULT_ARE_NOTIFICATIONS_ENABLED = true
         const val DEFAULT_FREQUENCY_MINUTES = 60
-        const val DEFAULT_START_TIME = "07:00 AM"
-        const val DEFAULT_END_TIME = "09:00 PM"
+        val DEFAULT_START_TIME: LocalTime = LocalTime.of(7, 0)   // 07:00
+        val DEFAULT_END_TIME: LocalTime = LocalTime.of(21, 0)    // 21:00
         const val DEFAULT_IS_FASTING = false
-        const val DEFAULT_FASTING_START_TIME = "06:45 PM"
-        const val DEFAULT_FASTING_END_TIME = "04:15 AM"
+        val DEFAULT_FASTING_START_TIME: LocalTime = LocalTime.of(18, 45) // 18:45
+        val DEFAULT_FASTING_END_TIME: LocalTime = LocalTime.of(4, 15)   // 04:15
 
         const val MIN_DAILY_GOAL_ML = 1000
         const val MAX_DAILY_GOAL_ML = 8000
@@ -45,7 +46,6 @@ class AppSettingsDataStore(private val context: Context) {
 
         val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
         val SUPPORTED_FREQUENCIES_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
-        val SUPPORTED_UNITS = listOf("ml", "fl oz")
     }
 
     /**
@@ -58,8 +58,12 @@ class AppSettingsDataStore(private val context: Context) {
                 unit = AppUnit.fromKey(preferences[UNIT]),
                 areNotificationsEnabled = preferences[ARE_NOTIFICATIONS_ENABLED] ?: DEFAULT_ARE_NOTIFICATIONS_ENABLED,
                 frequency = preferences[FREQUENCY_MINUTES] ?: DEFAULT_FREQUENCY_MINUTES,
-                startTime = preferences[START_TIME] ?: DEFAULT_START_TIME,
-                endTime = preferences[END_TIME] ?: DEFAULT_END_TIME,
+                startTime = preferences[START_TIME]?.let {
+                    runCatching { LocalTime.parse(it) }.getOrNull()
+                } ?: DEFAULT_START_TIME,
+                endTime = preferences[END_TIME]?.let {
+                    runCatching { LocalTime.parse(it) }.getOrNull()
+                } ?: DEFAULT_END_TIME,
                 isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
                 city = preferences[CITY] ?: "",
                 country = preferences[COUNTRY] ?: "",
@@ -96,10 +100,10 @@ class AppSettingsDataStore(private val context: Context) {
         }
     }
 
-    suspend fun updateStartAndEndTimes(startTime: String, endTime: String) {
+    suspend fun updateStartAndEndTimes(startTime: LocalTime, endTime: LocalTime) {
         context.dataStore.edit { prefs ->
-            prefs[START_TIME] = startTime
-            prefs[END_TIME] = endTime
+            prefs[START_TIME] = startTime.toString()
+            prefs[END_TIME] = endTime.toString()
         }
     }
 
