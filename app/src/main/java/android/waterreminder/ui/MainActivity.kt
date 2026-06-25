@@ -17,14 +17,16 @@
 package android.waterreminder.ui
 
 import android.os.Bundle
-import android.waterreminder.service.WaterNotificationScheduler
 import android.waterreminder.ui.navigation.WaterTrackerNavHost
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,11 +34,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Instantly unlocks transparent status/navigation bars
-        enableEdgeToEdge()
+        enableEdgeToEdge() // Instantly unlocks transparent status/navigation bars
 
         setContent {
-            ErtawyTheme {
+            val viewModel: MainViewModel = hiltViewModel()
+            val activeTheme by viewModel.appTheme.collectAsStateWithLifecycle()
+
+            ErtawyTheme(appTheme = activeTheme) {
                 WaterTrackerNavHost(
                     modifier = Modifier.fillMaxSize()
                 )

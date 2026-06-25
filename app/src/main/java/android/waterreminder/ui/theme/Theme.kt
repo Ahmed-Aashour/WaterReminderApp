@@ -1,6 +1,7 @@
 package android.waterreminder.ui.theme
 
 import android.app.Activity
+import android.waterreminder.data.entity.AppTheme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -40,9 +41,15 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun ErtawyTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    appTheme: AppTheme = AppTheme.SYSTEM,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (appTheme) {
+        AppTheme.LIGHT -> false
+        AppTheme.DARK -> true
+        AppTheme.SYSTEM -> isSystemInDarkTheme()
+    }
+
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     val view = LocalView.current
 
@@ -57,8 +64,7 @@ fun ErtawyTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        // We link your typography structure cleanly into the composition lifecycle here
-        typography = Material3TypographyBridge,
+        typography = Material3TypographyBridge, // Custom typography structure
         content = content
     )
 }
