@@ -30,7 +30,6 @@ class AppSettingsDataStore(private val context: Context) {
 
 
         const val DEFAULT_DAILY_GOAL_ML = 2000
-        const val DEFAULT_UNIT = "ml"
         const val DEFAULT_ARE_NOTIFICATIONS_ENABLED = true
         const val DEFAULT_FREQUENCY_MINUTES = 60
         const val DEFAULT_START_TIME = "07:00 AM"

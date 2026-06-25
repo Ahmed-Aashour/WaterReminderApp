@@ -30,7 +30,7 @@ class SettingsViewModel @Inject constructor(
     )
 
     private val notificationScheduler = WaterNotificationScheduler(context)
-    private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
+    private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES
 
     /**
      * Exposes the current read-only snapshot of user settings.
@@ -62,7 +62,7 @@ class SettingsViewModel @Inject constructor(
             initialValue = SettingsUiState(
                 dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
                 predefinedGoals = predefinedGoalOptions,
-                unit = AppSettingsDataStore.DEFAULT_UNIT,
+                unit = AppUnit.ML,
                 areNotificationsEnabled = AppSettingsDataStore.DEFAULT_ARE_NOTIFICATIONS_ENABLED,
                 frequency = AppSettingsDataStore.DEFAULT_FREQUENCY_MINUTES,
                 supportedFrequencies = supportedFrequencies,

@@ -41,4 +41,9 @@
     <string name="unit_ml">ml</string>
     <string name="unit_oz">fl oz</string>
     <string name="unit_dialog_title">Unit</string>
+    <string name="frequency_dialog_title">Frequency</string>
+    <plurals name="frequency_minutes_format">
+        <item quantity="one">Every %1$d minute</item>
+        <item quantity="other">Every %1$d minutes</item>
+    </plurals>
 </resources>

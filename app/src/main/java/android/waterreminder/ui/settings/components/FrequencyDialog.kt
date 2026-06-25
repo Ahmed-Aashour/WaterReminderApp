@@ -1,40 +1,46 @@
 package android.waterreminder.ui.settings.components
 
 import android.content.res.Configuration
+import android.waterreminder.R
 import android.waterreminder.ui.core.components.BaseDialog
 import android.waterreminder.ui.core.components.CancelButton
 import android.waterreminder.ui.core.components.SelectionRow
-import android.waterreminder.ui.settings.FrequencyOptionUiModel
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 fun FrequencyDialog(
     currentFrequency: Int,
-    frequencyOptions: List<FrequencyOptionUiModel>,
+    frequencyOptions: List<Int>,
     onFrequencySelected: (Int) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BaseDialog(
-        title = "Frequency",
+        title = stringResource(R.string.frequency_dialog_title),
         onDismissRequest = onDismiss,
         modifier = modifier,
         buttons = {
             CancelButton(onClick = onDismiss)
         },
         options = {
-            frequencyOptions.forEach { option ->
+            frequencyOptions.forEach { minutes ->
                 SelectionRow(
-                    label = option.displayLabel,
-                    isSelected = currentFrequency == option.minutes,
+                    label = pluralStringResource(
+                        id = R.plurals.frequency_minutes_format,
+                        count = minutes,
+                        minutes
+                    ),
+                    isSelected = currentFrequency == minutes,
                     onClick = {
-                        onFrequencySelected(option.minutes)
+                        onFrequencySelected(minutes)
                         onDismiss() // Fluid auto-dismiss upon selecting a row choice
                     }
                 )
