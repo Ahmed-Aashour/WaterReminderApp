@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings
 
 import android.content.Context
+import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
@@ -54,7 +55,6 @@ class SettingsViewModel @Inject constructor(
                 activeEndTime = window.endTime,
                 isFasting = prefs.isFasting,
                 theme = prefs.theme,
-                supportedThemes = supportedThemes,
                 language = prefs.language,
                 supportedLanguages = supportedLanguages,
             )
@@ -75,8 +75,7 @@ class SettingsViewModel @Inject constructor(
                 activeStartTime = AppSettingsDataStore.DEFAULT_START_TIME,
                 activeEndTime = AppSettingsDataStore.DEFAULT_END_TIME,
                 isFasting = AppSettingsDataStore.DEFAULT_IS_FASTING,
-                theme = AppSettingsDataStore.DEFAULT_THEME,
-                supportedThemes = supportedThemes,
+                theme = AppTheme.SYSTEM,
                 language = AppSettingsDataStore.DEFAULT_LANGUAGE,
                 supportedLanguages = supportedLanguages,
             )
@@ -140,7 +139,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateTheme(theme: String) {
+    fun updateTheme(theme: AppTheme) {
         viewModelScope.launch {
             appSettingsDataStore.updateTheme(theme)
         }

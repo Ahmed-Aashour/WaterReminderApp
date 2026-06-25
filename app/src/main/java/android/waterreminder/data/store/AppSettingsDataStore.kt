@@ -1,6 +1,7 @@
 package android.waterreminder.data.store
 
 import android.content.Context
+import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.UserPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
@@ -35,7 +36,6 @@ class AppSettingsDataStore(private val context: Context) {
         const val DEFAULT_IS_FASTING = false
         const val DEFAULT_FASTING_START_TIME = "06:45 PM"
         const val DEFAULT_FASTING_END_TIME = "04:15 AM"
-        const val DEFAULT_THEME = "System"
         const val DEFAULT_LANGUAGE = "English"
 
         const val MIN_DAILY_GOAL_ML = 1000
@@ -65,7 +65,7 @@ class AppSettingsDataStore(private val context: Context) {
                 isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
                 city = preferences[CITY] ?: "",
                 country = preferences[COUNTRY] ?: "",
-                theme = preferences[THEME] ?: DEFAULT_THEME,
+                theme = AppTheme.fromString(preferences[THEME]),
                 language = preferences[LANGUAGE] ?: DEFAULT_LANGUAGE,
             )
         }
@@ -116,9 +116,9 @@ class AppSettingsDataStore(private val context: Context) {
         }
     }
 
-    suspend fun updateTheme(newTheme: String) {
-        if (newTheme in SUPPORTED_THEMES) {
-            context.dataStore.edit { prefs -> prefs[THEME] = newTheme }
+    suspend fun updateTheme(newTheme: AppTheme) {
+        context.dataStore.edit { prefs ->
+            prefs[THEME] = newTheme.string
         }
     }
 

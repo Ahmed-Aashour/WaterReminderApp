@@ -1,5 +1,6 @@
 package android.waterreminder.ui.settings.preview
 
+import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.toFrequencyUiModels
 import android.waterreminder.ui.settings.toGoalUiModels
@@ -10,7 +11,6 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
     private val defaultGoalOptions = listOf(2000, 2250, 2500, 2750, 3000).toGoalUiModels(0.033814)
     private val supportedUnitsOptions = listOf("ml", "fl oz")
     private val supportedFrequencies = listOf(15, 30, 60, 90, 120, 180).toFrequencyUiModels()
-    private val supportedThemesOptions = listOf("Light", "Dark", "System")
     private val supportedLanguagesOptions = listOf("English", "Arabic", "German")
 
     override val values: Sequence<SettingsUiState> = listOf(
@@ -28,8 +28,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             activeStartTime = "07:00 AM",
             activeEndTime = "09:00 PM",
             isFasting = false,
-            theme = "System",
-            supportedThemes = supportedThemesOptions,
+            theme = AppTheme.SYSTEM,
             language = "English",
             supportedLanguages = supportedLanguagesOptions,
         ),
@@ -48,8 +47,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             activeStartTime = "06:00 AM",
             activeEndTime = "11:30 PM",
             isFasting = false,
-            theme = "Dark",
-            supportedThemes = supportedThemesOptions,
+            theme = AppTheme.DARK,
             language = "German",
             supportedLanguages = supportedLanguagesOptions,
         ),
@@ -68,8 +66,7 @@ class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
             activeStartTime = "06:45 PM",
             activeEndTime = "04:15 AM",
             isFasting = true,
-            theme = "Light",
-            supportedThemes = supportedThemesOptions,
+            theme = AppTheme.LIGHT,
             language = "Arabic",
             supportedLanguages = supportedLanguagesOptions,
         )

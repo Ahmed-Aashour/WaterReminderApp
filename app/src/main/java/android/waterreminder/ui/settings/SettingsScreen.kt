@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings
 
 import android.content.res.Configuration
+import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.settings.components.DailyGoalDialog
@@ -51,7 +52,7 @@ fun SettingsScreen(
     onUpdateFrequency: (Int) -> Unit,
     onUpdateStartAndEndTimes: (String, String) -> Unit,
     onUpdateFastingState: (Boolean) -> Unit,
-    onUpdateTheme: (String) -> Unit,
+    onUpdateTheme: (AppTheme) -> Unit,
     onUpdateLanguage: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,7 +116,6 @@ fun SettingsScreen(
     if (showThemeDialog) {
         ThemeDialog(
             currentTheme = state.theme,
-            themeOptions = state.supportedThemes,
             onThemeSelected = { selectedTheme -> onUpdateTheme(selectedTheme) },
             onDismiss = { showThemeDialog = false }
         )

@@ -1,5 +1,7 @@
 package android.waterreminder.ui.settings
 
+import android.waterreminder.data.entity.AppTheme
+
 /**
  * UI-specific state snapshot representing everything the [SettingsScreen]
  * needs to display.
@@ -19,8 +21,7 @@ data class SettingsUiState(
     val activeEndTime: String,
     val isFasting: Boolean,
 
-    val theme: String,
-    val supportedThemes: List<String> = emptyList(),
+    val theme: AppTheme,
     val language: String,
     val supportedLanguages: List<String> = emptyList(),
 )

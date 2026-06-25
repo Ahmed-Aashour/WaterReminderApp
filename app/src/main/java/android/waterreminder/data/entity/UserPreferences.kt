@@ -14,6 +14,6 @@ data class UserPreferences(
     val isFasting: Boolean,
     val city: String,
     val country: String,
-    val theme: String,
+    val theme: AppTheme,
     val language: String,
 )
