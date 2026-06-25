@@ -3,6 +3,7 @@ package android.waterreminder.data.store
 import android.content.Context
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.entity.UserPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
@@ -45,7 +46,6 @@ class AppSettingsDataStore(private val context: Context) {
 
         val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
         val SUPPORTED_FREQUENCIES_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
-        val SUPPORTED_THEMES = listOf("Light", "Dark", "System")
         val SUPPORTED_UNITS = listOf("ml", "fl oz")
     }
 
@@ -56,7 +56,7 @@ class AppSettingsDataStore(private val context: Context) {
         .map { preferences ->
             UserPreferences(
                 dailyGoalMl = preferences[DAILY_GOAL_ML] ?: DEFAULT_DAILY_GOAL_ML,
-                unit = preferences[UNIT] ?: DEFAULT_UNIT,
+                unit = AppUnit.fromKey(preferences[UNIT]),
                 areNotificationsEnabled = preferences[ARE_NOTIFICATIONS_ENABLED] ?: DEFAULT_ARE_NOTIFICATIONS_ENABLED,
                 frequency = preferences[FREQUENCY_MINUTES] ?: DEFAULT_FREQUENCY_MINUTES,
                 startTime = preferences[START_TIME] ?: DEFAULT_START_TIME,
@@ -79,9 +79,9 @@ class AppSettingsDataStore(private val context: Context) {
         return true
     }
 
-    suspend fun updateUnit(unit: String) {
-        if (unit in SUPPORTED_UNITS) {
-            context.dataStore.edit { prefs -> prefs[UNIT] = unit }
+    suspend fun updateUnit(unit: AppUnit) {
+        context.dataStore.edit { prefs ->
+            prefs[UNIT] = unit.key
         }
     }
 

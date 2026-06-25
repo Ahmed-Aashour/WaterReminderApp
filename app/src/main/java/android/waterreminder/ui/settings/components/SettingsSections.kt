@@ -3,6 +3,7 @@ package android.waterreminder.ui.settings.components
 import android.waterreminder.R
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.ClickableTarget
 import android.waterreminder.ui.core.components.SettingsItemRow
 import android.waterreminder.ui.core.components.SettingsSectionHeader
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HydrationFrame(
     dailyGoal: Int,
-    unit: String,
+    unit: AppUnit,
     onGoalClick: () -> Unit,
     onUnitClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -34,7 +35,7 @@ fun HydrationFrame(
         )
         SettingsItemRow(
             title = "Unit",
-            description = if (unit == "ml") "Milliliters (ml)" else "Fluid Ounces (fl oz)",
+            description = if (unit == AppUnit.ML) "Milliliters (ml)" else "Fluid Ounces (fl oz)",
             onClick = onUnitClick
         )
     }

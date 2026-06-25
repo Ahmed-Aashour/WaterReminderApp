@@ -1,6 +1,8 @@
 package android.waterreminder.ui.settings.components
 
 import android.content.res.Configuration
+import android.waterreminder.R
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.*
 import android.waterreminder.ui.settings.GoalOptionUiModel
 import android.waterreminder.ui.settings.SettingsUiState
@@ -12,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -23,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun DailyGoalDialog(
     currentGoalMl: Int,
-    currentUnit: String,
+    currentUnit: AppUnit,
     predefinedOptions: List<GoalOptionUiModel>,
     validationEvents: SharedFlow<String>,
     onDismiss: () -> Unit,
@@ -44,13 +47,13 @@ fun DailyGoalDialog(
     }
 
     BaseDialog(
-        title = "Goal",
+        title = stringResource(R.string.daily_goal_dialog_title),
         onDismissRequest = onDismiss,
         modifier = modifier,
         options = {
             // Render pre-defined selections loop safely
             predefinedOptions.forEach { option ->
-                val displayLabel = if (currentUnit == "ml") option.displayLabelMl else option.displayLabelOz
+                val displayLabel = if (currentUnit == AppUnit.ML) option.displayLabelMl else option.displayLabelOz
                 SelectionRow(
                     label = displayLabel,
                     isSelected = selectedGoalMl == option.amountMl,

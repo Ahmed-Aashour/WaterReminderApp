@@ -1,8 +1,11 @@
 package android.waterreminder.ui.settings
 
 import android.content.res.Configuration
+import android.waterreminder.BuildConfig
+import android.waterreminder.R
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.settings.components.DailyGoalDialog
@@ -33,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -48,7 +52,7 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onUpdateDailyGoal: (Int) -> Unit,
     onUpdateCustomDailyGoalString: (String) -> Unit,
-    onUpdateUnit: (String) -> Unit,
+    onUpdateUnit: (AppUnit) -> Unit,
     onUpdateNotificationToggle: (Boolean) -> Unit,
     onUpdateFrequency: (Int) -> Unit,
     onUpdateStartAndEndTimes: (String, String) -> Unit,
@@ -86,7 +90,6 @@ fun SettingsScreen(
     if (showUnitDialog) {
         UnitDialog(
             currentUnit = state.unit,
-            supportedUnits = state.supportedUnits,
             onUnitSelected = { selectedUnit -> onUpdateUnit(selectedUnit) },
             onDismiss = { showUnitDialog = false }
         )
@@ -189,7 +192,7 @@ fun SettingsScreen(
 
             // Version label
             Text(
-                text = "version 1.0.1",
+                text = stringResource(R.string.settings_version_format, BuildConfig.VERSION_NAME),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
                 modifier = Modifier

@@ -6,7 +6,7 @@ package android.waterreminder.data.entity
  */
 data class UserPreferences(
     val dailyGoalMl: Int,
-    val unit: String,
+    val unit: AppUnit,
     val areNotificationsEnabled: Boolean,
     val frequency: Int,
     val startTime: String,

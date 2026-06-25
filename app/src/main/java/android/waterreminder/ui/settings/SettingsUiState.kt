@@ -2,6 +2,7 @@ package android.waterreminder.ui.settings
 
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
+import android.waterreminder.data.entity.AppUnit
 
 /**
  * UI-specific state snapshot representing everything the [SettingsScreen]
@@ -10,8 +11,7 @@ import android.waterreminder.data.entity.AppTheme
 data class SettingsUiState(
     val dailyGoalMl: Int,
     val predefinedGoals: List<GoalOptionUiModel> = emptyList(),
-    val unit: String,
-    val supportedUnits: List<String> = emptyList(),
+    val unit: AppUnit,
 
     val areNotificationsEnabled: Boolean = true,
     val frequency: Int,

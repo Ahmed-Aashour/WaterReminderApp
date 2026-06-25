@@ -1,5 +1,6 @@
 package android.waterreminder.ui.core.components
 
+import android.waterreminder.R
 import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,6 +13,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
@@ -21,7 +23,7 @@ fun TextInputField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholderText: String = "Custom...",
+    placeholderText: String = stringResource(R.string.text_input_placeholder_custom),
     isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 ) {

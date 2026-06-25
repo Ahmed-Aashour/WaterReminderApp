@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import android.waterreminder.R
 
 @Composable
 fun CancelButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String = "Cancel"
+    text: String = stringResource(R.string.action_cancel)
 ) {
     TextButton(
         onClick = onClick,
@@ -30,7 +32,7 @@ fun CancelButton(
 fun ConfirmButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String = "Confirm"
+    text: String = stringResource(R.string.action_confirm)
 ) {
     Button(
         onClick = onClick,

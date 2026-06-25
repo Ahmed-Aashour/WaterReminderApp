@@ -32,4 +32,13 @@
     <string name="language_german">German</string>
     <string name="language_french">French</string>
     <string name="language_italian">Italian</string>
+
+    <string name="settings_version_format">Version %1$s</string>
+    <string name="daily_goal_dialog_title">Goal</string>
+    <string name="text_input_placeholder_custom">Enter custom value…</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_oz">fl oz</string>
+    <string name="unit_dialog_title">Unit</string>
 </resources>

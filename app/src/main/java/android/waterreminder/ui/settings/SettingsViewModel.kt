@@ -3,6 +3,7 @@ package android.waterreminder.ui.settings
 import android.content.Context
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.WaterNotificationScheduler
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
@@ -28,7 +29,6 @@ class SettingsViewModel @Inject constructor(
         AppSettingsDataStore.ML_TO_OZ_FACTOR
     )
 
-    val supportedUnits = AppSettingsDataStore.SUPPORTED_UNITS
     private val notificationScheduler = WaterNotificationScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES.toFrequencyUiModels()
 
@@ -44,7 +44,6 @@ class SettingsViewModel @Inject constructor(
                 dailyGoalMl = prefs.dailyGoalMl,
                 predefinedGoals = predefinedGoalOptions,
                 unit = prefs.unit,
-                supportedUnits = supportedUnits,
                 areNotificationsEnabled = prefs.areNotificationsEnabled,
                 frequency = prefs.frequency,
                 supportedFrequencies = supportedFrequencies,
@@ -64,7 +63,6 @@ class SettingsViewModel @Inject constructor(
                 dailyGoalMl = AppSettingsDataStore.DEFAULT_DAILY_GOAL_ML,
                 predefinedGoals = predefinedGoalOptions,
                 unit = AppSettingsDataStore.DEFAULT_UNIT,
-                supportedUnits = supportedUnits,
                 areNotificationsEnabled = AppSettingsDataStore.DEFAULT_ARE_NOTIFICATIONS_ENABLED,
                 frequency = AppSettingsDataStore.DEFAULT_FREQUENCY_MINUTES,
                 supportedFrequencies = supportedFrequencies,
@@ -102,7 +100,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateUnit(unit: String) {
+    fun updateUnit(unit: AppUnit) {
         viewModelScope.launch {
             appSettingsDataStore.updateUnit(unit)
         }
