@@ -1,5 +1,7 @@
 package android.waterreminder.data.repository
 
+import android.waterreminder.data.di.DateFormatShort
+import android.waterreminder.data.di.TimeFormat24Hour
 import android.waterreminder.data.entity.DayPrayerTimes
 import android.waterreminder.service.remote.AladhanApiService
 import java.time.LocalDate
@@ -8,11 +10,12 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class PrayerTimesRepositoryImpl @Inject constructor(
-    private val apiService: AladhanApiService
+    private val apiService: AladhanApiService,
+    @param:TimeFormat24Hour
+    private val timeFormatter: DateTimeFormatter,
+    @param:DateFormatShort
+    private val dateFormatter: DateTimeFormatter,
 ) : PrayerTimesRepository {
-
-    private val apiTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
     override suspend fun getPrayerTimesForDate(
         date: LocalDate,
@@ -35,8 +38,8 @@ class PrayerTimesRepositoryImpl @Inject constructor(
         val cleanedMaghrib = timings.maghrib.substringBefore(" ")
 
         DayPrayerTimes(
-            fajr = LocalTime.parse(cleanedFajr, apiTimeFormatter),
-            maghrib = LocalTime.parse(cleanedMaghrib, apiTimeFormatter)
+            fajr = LocalTime.parse(cleanedFajr, timeFormatter),
+            maghrib = LocalTime.parse(cleanedMaghrib, timeFormatter)
         )
     }
 }

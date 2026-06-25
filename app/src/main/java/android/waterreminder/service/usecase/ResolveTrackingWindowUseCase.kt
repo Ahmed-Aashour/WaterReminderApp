@@ -1,12 +1,12 @@
 package android.waterreminder.service.usecase
 
+import android.waterreminder.data.di.TimeFormat12Hour
 import android.waterreminder.data.entity.UserPreferences
 import android.waterreminder.data.repository.LocationRepository
 import android.waterreminder.data.repository.PrayerTimesRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 data class TrackingWindow(
@@ -16,10 +16,10 @@ data class TrackingWindow(
 
 class ResolveTrackingWindowUseCase @Inject constructor(
     private val locationRepository: LocationRepository,
-    private val prayerTimesRepository: PrayerTimesRepository
+    private val prayerTimesRepository: PrayerTimesRepository,
+    @param:TimeFormat12Hour
+    private val timeFormatter: DateTimeFormatter,
 ) {
-    private val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
-
     /**
      * Resolves the active tracking window based on user preferences.
      * Evaluates fasting constraints dynamically via network or cache lookups if enabled.

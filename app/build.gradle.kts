@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "android.waterreminder"
-        minSdk = 23
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -40,7 +40,7 @@ android {
     }
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = false
 
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -139,7 +139,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
 
     // The official desugaring dependency
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    // coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // Google Play Services location dependencies
     implementation(libs.play.services.location)

@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard
 
+import android.waterreminder.data.di.TimeFormat12Hour
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
@@ -9,18 +10,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: WaterRepository,
-    appSettingsDataStore: AppSettingsDataStore
+    appSettingsDataStore: AppSettingsDataStore,
+    @param:TimeFormat12Hour
+    private val timeFormatter: DateTimeFormatter
 ) : ViewModel() {
-
-    // Time-formatter for converting raw timestamps into clean UI strings
-    private val timeFormatter = SimpleDateFormat("hh:mm A", Locale.getDefault())
 
     val uiState: StateFlow<DashboardUiState> = combine(
         repository.getCupsCatalog(),
@@ -49,7 +49,7 @@ class DashboardViewModel @Inject constructor(
                 DrunkCupHistory(
                     id = entity.id,
                     amountMl = entity.amountMl,
-                    timeLogged = timeFormatter.format(entity.timestamp)
+                    timeLogged = timeFormatter.format(Date(entity.timestamp).toInstant())
                 )
             }
 
