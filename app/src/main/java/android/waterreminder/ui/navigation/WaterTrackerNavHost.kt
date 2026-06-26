@@ -20,6 +20,7 @@ fun WaterTrackerNavHost(
         startDestination = DashboardRouteDestination,
         modifier = modifier
     ) {
+        // TODO: fix navigation white screen stuck error when navigating back to settings when animation is incomplete
         // - Dashboard Screen Graph Node
         composable<DashboardRouteDestination> {
             DashboardRoute(

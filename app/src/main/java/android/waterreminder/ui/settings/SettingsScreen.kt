@@ -8,16 +8,7 @@ import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
-import android.waterreminder.ui.settings.components.DailyGoalDialog
-import android.waterreminder.ui.settings.components.FrequencyDialog
-import android.waterreminder.ui.settings.components.HydrationFrame
-import android.waterreminder.ui.settings.components.LanguageDialog
-import android.waterreminder.ui.settings.components.LegalLinksFrame
-import android.waterreminder.ui.settings.components.NotificationsFrame
-import android.waterreminder.ui.settings.components.ReminderTimesDialog
-import android.waterreminder.ui.settings.components.PreferencesFrame
-import android.waterreminder.ui.settings.components.ThemeDialog
-import android.waterreminder.ui.settings.components.UnitDialog
+import android.waterreminder.ui.settings.components.*
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.*
@@ -29,11 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -41,15 +28,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
-    validationEvents: SharedFlow<String>,
+    validationEvents: Flow<String>,
     onNavigateBack: () -> Unit,
     onUpdateDailyGoal: (Int) -> Unit,
     onUpdateCustomDailyGoalString: (String) -> Unit,

@@ -18,8 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,7 +28,7 @@ fun DailyGoalDialog(
     currentGoalMl: Int,
     currentUnit: AppUnit,
     predefinedOptions: List<GoalOptionUiModel>,
-    validationEvents: SharedFlow<String>,
+    validationEvents: Flow<String>,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
     onConfirmCustomString: (String) -> Unit,
