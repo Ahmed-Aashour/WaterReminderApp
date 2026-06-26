@@ -31,14 +31,12 @@ fun HydrationFrame(
 
         SettingsItemRow(
             title = stringResource(R.string.goal_row_title),
-            description = "$dailyGoal ml",
+            description = stringResource(id = unit.formatRes, dailyGoal),
             onClick = onGoalClick
         )
         SettingsItemRow(
             title = stringResource(R.string.unit_row_title),
-            description = stringResource(
-                id = if (unit == AppUnit.ML) R.string.unit_name_ml else R.string.unit_name_oz
-            ),
+            description = stringResource(id = unit.nameRes),
             onClick = onUnitClick
         )
     }
@@ -118,12 +116,12 @@ fun PreferencesFrame(
 
         SettingsItemRow(
             title = stringResource(R.string.theme_row_title),
-            description = stringResource(id = theme.getDisplayLabelRes()),
+            description = stringResource(id = theme.labelRes),
             onClick = onThemeClick
         )
         SettingsItemRow(
             title = stringResource(R.string.language_row_title),
-            description = stringResource(id = language.getDisplayLabelRes()),
+            description = stringResource(id = language.labelRes),
             onClick = onLanguageClick
         )
     }

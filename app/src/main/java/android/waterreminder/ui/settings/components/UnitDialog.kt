@@ -32,7 +32,7 @@ fun UnitDialog(
         options = {
             AppUnit.entries.forEach { unitOption ->
                 SelectionRow(
-                    label = stringResource(id = unitOption.getDisplayLabelRes()),
+                    label = stringResource(id = unitOption.unitRes),
                     isSelected = currentUnit == unitOption,
                     onClick = {
                         onUnitSelected(unitOption)

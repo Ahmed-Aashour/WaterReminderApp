@@ -32,7 +32,7 @@ fun LanguageDialog(
         options = {
             AppLanguage.entries.forEach { languageOption ->
                 SelectionRow(
-                    label = stringResource(id = languageOption.getDisplayLabelRes()),
+                    label = stringResource(id = languageOption.labelRes),
                     isSelected = currentLanguage == languageOption,
                     onClick = {
                         onLanguageSelected(languageOption)

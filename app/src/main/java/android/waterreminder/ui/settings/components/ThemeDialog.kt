@@ -32,7 +32,7 @@ fun ThemeDialog(
         options = {
             AppTheme.entries.forEach { themeOption ->
                 SelectionRow(
-                    label = stringResource(id = themeOption.getDisplayLabelRes()),
+                    label = stringResource(id = themeOption.labelRes),
                     isSelected = currentTheme == themeOption,
                     onClick = {
                         onThemeSelected(themeOption)

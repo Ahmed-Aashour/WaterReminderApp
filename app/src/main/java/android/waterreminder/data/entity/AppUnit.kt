@@ -3,20 +3,24 @@ package android.waterreminder.data.entity
 import androidx.annotation.StringRes
 import android.waterreminder.R
 
-enum class AppUnit(val key: String) {
-    ML("ml"),
-    OZ("fl oz");
-
-    /**
-     * Returns the correct string resource ID for localization.
-     */
-    @StringRes
-    fun getDisplayLabelRes(): Int {
-        return when (this) {
-            ML -> R.string.unit_ml
-            OZ -> R.string.unit_oz
-        }
-    }
+enum class AppUnit(
+    val key: String,
+    @param:StringRes val unitRes: Int,    // (e.g., ml)
+    @param:StringRes val nameRes: Int,    // (e.g., "Milliliters (ml)")
+    @param:StringRes val formatRes: Int   // (e.g., "%1$d ml")
+) {
+    ML(
+        key = "ml",
+        unitRes = R.string.unit_ml,
+        nameRes = R.string.unit_name_ml,
+        formatRes = R.string.unit_format_ml
+    ),
+    OZ(
+        key = "fl oz",
+        unitRes = R.string.unit_oz,
+        nameRes = R.string.unit_name_oz,
+        formatRes = R.string.unit_format_oz
+    );
 
     companion object {
         /**

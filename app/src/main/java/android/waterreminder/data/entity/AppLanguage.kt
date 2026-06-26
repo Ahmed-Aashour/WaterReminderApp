@@ -3,26 +3,15 @@ package android.waterreminder.data.entity
 import androidx.annotation.StringRes
 import android.waterreminder.R
 
-enum class AppLanguage(val isoCode: String) {
-    ENGLISH("en"),
-    ARABIC("ar"),
-    GERMAN("de"),
-    FRENCH("fr"),
-    ITALIAN("it");
-
-    /**
-     * Returns the correct key resource ID for localization.
-     */
-    @StringRes
-    fun getDisplayLabelRes(): Int {
-        return when (this) {
-            ENGLISH -> R.string.language_english
-            ARABIC -> R.string.language_arabic
-            GERMAN -> R.string.language_german
-            FRENCH -> R.string.language_french
-            ITALIAN -> R.string.language_italian
-        }
-    }
+enum class AppLanguage(
+    val isoCode: String,
+    @param:StringRes val labelRes: Int
+) {
+    ENGLISH("en", R.string.language_english),
+    ARABIC("ar", R.string.language_arabic),
+    GERMAN("de", R.string.language_german),
+    FRENCH("fr", R.string.language_french),
+    ITALIAN("it", R.string.language_italian);
 
     companion object {
         /**

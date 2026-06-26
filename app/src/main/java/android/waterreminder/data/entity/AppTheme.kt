@@ -3,22 +3,13 @@ package android.waterreminder.data.entity
 import android.waterreminder.R
 import androidx.annotation.StringRes
 
-enum class AppTheme(val key: String) {
-    LIGHT("Light"),
-    DARK("Dark"),
-    SYSTEM("System");
-
-    /**
-     * Returns the correct key resource ID for localization.
-     */
-    @StringRes
-    fun getDisplayLabelRes(): Int {
-        return when (this) {
-            LIGHT -> R.string.theme_light
-            DARK -> R.string.theme_dark
-            SYSTEM -> R.string.theme_system
-        }
-    }
+enum class AppTheme(
+    val key: String,
+    @param:StringRes val labelRes: Int
+) {
+    LIGHT("Light", R.string.theme_light),
+    DARK("Dark", R.string.theme_dark),
+    SYSTEM("System", R.string.theme_system);
 
     companion object {
         /**
