@@ -147,11 +147,11 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             Header(
-                title = "Settings",
+                title = stringResource(R.string.settings_title),
                 actionButton = {
                     SquareIconButton(
                         icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Return Button",
+                        contentDescription = stringResource(R.string.content_description_navigate_back),
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.primary,
                         onClick = onNavigateBack

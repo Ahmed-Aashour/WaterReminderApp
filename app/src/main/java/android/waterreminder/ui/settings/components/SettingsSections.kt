@@ -14,6 +14,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
@@ -26,16 +27,18 @@ fun HydrationFrame(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        SettingsSectionHeader(title = "Hydration Target")
+        SettingsSectionHeader(title = stringResource(R.string.settings_hydration_title))
 
         SettingsItemRow(
-            title = "Goal",
+            title = stringResource(R.string.goal_row_title),
             description = "$dailyGoal ml",
             onClick = onGoalClick
         )
         SettingsItemRow(
-            title = "Unit",
-            description = if (unit == AppUnit.ML) "Milliliters (ml)" else "Fluid Ounces (fl oz)",
+            title = stringResource(R.string.unit_row_title),
+            description = stringResource(
+                id = if (unit == AppUnit.ML) R.string.unit_name_ml else R.string.unit_name_oz
+            ),
             onClick = onUnitClick
         )
     }
@@ -56,30 +59,38 @@ fun NotificationsFrame(
     val configurationAlpha = if (isNotificationEnabled) 1.0f else 0.45f
 
     Column(modifier = modifier) {
-        SettingsSectionHeader(title = "Notifications")
+        SettingsSectionHeader(title = stringResource(R.string.settings_notifications_title))
 
         SettingsItemRow(
-            title = "Scheduled Push Notifications",
-            description = if (isNotificationEnabled) "Enabled" else "Disabled",
+            title = stringResource(R.string.push_notifications_row_title),
+            description = stringResource(
+                id = if (isNotificationEnabled) R.string.state_enabled else R.string.state_disabled
+            ),
             controlSlot = {
                 Switch(checked = isNotificationEnabled, onCheckedChange = onNotificationToggle)
             }
         )
         SettingsItemRow(
-            title = "Frequency",
-            description = "Every $frequencyMinutes minutes",
+            title = stringResource(R.string.frequency_row_title),
+            description = pluralStringResource(
+                id = R.plurals.frequency_minutes_format,
+                count = frequencyMinutes,
+                frequencyMinutes
+            ),
             onClick = if (isNotificationEnabled) onFrequencyClick else null,
             modifier = Modifier.alpha(configurationAlpha)
         )
         SettingsItemRow(
-            title = "Period",
+            title = stringResource(R.string.period_row_title),
             description = reminderWindow,
             onClick = if (isNotificationEnabled) onWindowClick else null,
             modifier = Modifier.alpha(configurationAlpha)
         )
         SettingsItemRow(
-            title = "Fasting Mode",
-            description = if (isFastingMode) "Active" else "Inactive",
+            title = stringResource(R.string.fasting_mode_row_title),
+            description = stringResource(
+                id = if (isFastingMode) R.string.state_active else R.string.state_inactive
+            ),
             controlSlot = {
                 Switch(
                     checked = isFastingMode,
@@ -132,22 +143,22 @@ fun LegalLinksFrame(
             .padding(vertical = 16.dp)
     ) {
         SettingsItemRow(
-            title = "About",
+            title = stringResource(R.string.about_row_title),
             clickableTarget = ClickableTarget.TextOnly,
             onClick = onAboutClick
         )
         SettingsItemRow(
-            title = "Feedback",
+            title = stringResource(R.string.feedback_row_title),
             clickableTarget = ClickableTarget.TextOnly,
             onClick = onFeedbackClick
         )
         SettingsItemRow(
-            title = "Terms & Policies",
+            title = stringResource(R.string.terms_row_title),
             clickableTarget = ClickableTarget.TextOnly,
             onClick = onTermsClick
         )
         SettingsItemRow(
-            title = "Acknowledgements",
+            title = stringResource(R.string.acknowledgements_row_title),
             clickableTarget = ClickableTarget.TextOnly,
             onClick = onAcknowledgementsClick
         )
