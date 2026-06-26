@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.content.res.Configuration
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
@@ -13,13 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -206,23 +201,12 @@ private fun HistoryCupChip(
 }
 
 @Preview(name = "Light Mode", showBackground = true)
-@Composable
-fun TodayHistoryActivePreview(
-    @PreviewParameter(HistoryLogsProvider ::class) mockHistory: List<DrunkCupHistory>
-) {
-    ErtawyTheme(darkTheme = false) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            TodayHistorySection(historyItems = mockHistory, onDeleteLog = {})
-        }
-    }
-}
-
-@Preview(name = "Dark Mode", showBackground = true)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TodayHistoryDarkModePreview(
     @PreviewParameter(HistoryLogsProvider ::class) mockHistory: List<DrunkCupHistory>
 ) {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

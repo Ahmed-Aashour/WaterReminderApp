@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Silence benign Google Play Services Location metadata warning
+-dontwarn com.google.android.gms.internal.location.zze

@@ -15,5 +15,82 @@
   -->
 
 <resources>
+    <!-- Global & App Scope -->
     <string name="app_name">Hydra</string>
+    <string name="settings_version_format">Version %1$s</string>
+    <string name="content_description_navigate_back">Navigate back</string>
+
+    <!-- Reusable Dialog & Form Actions -->
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="text_input_placeholder_custom">Enter custom value…</string>
+
+    <!-- Global States -->
+    <string name="state_enabled">Enabled</string>
+    <string name="state_disabled">Disabled</string>
+    <string name="state_active">Active</string>
+    <string name="state_inactive">Inactive</string>
+
+    <!-- ===================================================================== -->
+    <!-- Settings Screen Structure                                             -->
+    <!-- ===================================================================== -->
+    <string name="settings_title">Settings</string>
+
+    <!-- Hydration Target Section -->
+    <string name="settings_hydration_title">Hydration Target</string>
+    <string name="goal_row_title">Goal</string>
+    <string name="daily_goal_dialog_title">Goal</string>
+    <string name="validation_error_invalid_number">Please enter a valid numeric value.</string>
+    <string name="validation_error_goal_out_of_bounds">Goal must be between %1$dml and %2$dml.</string>
+
+    <string name="unit_row_title">Unit</string>
+    <string name="unit_dialog_title">Unit</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_oz">fl oz</string>
+    <string name="unit_name_ml">Milliliters (ml)</string>
+    <string name="unit_name_oz">Fluid Ounces (fl oz)</string>
+    <string name="unit_format_ml">%1$d ml</string>
+    <string name="unit_format_oz">%1$d fl oz</string>
+
+    <!-- Notifications Section -->
+    <string name="settings_notifications_title">Notifications</string>
+
+    <string name="push_notifications_row_title">Scheduled Push Notifications</string>
+
+    <string name="frequency_row_title">Frequency</string>
+    <string name="frequency_dialog_title">Frequency</string>
+    <plurals name="frequency_minutes_format">
+        <item quantity="one">Every %1$d minute</item>
+        <item quantity="other">Every %1$d minutes</item>
+    </plurals>
+
+    <string name="period_row_title">Period</string>
+    <string name="reminder_times_dialog_title">Reminder Times</string>
+    <string name="label_active_start_time">Active Start Time</string>
+    <string name="label_active_end_time">Active End Time</string>
+
+    <string name="fasting_mode_row_title">Fasting Mode</string>
+
+    <!-- Preferences Section -->
+    <string name="settings_preferences_title">Preferences</string>
+
+    <string name="theme_row_title">Theme</string>
+    <string name="theme_dialog_title">Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
+
+    <string name="language_row_title">Language</string>
+    <string name="language_dialog_title">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="language_german">German</string>
+    <string name="language_french">French</string>
+    <string name="language_italian">Italian</string>
+
+    <!-- Legal & About Footer Links -->
+    <string name="about_row_title">About</string>
+    <string name="feedback_row_title">Feedback</string>
+    <string name="terms_row_title">Terms and Policies</string>
+    <string name="acknowledgements_row_title">Acknowledgements</string>
 </resources>

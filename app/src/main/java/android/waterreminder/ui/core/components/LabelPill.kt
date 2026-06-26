@@ -1,5 +1,6 @@
 package android.waterreminder.ui.core.components
 
+import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,7 +52,7 @@ fun LabelPill(
 @Preview(name = "LabelPill - Light Mode", showBackground = true)
 @Composable
 fun LabelPillCorePreview() {
-    ErtawyTheme(darkTheme = false) {
+    ErtawyTheme(appTheme = AppTheme.LIGHT) {
         Box(modifier = Modifier.padding(16.dp)) {
             LabelPill(text = "365 days hydrated!")
         }
@@ -61,7 +62,7 @@ fun LabelPillCorePreview() {
 @Preview(name = "LabelPill - Dark Mode", showBackground = true)
 @Composable
 fun LabelPillCoreDarkPreview() {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme(appTheme = AppTheme.DARK) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

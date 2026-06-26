@@ -67,27 +67,12 @@ fun HydrationStreakSection(
 }
 
 @Preview(name = "Streak Full Container - Light Mode", showBackground = true)
-@Composable
-fun HydrationStreakLightPreview(
-    @PreviewParameter(StreakSectionProvider::class) mockState: StreakSectionState
-) {
-    ErtawyTheme(darkTheme = false) {
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)
-        ) {
-            HydrationStreakSection(state = mockState)
-        }
-    }
-}
-
-@Preview(name = "Streak Full Container - Dark Mode", showBackground = true)
+@Preview(name = "Streak Full Container - Dark Mode", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HydrationStreakDarkModePreview(
     @PreviewParameter(StreakSectionProvider::class) mockState: StreakSectionState
 ) {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
  * A reusable dashboard structural container component that enforces consistent section
  * header layouts and spacing guidelines.
  *
- * @param title The plain text string displaying the section purpose.
+ * @param title The plain text key displaying the section purpose.
  * @param modifier Explicit outer modifiers to control structural parent constraints.
  * @param content The slot lambda to append any target body element layout directly beneath the header.
  */

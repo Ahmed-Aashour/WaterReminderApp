@@ -17,39 +17,31 @@
 package android.waterreminder.ui
 
 import android.os.Bundle
-import android.waterreminder.data.WaterDataStore
-import android.waterreminder.service.WaterNotificationScheduler
-import android.waterreminder.ui.dashboard.DashboardRoute
+import android.waterreminder.ui.navigation.WaterTrackerNavHost
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Instantiating business-logic engines cleanly via lazy delegation
-    private val waterDataStore by lazy { WaterDataStore(applicationContext) }
-    private val notificationScheduler by lazy { WaterNotificationScheduler(applicationContext) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Instantly unlocks transparent status/navigation bars
-        enableEdgeToEdge()
-        // Let the scheduler handle the setup implicitly
-        notificationScheduler.scheduleRepeatingReminders()
+        enableEdgeToEdge() // Instantly unlocks transparent status/navigation bars
 
         setContent {
-            ErtawyTheme {
-                DashboardRoute(
-                    onNavigateToSettings = {
-                        // Handle your navigation routing to settings panel here
-                    },
+            val viewModel: MainViewModel = hiltViewModel()
+            val activeTheme by viewModel.appTheme.collectAsStateWithLifecycle()
+
+            ErtawyTheme(appTheme = activeTheme) {
+                WaterTrackerNavHost(
                     modifier = Modifier.fillMaxSize()
                 )
             }

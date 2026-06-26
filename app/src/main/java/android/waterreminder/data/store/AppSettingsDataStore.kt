@@ -1,79 +1,109 @@
 package android.waterreminder.data.store
 
 import android.content.Context
+import android.waterreminder.data.entity.AppLanguage
+import android.waterreminder.data.entity.AppTheme
+import android.waterreminder.data.entity.AppUnit
+import android.waterreminder.data.entity.UserPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalTime
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "water_tracker_prefs")
 
 class AppSettingsDataStore(private val context: Context) {
 
     companion object {
-        // Core Target and Metrics Keys
         val DAILY_GOAL_ML = intPreferencesKey("daily_goal_ml")
-        val MEASUREMENT_UNIT = stringPreferencesKey("measurement_unit")
+        val UNIT = stringPreferencesKey("unit")
+        val ARE_NOTIFICATIONS_ENABLED = booleanPreferencesKey("are_notifications_enabled")
+        val FREQUENCY_MINUTES = intPreferencesKey("frequency_minutes")
+        val START_TIME = stringPreferencesKey("start_time")
+        val END_TIME = stringPreferencesKey("end_time")
         val IS_FASTING = booleanPreferencesKey("is_fasting")
-
-        // Polling Window & Engine Keys
-        val NOTIFICATION_INTERVAL = intPreferencesKey("notification_interval")
+        val CITY = stringPreferencesKey("city")
+        val COUNTRY = stringPreferencesKey("country")
         val THEME = stringPreferencesKey("theme")
         val LANGUAGE = stringPreferencesKey("language")
 
-        // Reminder Frame Boundary Constraints (e.g. "07:00 AM")
-        val REMINDER_START_TIME = stringPreferencesKey("reminder_start_time")
-        val REMINDER_END_TIME = stringPreferencesKey("reminder_end_time")
+
+        const val DEFAULT_DAILY_GOAL_ML = 2000
+        const val DEFAULT_ARE_NOTIFICATIONS_ENABLED = true
+        const val DEFAULT_FREQUENCY_MINUTES = 60
+        val DEFAULT_START_TIME: LocalTime = LocalTime.of(7, 0)   // 07:00
+        val DEFAULT_END_TIME: LocalTime = LocalTime.of(21, 0)    // 21:00
+        const val DEFAULT_IS_FASTING = false
+        val DEFAULT_FASTING_START_TIME: LocalTime = LocalTime.of(18, 45) // 18:45
+        val DEFAULT_FASTING_END_TIME: LocalTime = LocalTime.of(4, 15)   // 04:15
+
+        const val MIN_DAILY_GOAL_ML = 1000
+        const val MAX_DAILY_GOAL_ML = 8000
+
+        const val ML_TO_OZ_FACTOR = 0.0338140227
+
+        val PREDEFINED_GOALS_ML = listOf(2000, 2250, 2500, 2750, 3000)
+        val SUPPORTED_FREQUENCIES_MINUTES = listOf(15, 30, 45, 60, 90, 120, 180)
     }
 
     /**
      * Aggregated Settings State Model containing all user configurations.
      */
-    val settingsFlow: Flow<SettingsState> = context.dataStore.data
+    val settingsFlow: Flow<UserPreferences> = context.dataStore.data
         .map { preferences ->
-            val isFastingActive = preferences[IS_FASTING] ?: SettingsConfig.DEFAULT_IS_FASTING
-
-            // Fetch baseline disk states safely
-            val originalStart = preferences[REMINDER_START_TIME] ?: SettingsConfig.DEFAULT_START_TIME
-            val originalEnd = preferences[REMINDER_END_TIME] ?: SettingsConfig.DEFAULT_END_TIME
-
-            // 🌟 Compute operational bounds dynamically
-            val operationalStart: String
-            val operationalEnd: String
-
-            if (isFastingActive) {
-                // TODO: Fetch these dynamically from a PrayerTimes calculation library based on device GPS location
-                operationalStart = fetchTodayMaghribTime() // e.g., "06:45 PM"
-                operationalEnd = fetchTomorrowFajrTime()    // e.g., "04:15 AM"
-            } else {
-                operationalStart = originalStart
-                operationalEnd = originalEnd
-            }
-
-            SettingsState(
-                dailyGoalMl = preferences[DAILY_GOAL_ML] ?: SettingsConfig.DEFAULT_DAILY_GOAL_ML,
-                measurementUnit = preferences[MEASUREMENT_UNIT] ?: SettingsConfig.DEFAULT_MEASUREMENT_UNIT,
-                isFasting = isFastingActive,
-                notificationInterval = preferences[NOTIFICATION_INTERVAL] ?: SettingsConfig.DEFAULT_NOTIFICATION_INTERVAL_MIN,
-                theme = preferences[THEME] ?: SettingsConfig.DEFAULT_THEME,
-                language = preferences[LANGUAGE] ?: SettingsConfig.DEFAULT_LANGUAGE,
-                savedStartHour = originalStart, // Kept safe & unchanged
-                savedEndHour = originalEnd,     // Kept safe & unchanged
-                activeStartHour = operationalStart, // Used by notification workers
-                activeEndHour = operationalEnd      // Used by notification workers
+            UserPreferences(
+                dailyGoalMl = preferences[DAILY_GOAL_ML] ?: DEFAULT_DAILY_GOAL_ML,
+                unit = AppUnit.fromKey(preferences[UNIT]),
+                areNotificationsEnabled = preferences[ARE_NOTIFICATIONS_ENABLED] ?: DEFAULT_ARE_NOTIFICATIONS_ENABLED,
+                frequency = preferences[FREQUENCY_MINUTES] ?: DEFAULT_FREQUENCY_MINUTES,
+                startTime = preferences[START_TIME]?.let {
+                    runCatching { LocalTime.parse(it) }.getOrNull()
+                } ?: DEFAULT_START_TIME,
+                endTime = preferences[END_TIME]?.let {
+                    runCatching { LocalTime.parse(it) }.getOrNull()
+                } ?: DEFAULT_END_TIME,
+                isFasting = preferences[IS_FASTING] ?: DEFAULT_IS_FASTING,
+                city = preferences[CITY] ?: "",
+                country = preferences[COUNTRY] ?: "",
+                theme = AppTheme.fromKey(preferences[THEME]),
+                language = AppLanguage.fromIsoCode(preferences[LANGUAGE]),
             )
         }
 
     // --- Suspended Preference Write Operations ---
 
-    suspend fun updateDailyGoal(newGoalMl: Int) {
+    suspend fun updateDailyGoal(newGoalMl: Int): Boolean {
+        if (newGoalMl !in MIN_DAILY_GOAL_ML..MAX_DAILY_GOAL_ML) {
+            return false
+        }
         context.dataStore.edit { prefs -> prefs[DAILY_GOAL_ML] = newGoalMl }
+        return true
     }
 
-    suspend fun updateMeasurementUnit(unit: String) {
-        if (unit in SettingsConfig.SUPPORTED_UNITS) {
-            context.dataStore.edit { prefs -> prefs[MEASUREMENT_UNIT] = unit }
+    suspend fun updateUnit(unit: AppUnit) {
+        context.dataStore.edit { prefs ->
+            prefs[UNIT] = unit.key
+        }
+    }
+
+    suspend fun updateNotificationToggle(isEnabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[ARE_NOTIFICATIONS_ENABLED] = isEnabled
+        }
+    }
+
+    suspend fun updateFrequency(minutes: Int) {
+        if (minutes in SUPPORTED_FREQUENCIES_MINUTES) {
+            context.dataStore.edit { prefs -> prefs[FREQUENCY_MINUTES] = minutes }
+        }
+    }
+
+    suspend fun updateStartAndEndTimes(startTime: LocalTime, endTime: LocalTime) {
+        context.dataStore.edit { prefs ->
+            prefs[START_TIME] = startTime.toString()
+            prefs[END_TIME] = endTime.toString()
         }
     }
 
@@ -81,36 +111,22 @@ class AppSettingsDataStore(private val context: Context) {
         context.dataStore.edit { prefs -> prefs[IS_FASTING] = isFasting }
     }
 
-    suspend fun updateNotificationInterval(minutes: Int) {
-        val sanitizedMinutes = minutes.coerceIn(
-            SettingsConfig.MIN_NOTIFICATION_INTERVAL_MIN,
-            SettingsConfig.MAX_NOTIFICATION_INTERVAL_MIN
-        )
+    suspend fun updateLocationProfile(city: String, country: String) {
         context.dataStore.edit { prefs ->
-            prefs[NOTIFICATION_INTERVAL] = sanitizedMinutes
+            prefs[CITY] = city
+            prefs[COUNTRY] = country
         }
     }
 
-    suspend fun updateTheme(newTheme: String) {
-        if (newTheme in SettingsConfig.SUPPORTED_THEMES) {
-            context.dataStore.edit { prefs -> prefs[THEME] = newTheme }
-        }
-    }
-
-    suspend fun updateLanguage(newLanguage: String) {
-        if (newLanguage in SettingsConfig.SUPPORTED_LANGUAGES) {
-            context.dataStore.edit { prefs -> prefs[LANGUAGE] = newLanguage }
-        }
-    }
-
-    suspend fun updateReminderWindow(startHour: String, endHour: String) {
+    suspend fun updateTheme(newTheme: AppTheme) {
         context.dataStore.edit { prefs ->
-            prefs[REMINDER_START_TIME] = startHour
-            prefs[REMINDER_END_TIME] = endHour
+            prefs[THEME] = newTheme.key
         }
     }
 
-    // --- Helper calculation placeholders ---
-    private fun fetchTodayMaghribTime(): String = "06:45 PM"
-    private fun fetchTomorrowFajrTime(): String = "04:15 AM"
+    suspend fun updateLanguage(newLanguage: AppLanguage) {
+        context.dataStore.edit { prefs ->
+            prefs[LANGUAGE] = newLanguage.isoCode
+        }
+    }
 }

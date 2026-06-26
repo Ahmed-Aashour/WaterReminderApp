@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.theme.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -100,7 +101,7 @@ fun ProgressBar(
                     )
                 }
 
-                // Displaying the dynamic percentage string inside the circle
+                // Displaying the dynamic percentage key inside the circle
                 val isGoalReached = currentIntakeMl >= targetIntakeMl
 
                 Text(
@@ -129,7 +130,7 @@ fun ProgressBar(
 @Preview(name = "Progress 25% - Light Mode", showBackground = true)
 @Composable
 fun ProgressBarPreview_25_Light() {
-    ErtawyTheme(darkTheme = false) {
+    ErtawyTheme(appTheme = AppTheme.LIGHT) {
         Box(modifier = Modifier.padding(16.dp)) {
             ProgressBar(currentIntakeMl = 500, targetIntakeMl = 2000)
         }
@@ -139,7 +140,7 @@ fun ProgressBarPreview_25_Light() {
 @Preview(name = "Progress 50% - Dark Mode", showBackground = true)
 @Composable
 fun ProgressBarPreview_50_Dark() {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme(appTheme = AppTheme.DARK) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -153,7 +154,7 @@ fun ProgressBarPreview_50_Dark() {
 @Preview(name = "Progress 75% - Light Mode", showBackground = true)
 @Composable
 fun ProgressBarPreview_75_Light() {
-    ErtawyTheme(darkTheme = false) {
+    ErtawyTheme(appTheme = AppTheme.LIGHT) {
         Box(modifier = Modifier.padding(16.dp)) {
             ProgressBar(currentIntakeMl = 1500, targetIntakeMl = 2000)
         }
@@ -163,7 +164,7 @@ fun ProgressBarPreview_75_Light() {
 @Preview(name = "Progress 100% - Dark Mode", showBackground = true)
 @Composable
 fun ProgressBarPreview_100_Dark() {
-    ErtawyTheme(darkTheme = true) {
+    ErtawyTheme(appTheme = AppTheme.DARK) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

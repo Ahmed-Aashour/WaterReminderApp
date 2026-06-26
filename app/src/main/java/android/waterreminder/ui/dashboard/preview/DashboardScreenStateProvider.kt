@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 
 class DashboardScreenStateProvider : PreviewParameterProvider<DashboardState> {
-    override val values: Sequence<DashboardState> = sequenceOf(
+    override val values: Sequence<DashboardState> = listOf(
         // Scenario 1: High Streak (365 Days) / Mid-Week Progression
         DashboardState(
             currentIntake = 1000,
@@ -31,5 +31,5 @@ class DashboardScreenStateProvider : PreviewParameterProvider<DashboardState> {
             ),
             streakSection = MockStreakData.fiveDayFridayProgress
         )
-    )
+    ).asSequence()
 }

@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "android.waterreminder"
-        minSdk = 23
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -37,6 +37,13 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = false
+
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildTypes {
@@ -49,7 +56,7 @@ android {
     buildFeatures {
         compose = true
         aidl = false
-        buildConfig = false
+        buildConfig = true
         shaders = false
     }
 
@@ -67,8 +74,11 @@ ksp {
 dependencies {
 
     val composeBom = platform(libs.androidx.compose.bom)
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+    listOf("implementation", "androidTestImplementation").forEach {
+        add(it, composeBom)
+    }
+    // implementation(composeBom)
+    // androidTestImplementation(composeBom)
 
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
@@ -78,12 +88,19 @@ dependencies {
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    // Hilt and instrumented tests.
-    androidTestImplementation(libs.hilt.android.testing)
-    kspAndroidTest(libs.hilt.android.compiler)
-    // Hilt and Robolectric tests.
-    testImplementation(libs.hilt.android.testing)
-    kspTest(libs.hilt.android.compiler)
+
+    // Hilt Local Unit/Robolectric JVM & Instrumented On-Device Tests
+    listOf("testImplementation", "androidTestImplementation").forEach {
+        add(it, libs.hilt.android.testing)
+    }
+    listOf("kspTest", "kspAndroidTest").forEach {
+        add(it, libs.hilt.android.compiler)
+    }
+    // androidTestImplementation(libs.hilt.android.testing)
+    // kspAndroidTest(libs.hilt.android.compiler)
+    // testImplementation(libs.hilt.android.testing)
+    // kspTest(libs.hilt.android.compiler)
+
 
     // Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -99,8 +116,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.lifecycle.runtime.compose.v282)
     implementation(libs.androidx.hilt.navigation.compose)
+
     // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)
+
     // Instrumented tests
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -110,7 +129,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 
     // Instrumented tests: JUnit rules and runners
-
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
@@ -130,4 +148,17 @@ dependencies {
 
     // The core material design icons (including Refresh, Favorite, Share, etc.)
     implementation(libs.androidx.compose.material.icons.core)
+
+    // The official desugaring dependency
+    // coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Google Play Services location dependencies
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    // Core Retrofit HTTP Client Engine
+    implementation(libs.retrofit)
+
+    // Gson serialization/deserialization converter factory binding
+    implementation(libs.converter.gson)
 }

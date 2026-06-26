@@ -95,10 +95,8 @@ fun HydrationNode(
 fun HydrationNodeParameterPreview(
     @PreviewParameter(HydrationNodeStateProvider::class) scenario: NodePreviewScenario
 ) {
-    // Dynamically checks if the current preview configuration context is set to night mode
-    val isDarkMode = androidx.compose.foundation.isSystemInDarkTheme()
 
-    ErtawyTheme(darkTheme = isDarkMode) {
+    ErtawyTheme {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)

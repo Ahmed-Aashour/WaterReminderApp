@@ -1,42 +1,33 @@
 package android.waterreminder.ui.dashboard
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.waterreminder.data.di.TimeFormat12Hour
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
-import android.waterreminder.data.store.SettingsConfig
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: WaterRepository,
-    private val appSettingsDataStore: AppSettingsDataStore
+    appSettingsDataStore: AppSettingsDataStore,
+    @param:TimeFormat12Hour
+    private val timeFormatter: DateTimeFormatter
 ) : ViewModel() {
 
-    // Define a hardcoded target intake goal for now (2000ml)
-    private val targetIntakeGoal = 2000
-
-    // Time-formatter for converting raw timestamps into clean UI strings
-    private val timeFormatter = SimpleDateFormat("hh:mm A", Locale.getDefault())
-
-    val uiState: StateFlow<DashboardState> = combine(
+    val uiState: StateFlow<DashboardUiState> = combine(
         repository.getCupsCatalog(),
         repository.getHistoryForPastDays(daysBefore = 7),  // For the weekly nodes UI
         repository.getHistoryForPastDays(daysBefore = 35), // Efficient 5-week look-back window for streak calculation
         appSettingsDataStore.settingsFlow
-    ) { catalog, currentWeekLogs, longTermLogs, settingsState ->
+    ) { _, currentWeekLogs, longTermLogs, settingsState ->
 
         val targetIntakeGoal = settingsState.dailyGoalMl
 
@@ -58,7 +49,7 @@ class DashboardViewModel @Inject constructor(
                 DrunkCupHistory(
                     id = entity.id,
                     amountMl = entity.amountMl,
-                    timeLogged = timeFormatter.format(entity.timestamp)
+                    timeLogged = timeFormatter.format(Date(entity.timestamp).toInstant())
                 )
             }
 
@@ -69,31 +60,24 @@ class DashboardViewModel @Inject constructor(
         val computedStreak = calculateStreak(longTermLogs, targetIntakeGoal)
 
         // Return the clean, fully calculated UI State
-        DashboardState(
-            streakSection = StreakSectionState(
-                count = computedStreak,
-                dayIndex = todayIndex,
-                days = weeklyNodes
-            ),
-            historyLogs = mappedHistory,
-            currentIntake = currentIntakeSum,
-            targetIntake = targetIntakeGoal
+        DashboardUiState.Success(
+            DashboardState(
+                streakSection = StreakSectionState(
+                    count = computedStreak,
+                    dayIndex = todayIndex,
+                    days = weeklyNodes
+                ),
+                historyLogs = mappedHistory,
+                currentIntake = currentIntakeSum,
+                targetIntake = targetIntakeGoal
+            )
         )
     }
         .flowOn(Dispatchers.Default) // Ensures math calculations never run on the UI thread!
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = DashboardState(
-                streakSection = StreakSectionState(
-                    count = 0,
-                    dayIndex = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1,
-                    days = emptyList()
-                ),
-                historyLogs = emptyList(),
-                currentIntake = 0,
-                targetIntake = SettingsConfig.DEFAULT_DAILY_GOAL_ML
-            )
+            initialValue = DashboardUiState.Loading
         )
 
     // --- Interactive User UI Actions ---
