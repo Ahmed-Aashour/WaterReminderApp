@@ -117,4 +117,11 @@
     <string name="dashboard_history_chip_id_format">%1$d</string>
     <string name="dashboard_history_chip_amount_format">%1$d\nml</string>
 
+    <!-- Section: Hydration Streak -->
+    <string name="dashboard_section_streak_title">Hydration Streak</string>
+    <plurals name="dashboard_streak_count_format">
+        <item quantity="one">%1$d day hydrated!</item>
+        <item quantity="other">%1$d days hydrated!</item>
+    </plurals>
+
 </resources>

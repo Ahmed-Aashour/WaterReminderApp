@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.R
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.core.components.HydrationNode
 import android.waterreminder.ui.core.components.LabelPill
@@ -13,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -23,7 +26,7 @@ fun HydrationStreakSection(
     modifier: Modifier = Modifier
 ) {
     DashboardSection(
-        title = "Hydration Streak",
+        title = stringResource(R.string.dashboard_section_streak_title),
         modifier = modifier
     ) {
         // Main Container Card matching Figma geometric border frames
@@ -45,7 +48,13 @@ fun HydrationStreakSection(
         ) {
 
             // --- Component 1: Days-Hydrated Label Pill ---
-            LabelPill(text = "${state.count} days hydrated!")
+            LabelPill(
+                text = pluralStringResource(
+                    id = R.plurals.dashboard_streak_count_format,
+                    count = state.count,
+                    state.count
+                )
+            )
 
             // --- Component 2: 7-Day Tracker Row Layout ---
             Row(
