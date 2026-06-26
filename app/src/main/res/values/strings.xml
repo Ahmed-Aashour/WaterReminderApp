@@ -97,8 +97,13 @@
     <string name="acknowledgements_row_title">Acknowledgements</string>
 
     <!-- ===================================================================== -->
-    <!-- Dashboard Screen                                                       -->
+    <!-- Dashboard Screen                                                      -->
     <!-- ===================================================================== -->
     <string name="dashboard_accessibility_settings_button">Navigate to settings</string>
+
+    <!-- Section: Progress Card Components -->
+    <string name="dashboard_progress_goal_reached">✓</string>
+    <string name="dashboard_progress_percentage_format">%1$d%%</string>
+    <string name="dashboard_progress_quantity_format">%1$d /\n%2$d ml</string>
 
 </resources>
