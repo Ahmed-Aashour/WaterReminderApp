@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import android.waterreminder.ui.core.components.DashboardSection // Your newly c
 import android.waterreminder.ui.core.utils.dynamicFadingEdges
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -26,7 +28,7 @@ fun DrinkButtonsSection(
     val scrollState = rememberScrollState()
 
     DashboardSection(
-        title = "Drink Cups",
+        title = stringResource(R.string.dashboard_section_drink_cups),
         modifier = modifier
     ) {
         // Everything inside this lambda block fills the "content" slot seamlessly!

@@ -106,4 +106,8 @@
     <string name="dashboard_progress_percentage_format">%1$d%%</string>
     <string name="dashboard_progress_quantity_format">%1$d /\n%2$d ml</string>
 
+    <!-- Section: Drink Selection Panel -->
+    <string name="dashboard_section_drink_cups">Drink Cups</string>
+    <string name="dashboard_preset_cup_label_format">%1$d ml</string>
+
 </resources>
