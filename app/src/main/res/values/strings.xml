@@ -110,4 +110,11 @@
     <string name="dashboard_section_drink_cups">Drink Cups</string>
     <string name="dashboard_preset_cup_label_format">%1$d ml</string>
 
+    <!-- Section: History Tracking Timeline -->
+    <string name="dashboard_section_history_title">Today’s Drink History</string>
+    <string name="dashboard_history_empty_state">No Cups Drank yet!</string>
+    <string name="dashboard_accessibility_delete_log">Delete Log</string>
+    <string name="dashboard_history_chip_id_format">%1$d</string>
+    <string name="dashboard_history_chip_amount_format">%1$d\nml</string>
+
 </resources>
