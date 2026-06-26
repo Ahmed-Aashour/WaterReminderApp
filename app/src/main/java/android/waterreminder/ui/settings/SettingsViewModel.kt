@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings
 
 import android.content.Context
+import android.waterreminder.R
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.AppUnit
@@ -12,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -24,8 +26,8 @@ class SettingsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context // To control the scheduler
 ) : ViewModel() {
 
-    private val _validationErrorChannel = MutableSharedFlow<String>()
-    val validationErrorChannel: SharedFlow<String> = _validationErrorChannel.asSharedFlow()
+    private val _validationErrorChannel = Channel<String>(Channel.BUFFERED)
+    val validationErrorChannel = _validationErrorChannel.receiveAsFlow()
     val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.toGoalUiModels(
         AppSettingsDataStore.ML_TO_OZ_FACTOR
     )
@@ -83,7 +85,9 @@ class SettingsViewModel @Inject constructor(
         val parsedInt = inputString.trim().toIntOrNull()
         if (parsedInt == null) {
             viewModelScope.launch {
-                _validationErrorChannel.emit("Please enter a valid numeric value.")
+                _validationErrorChannel.send(
+                    context.getString(R.string.validation_error_invalid_number)
+                )
             }
             return
         }
@@ -94,8 +98,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val wasSaved = appSettingsDataStore.updateDailyGoal(goalMl)
             if (!wasSaved) {
-                _validationErrorChannel.emit(
-                    "Goal must be between ${AppSettingsDataStore.MIN_DAILY_GOAL_ML}ml and ${AppSettingsDataStore.MAX_DAILY_GOAL_ML}ml."
+                _validationErrorChannel.send(
+                    context.getString(
+                        R.string.validation_error_goal_out_of_bounds,
+                        AppSettingsDataStore.MIN_DAILY_GOAL_ML,
+                        AppSettingsDataStore.MAX_DAILY_GOAL_ML
+                    )
                 )
             }
         }
