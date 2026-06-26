@@ -99,5 +99,6 @@
     <!-- ===================================================================== -->
     <!-- Dashboard Screen                                                       -->
     <!-- ===================================================================== -->
+    <string name="dashboard_accessibility_settings_button">Navigate to settings</string>
 
 </resources>

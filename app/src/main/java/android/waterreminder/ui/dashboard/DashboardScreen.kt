@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard
 
+import android.waterreminder.R
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
@@ -21,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -47,11 +49,11 @@ fun DashboardScreen(
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             Header(
-                title = "Ertawy",
+                title = stringResource(R.string.app_name),
                 actionButton = {
                     SquareIconButton(
                         icon = Icons.Default.Settings,
-                        contentDescription = "Settings",
+                        contentDescription = stringResource(R.string.dashboard_accessibility_settings_button),
                         onClick = onNavigateToSettings
                     )
                 }
