@@ -1,5 +1,6 @@
 package android.waterreminder.ui.core.components
 
+import android.waterreminder.R
 import android.waterreminder.ui.dashboard.StreakDayState
 import android.waterreminder.ui.dashboard.preview.HydrationNodeStateProvider
 import android.waterreminder.ui.dashboard.preview.NodePreviewScenario
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -65,7 +67,7 @@ fun HydrationNode(
         ) {
             if (state.progress >= 1f) {
                 Text(
-                    text = "✓",
+                    text = stringResource(R.string.dashboard_progress_goal_reached),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center,
