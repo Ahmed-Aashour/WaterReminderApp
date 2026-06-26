@@ -15,28 +15,30 @@
   -->
 
 <resources>
-    <!-- Global & App Scope -->
+    <!-- ===================================================================== -->
+    <!-- Global & Core Application Scope                                       -->
+    <!-- ===================================================================== -->
     <string name="app_name">Hydra</string>
     <string name="settings_version_format">Version %1$s</string>
     <string name="content_description_navigate_back">Navigate back</string>
 
-    <!-- Reusable Dialog & Form Actions -->
+    <!-- Shared Actions & Input Controls -->
     <string name="action_cancel">Cancel</string>
     <string name="action_confirm">Confirm</string>
     <string name="text_input_placeholder_custom">Enter custom value…</string>
 
-    <!-- Global States -->
+    <!-- Shared Core Status States -->
     <string name="state_enabled">Enabled</string>
     <string name="state_disabled">Disabled</string>
     <string name="state_active">Active</string>
     <string name="state_inactive">Inactive</string>
 
     <!-- ===================================================================== -->
-    <!-- Settings Screen Structure                                             -->
+    <!-- Settings Screen                                                       -->
     <!-- ===================================================================== -->
     <string name="settings_title">Settings</string>
 
-    <!-- Hydration Target Section -->
+    <!-- Section: Hydration Target -->
     <string name="settings_hydration_title">Hydration Target</string>
     <string name="goal_row_title">Goal</string>
     <string name="daily_goal_dialog_title">Goal</string>
@@ -52,7 +54,7 @@
     <string name="unit_format_ml">%1$d ml</string>
     <string name="unit_format_oz">%1$d fl oz</string>
 
-    <!-- Notifications Section -->
+    <!-- Section: Notifications & Background Scheduler -->
     <string name="settings_notifications_title">Notifications</string>
 
     <string name="push_notifications_row_title">Scheduled Push Notifications</string>
@@ -71,7 +73,7 @@
 
     <string name="fasting_mode_row_title">Fasting Mode</string>
 
-    <!-- Preferences Section -->
+    <!-- Section: User Interface Preferences -->
     <string name="settings_preferences_title">Preferences</string>
 
     <string name="theme_row_title">Theme</string>
@@ -88,9 +90,14 @@
     <string name="language_french">French</string>
     <string name="language_italian">Italian</string>
 
-    <!-- Legal & About Footer Links -->
+    <!-- Section: Legal, Metadata & Support Footer -->
     <string name="about_row_title">About</string>
     <string name="feedback_row_title">Feedback</string>
     <string name="terms_row_title">Terms and Policies</string>
     <string name="acknowledgements_row_title">Acknowledgements</string>
+
+    <!-- ===================================================================== -->
+    <!-- Dashboard Screen                                                       -->
+    <!-- ===================================================================== -->
+
 </resources>
