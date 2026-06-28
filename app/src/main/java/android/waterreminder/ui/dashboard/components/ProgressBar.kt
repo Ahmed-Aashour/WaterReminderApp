@@ -89,7 +89,12 @@ fun ProgressBar(
             val localizedUnitLabel = stringResource(id = state.unit.unitRes)
 
             Text(
-                text = "${state.currentLabel} / ${state.targetLabel} $localizedUnitLabel",
+                text = stringResource(
+                    R.string.dashboard_progress_quantity_format,
+                    state.currentLabel,
+                    state.targetLabel,
+                    localizedUnitLabel
+                ),
                 style = MaterialTheme.typography.headlineLarge,
                 color = primaryColor,
                 textAlign = TextAlign.Center
