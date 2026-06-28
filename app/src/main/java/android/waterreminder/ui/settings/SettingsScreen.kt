@@ -49,76 +49,68 @@ fun SettingsScreen(
     onUpdateLanguage: (AppLanguage) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showGoalDialog by remember { mutableStateOf(false) }
-    var showUnitDialog by remember { mutableStateOf(false) }
-    var showFrequencyDialog by remember { mutableStateOf(false) }
-    var showPeriodDialog by remember { mutableStateOf(false) }
-    var showThemeDialog by remember { mutableStateOf(false) }
-    var showLanguageDialog by remember { mutableStateOf(false) }
+    var activeDialog by remember { mutableStateOf<ActiveSettingsDialog>(ActiveSettingsDialog.None) }
 
-    if (showGoalDialog) {
-        DailyGoalDialog(
-            currentGoalMl = state.dailyGoalMl,
-            currentUnit = state.unit,
-            predefinedOptions = state.predefinedGoals,
-            validationEvents = validationEvents,
-            onDismiss = { showGoalDialog = false },
-            onConfirm = { selectedGoal ->
-                onUpdateDailyGoal(selectedGoal)
-                showGoalDialog = false // Clean options are safe to dismiss immediately
-            },
-            onConfirmCustomString = { customString ->
-                onUpdateCustomDailyGoalString(customString)
-                // Do not auto-dismiss! If validation passes, uiState updates close context via parent checks if desired,
-                // or user can click out. If it fails, error stays up for rectification.
-            }
-        )
-    }
-
-    if (showUnitDialog) {
-        UnitDialog(
-            currentUnit = state.unit,
-            onUnitSelected = { selectedUnit -> onUpdateUnit(selectedUnit) },
-            onDismiss = { showUnitDialog = false }
-        )
-    }
-
-    if (showFrequencyDialog) {
-        FrequencyDialog(
-            currentFrequency = state.frequency,
-            frequencyOptions = state.supportedFrequencies,
-            onFrequencySelected = { selectedMinutes ->
-                onUpdateFrequency(selectedMinutes)
-            },
-            onDismiss = { showFrequencyDialog = false }
-        )
-    }
-
-    if (showPeriodDialog) {
-        ReminderTimesDialog(
-            currentStartTime = state.startTime,
-            currentEndTime = state.endTime,
-            onDismiss = { showPeriodDialog = false },
-            onConfirm = { startTime, endTime ->
-                onUpdateStartAndEndTimes(startTime, endTime)
-            }
-        )
-    }
-
-    if (showThemeDialog) {
-        ThemeDialog(
-            currentTheme = state.theme,
-            onThemeSelected = { selectedTheme -> onUpdateTheme(selectedTheme) },
-            onDismiss = { showThemeDialog = false }
-        )
-    }
-
-    if (showLanguageDialog) {
-        LanguageDialog(
-            currentLanguage = state.language,
-            onLanguageSelected = { selectedLanguage -> onUpdateLanguage(selectedLanguage) },
-            onDismiss = { showLanguageDialog = false }
-        )
+    // Unified conditional rendering block
+    when (activeDialog) {
+        ActiveSettingsDialog.None -> {}
+        ActiveSettingsDialog.DailyGoal -> {
+            DailyGoalDialog(
+                currentGoalMl = state.dailyGoalMl,
+                currentUnit = state.unit,
+                predefinedOptions = state.predefinedGoals,
+                validationEvents = validationEvents,
+                onDismiss = { activeDialog = ActiveSettingsDialog.None },
+                onConfirm = { selectedGoal ->
+                    onUpdateDailyGoal(selectedGoal)
+                    activeDialog = ActiveSettingsDialog.None
+                },
+                onConfirmCustomString = { customString ->
+                    onUpdateCustomDailyGoalString(customString)
+                }
+            )
+        }
+        ActiveSettingsDialog.Unit -> {
+            UnitDialog(
+                currentUnit = state.unit,
+                onUnitSelected = { selectedUnit -> onUpdateUnit(selectedUnit) },
+                onDismiss = { activeDialog = ActiveSettingsDialog.None }
+            )
+        }
+        ActiveSettingsDialog.Frequency -> {
+            FrequencyDialog(
+                currentFrequency = state.frequency,
+                frequencyOptions = state.supportedFrequencies,
+                onFrequencySelected = { selectedMinutes ->
+                    onUpdateFrequency(selectedMinutes)
+                },
+                onDismiss = { activeDialog = ActiveSettingsDialog.None }
+            )
+        }
+        ActiveSettingsDialog.Period -> {
+            ReminderTimesDialog(
+                currentStartTime = state.startTime,
+                currentEndTime = state.endTime,
+                onDismiss = { activeDialog = ActiveSettingsDialog.None },
+                onConfirm = { startTime, endTime ->
+                    onUpdateStartAndEndTimes(startTime, endTime)
+                }
+            )
+        }
+        ActiveSettingsDialog.Theme -> {
+            ThemeDialog(
+                currentTheme = state.theme,
+                onThemeSelected = { selectedTheme -> onUpdateTheme(selectedTheme) },
+                onDismiss = { activeDialog = ActiveSettingsDialog.None }
+            )
+        }
+        ActiveSettingsDialog.Language -> {
+            LanguageDialog(
+                currentLanguage = state.language,
+                onLanguageSelected = { selectedLanguage -> onUpdateLanguage(selectedLanguage) },
+                onDismiss = { activeDialog = ActiveSettingsDialog.None }
+            )
+        }
     }
 
     Surface(
@@ -149,8 +141,8 @@ fun SettingsScreen(
             HydrationFrame(
                 dailyGoal = state.dailyGoalMl,
                 unit = state.unit,
-                onGoalClick = { showGoalDialog = true },
-                onUnitClick = { showUnitDialog = true }
+                onGoalClick = { activeDialog = ActiveSettingsDialog.DailyGoal },
+                onUnitClick = { activeDialog = ActiveSettingsDialog.Unit }
             )
 
             NotificationsFrame(
@@ -159,16 +151,16 @@ fun SettingsScreen(
                 reminderWindow = "${state.activeStartTime} - ${state.activeEndTime}",
                 isFastingMode = state.isFasting,
                 onNotificationToggle = onUpdateNotificationToggle,
-                onFrequencyClick = { showFrequencyDialog = true },
-                onWindowClick = { showPeriodDialog = true },
+                onFrequencyClick = { activeDialog = ActiveSettingsDialog.Frequency },
+                onWindowClick = { activeDialog = ActiveSettingsDialog.Period },
                 onFastingToggle = onUpdateFastingState
             )
 
             PreferencesFrame(
                 theme = state.theme,
                 language = state.language,
-                onThemeClick = { showThemeDialog = true },
-                onLanguageClick = { showLanguageDialog = true }
+                onThemeClick = { activeDialog = ActiveSettingsDialog.Theme },
+                onLanguageClick = { activeDialog = ActiveSettingsDialog.Language }
             )
 
             LegalLinksFrame(
