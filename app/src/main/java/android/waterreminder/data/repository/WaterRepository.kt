@@ -4,7 +4,6 @@ import android.waterreminder.data.dao.DashboardDao
 import android.waterreminder.data.entity.CupsCatalogEntity
 import android.waterreminder.data.entity.WaterHistoryEntity
 import kotlinx.coroutines.flow.Flow
-import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,10 +39,18 @@ class WaterRepository @Inject constructor(
 
     /**
      * Emits a reactive list containing only the data points logged during the current calendar day.
+     * 💡 Note: Pass startOfDay dynamically from the ViewModel to ensure midnight boundaries shift correctly.
      */
-    fun getTodayHistoryLogs(): Flow<List<WaterHistoryEntity>> {
-        val startOfTodayTimestamp = getStartOfTodayTimestamp()
+    fun getTodayHistoryLogs(startOfTodayTimestamp: Long): Flow<List<WaterHistoryEntity>> {
         return dashboardDao.getTodayHistoryFlow(startOfTodayTimestamp)
+    }
+
+    /**
+     * 🚀 High Optimization: Directly exposes the SQLite calculated daily total sum stream.
+     * Eliminates object allocations and manual list maps inside your presentation layers.
+     */
+    fun getTodayTotalIntake(startOfTodayTimestamp: Long): Flow<Int> {
+        return dashboardDao.getTodayTotalIntakeFlow(startOfTodayTimestamp)
     }
 
     /**
@@ -58,40 +65,23 @@ class WaterRepository @Inject constructor(
     }
 
     /**
-     * Deletes a water consumption entry from the history table.
+     * Deletes a water consumption entry from the history table using its explicit identifier.
      */
     suspend fun deleteWaterLog(logId: Long) {
         dashboardDao.deleteLogById(logId)
     }
 
     /**
-     * Streams all history logs recorded since a specific number of days ago.
-     * Useful for calculating streaks and generating weekly performance nodes.
+     * Streams all history logs recorded since a specific timestamp milestone.
      */
-    fun getHistoryForPastDays(daysBefore: Int): Flow<List<WaterHistoryEntity>> {
-        val calculateSinceTimestamp = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_YEAR, -daysBefore)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
-
-        return dashboardDao.getHistorySinceFlow(calculateSinceTimestamp)
+    fun getHistorySince(timestamp: Long): Flow<List<WaterHistoryEntity>> {
+        return dashboardDao.getHistorySinceFlow(timestamp)
     }
 
-
-    // --- Internal Time Math Helper Logic ---
-
     /**
-     * Computes the exact Unix Epoch millisecond timestamp representing 12:00:00 AM of the current local day.
+     * Completely wipes out all history data metrics within a secure database transaction.
      */
-    private fun getStartOfTodayTimestamp(): Long {
-        return Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
+    suspend fun clearAllHistoryLogs() {
+        dashboardDao.clearAllHistory()
     }
 }

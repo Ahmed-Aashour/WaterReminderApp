@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.R
 import android.content.res.Configuration
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.dashboard.DrunkCupHistory
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -36,7 +38,7 @@ fun TodayHistorySection(
     val scrollState = rememberScrollState()
 
     DashboardSection(
-        title = "Today’s Drink History",
+        title = stringResource(R.string.dashboard_section_history_title),
         modifier = modifier
     ) {
         // --- Core Container Card Frame (342dp x 94dp) ---
@@ -58,7 +60,7 @@ fun TodayHistorySection(
             if (historyItems.isEmpty()) {
                 // Empty State Handler View
                 Text(
-                    text = "No Cups Drank yet!",
+                    text = stringResource(R.string.dashboard_history_empty_state),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center
@@ -126,7 +128,7 @@ fun DismissibleHistoryCupChip(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete Log",
+                    contentDescription = stringResource(R.string.dashboard_accessibility_delete_log),
                     tint = if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
                         MaterialTheme.colorScheme.onError
                     } else {
@@ -168,7 +170,10 @@ private fun HistoryCupChip(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${item.id}",
+                text = stringResource(
+                    R.string.dashboard_history_chip_id_format,
+                    item.id
+                ),
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
@@ -189,7 +194,10 @@ private fun HistoryCupChip(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${item.amountMl}\nml",
+                text = stringResource(
+                    R.string.dashboard_history_chip_amount_format,
+                    item.amountMl
+                ),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center,

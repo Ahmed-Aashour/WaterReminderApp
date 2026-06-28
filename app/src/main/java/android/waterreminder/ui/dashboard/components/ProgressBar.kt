@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard.components
 
+import android.waterreminder.R
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.ui.theme.*
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -105,7 +107,11 @@ fun ProgressBar(
                 val isGoalReached = currentIntakeMl >= targetIntakeMl
 
                 Text(
-                    text = if (isGoalReached && progressPercentage == 100) "✓" else "$progressPercentage%",
+                    text = if (isGoalReached && progressPercentage >= 100) {
+                        stringResource(R.string.dashboard_progress_goal_reached)
+                    } else {
+                        stringResource(R.string.dashboard_progress_percentage_format, progressPercentage)
+                    },
                     style = if (isGoalReached && progressPercentage == 100) {
                         // Boost font size slightly for the checkmark icon so it fills the inner circle nicely
                         MaterialTheme.typography.displayLarge
@@ -118,7 +124,11 @@ fun ProgressBar(
 
             // --- RIGHT SIDE: Quantity Target Tracker ---
             Text(
-                text = "$currentIntakeMl /\n$targetIntakeMl ml",
+                text = stringResource(
+                    R.string.dashboard_progress_quantity_format,
+                    currentIntakeMl,
+                    targetIntakeMl
+                ),
                 style = MaterialTheme.typography.headlineLarge,
                 color = primaryColor,
                 textAlign = TextAlign.Center

@@ -1,6 +1,7 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.content.res.Configuration
+import android.waterreminder.R
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,11 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 // TODO: Animate button clicks
 // TODO: Add Sounds
+// TODO: Use general resource string format
 @Composable
 fun PresetCupButton(
     amountMl: Int,
@@ -44,7 +47,7 @@ fun PresetCupButton(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${amountMl}ml",
+                text = stringResource(R.string.dashboard_preset_cup_label_format, amountMl),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
             )

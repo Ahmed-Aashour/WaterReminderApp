@@ -14,22 +14,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun DashboardRoute(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel = hiltViewModel() // Injected via Hilt
+    viewModel: DashboardViewModel = hiltViewModel()
 ) {
-    // Collect state safely respecting lifecycle states (stops collecting when app is in background)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // Local UI State tracking visibility of the dialog overlay
     var showCustomDialog by remember { mutableStateOf(false) }
 
-    when (val state = uiState){
+    when (val state = uiState) {
         is DashboardUiState.Loading -> {
-            // TODO: Design a loading screen
+            // TODO: Design a professional loading shimmer or circular indicator skeleton screen
         }
         is DashboardUiState.Success -> {
             DashboardScreen(
                 state = state.data,
                 onAddWater = { amount -> viewModel.logWater(amount) },
-                onCustomAddTrigger = { showCustomDialog = true }, // Toggle state open
+                onCustomAddTrigger = { showCustomDialog = true },
                 onDeleteLog = { log -> viewModel.deleteWaterLog(log) },
                 onNavigateToSettings = onNavigateToSettings,
                 modifier = modifier
@@ -37,13 +35,12 @@ fun DashboardRoute(
         }
     }
 
-    // Render overlay cleanly outside the structural Column layout thread
     if (showCustomDialog) {
         CustomWaterInputDialog(
             onDismiss = { showCustomDialog = false },
             onConfirm = { customAmount ->
                 viewModel.logWater(customAmount)
-                showCustomDialog = false // Close on success
+                showCustomDialog = false
             }
         )
     }
