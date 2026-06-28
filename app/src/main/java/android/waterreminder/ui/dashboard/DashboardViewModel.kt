@@ -1,7 +1,6 @@
 package android.waterreminder.ui.dashboard
 
 import android.waterreminder.data.di.TimeFormat12Hour
-import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
@@ -16,7 +15,6 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
