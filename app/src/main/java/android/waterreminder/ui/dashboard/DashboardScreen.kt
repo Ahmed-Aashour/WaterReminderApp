@@ -93,7 +93,7 @@ fun DashboardScreen(
     uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
-fun DashboardScreenDarkPreview(
+fun DashboardScreenPreview(
     @PreviewParameter(DashboardScreenStateProvider::class) state: DashboardState
 ) {
     ErtawyTheme {
