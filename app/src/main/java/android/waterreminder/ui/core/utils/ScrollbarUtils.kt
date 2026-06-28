@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** TODO: Remove fading effect when reaching the ends
+/**
  * Dynamically applies a blending alpha gradient layer to the edges
  * of a scrollable viewport box based on real-time layout movement parameters.
  */
@@ -20,7 +20,6 @@ fun Modifier.dynamicFadingEdges(
     .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
     .drawWithContent {
         drawContent()
-        @Suppress("unused", "UNUSED_VARIABLE")
         val currentScroll = state.value
         val maxScroll = state.maxValue
         val viewWidth = size.width
@@ -28,27 +27,41 @@ fun Modifier.dynamicFadingEdges(
 
         if (maxScroll <= 0) return@drawWithContent
 
-        // Left Edge Mask Fade
-        drawRect(
-            brush = Brush.horizontalGradient(
-                colors = listOf(Color.Transparent, Color.Black),
-                startX = 0f,
-                endX = fadeWidthPx
-            ),
-            topLeft = Offset(0f, 0f),
-            size = Size(fadeWidthPx, size.height),
-            blendMode = BlendMode.DstIn
-        )
+        val minEdgeContentAlpha = 0.35f
+        val leftFadeAlpha = (currentScroll / fadeWidthPx).coerceIn(0f, 1f)
+        val rightFadeAlpha = ((maxScroll - currentScroll) / fadeWidthPx).coerceIn(0f, 1f)
 
-        // Right Edge Mask Fade
-        drawRect(
-            brush = Brush.horizontalGradient(
-                colors = listOf(Color.Black, Color.Transparent),
-                startX = viewWidth - fadeWidthPx,
-                endX = viewWidth
-            ),
-            topLeft = Offset(viewWidth - fadeWidthPx, 0f),
-            size = Size(fadeWidthPx, size.height),
-            blendMode = BlendMode.DstIn
-        )
+        if (leftFadeAlpha > 0f) {
+            // Left Edge Mask Fade
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color.Black.copy(alpha = 1f - ((1f - minEdgeContentAlpha) * leftFadeAlpha)),
+                        Color.Black
+                    ),
+                    startX = 0f,
+                    endX = fadeWidthPx
+                ),
+                topLeft = Offset(0f, 0f),
+                size = Size(fadeWidthPx, size.height),
+                blendMode = BlendMode.DstIn
+            )
+        }
+
+        if (rightFadeAlpha > 0f) {
+            // Right Edge Mask Fade
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color.Black,
+                        Color.Black.copy(alpha = 1f - ((1f - minEdgeContentAlpha) * rightFadeAlpha))
+                    ),
+                    startX = viewWidth - fadeWidthPx,
+                    endX = viewWidth
+                ),
+                topLeft = Offset(viewWidth - fadeWidthPx, 0f),
+                size = Size(fadeWidthPx, size.height),
+                blendMode = BlendMode.DstIn
+            )
+        }
     }
