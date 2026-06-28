@@ -71,23 +71,13 @@ class DashboardViewModel @Inject constructor(
                     0
                 }
 
-                val displayState = if (selectedUnit == AppUnit.OZ) {
-                    DisplayIntakeState(
-                        currentLabel = (currentIntakeSum * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt().toString(),
-                        targetLabel = (targetIntakeGoal * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt().toString(),
-                        unit = selectedUnit,
-                        progressFraction = progressFraction,
-                        progressPercentage = progressPercentage
-                    )
-                } else {
-                    DisplayIntakeState(
-                        currentLabel = currentIntakeSum.toString(),
-                        targetLabel = targetIntakeGoal.toString(),
-                        unit = selectedUnit,
-                        progressFraction = progressFraction,
-                        progressPercentage = progressPercentage
-                    )
-                }
+                val displayState = DisplayIntakeState(
+                    currentLabel = selectedUnit.convertFromMl(currentIntakeSum).toString(),
+                    targetLabel = selectedUnit.convertFromMl(targetIntakeGoal).toString(),
+                    unit = selectedUnit,
+                    progressFraction = progressFraction,
+                    progressPercentage = progressPercentage
+                )
 
                 DashboardUiState.Success(
                     DashboardState(
