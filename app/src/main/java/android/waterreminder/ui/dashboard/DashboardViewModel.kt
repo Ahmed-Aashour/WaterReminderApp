@@ -1,6 +1,7 @@
 package android.waterreminder.ui.dashboard
 
 import android.waterreminder.data.di.TimeFormat12Hour
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
@@ -15,6 +16,7 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -29,6 +31,7 @@ class DashboardViewModel @Inject constructor(
         .flatMapLatest { settingsState ->
             val startOfToday = getStartOfToday()
             val targetIntakeGoal = settingsState.dailyGoalMl
+            val selectedUnit = settingsState.unit
             val eligiblePastDaysStart = getPastDaysTimestamp() // Look back 5 weeks for streaks
 
             // Combine only raw streams needed from the repository
@@ -56,6 +59,36 @@ class DashboardViewModel @Inject constructor(
                 // 3. Calculate streak directly with database metrics
                 val computedStreak = calculateStreak(longTermLogs, targetIntakeGoal, currentIntakeSum)
 
+                val progressFraction = if (targetIntakeGoal > 0) {
+                    (currentIntakeSum.toFloat() / targetIntakeGoal.toFloat()).coerceIn(0f, 1f)
+                } else {
+                    0f
+                }
+
+                val progressPercentage = if (targetIntakeGoal > 0) {
+                    (currentIntakeSum * 100) / targetIntakeGoal
+                } else {
+                    0
+                }
+
+                val displayState = if (selectedUnit == AppUnit.OZ) {
+                    DisplayIntakeState(
+                        currentLabel = (currentIntakeSum * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt().toString(),
+                        targetLabel = (targetIntakeGoal * AppSettingsDataStore.ML_TO_OZ_FACTOR).roundToInt().toString(),
+                        unit = selectedUnit,
+                        progressFraction = progressFraction,
+                        progressPercentage = progressPercentage
+                    )
+                } else {
+                    DisplayIntakeState(
+                        currentLabel = currentIntakeSum.toString(),
+                        targetLabel = targetIntakeGoal.toString(),
+                        unit = selectedUnit,
+                        progressFraction = progressFraction,
+                        progressPercentage = progressPercentage
+                    )
+                }
+
                 DashboardUiState.Success(
                     DashboardState(
                         streakSection = StreakSectionState(
@@ -64,8 +97,7 @@ class DashboardViewModel @Inject constructor(
                             days = weeklyNodes
                         ),
                         historyLogs = mappedHistory,
-                        currentIntake = currentIntakeSum, // Calculated by SQLite!
-                        targetIntake = targetIntakeGoal
+                        progressDisplay = displayState
                     )
                 )
             }

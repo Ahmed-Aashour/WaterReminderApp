@@ -60,8 +60,7 @@ fun DashboardScreen(
             )
 
             ProgressBar(
-                currentIntakeMl = state.currentIntake,
-                targetIntakeMl = state.targetIntake
+                state = state.progressDisplay,
             )
 
             DrinkButtonsSection(
