@@ -15,50 +15,45 @@ import kotlinx.coroutines.launch
 @Database(
     entities = [WaterHistoryEntity::class, CupsCatalogEntity::class],
     version = 1,
-    exportSchema = false // Keeps project build outputs clean for now
+    exportSchema = false // TODO: Keeps project build outputs clean for now (set it later)
 )
 abstract class HydrationDatabase : RoomDatabase() {
 
-    // Expose your feature DAOs here
     abstract fun dashboardDao(): DashboardDao
 
     companion object {
         @Volatile
         private var INSTANCE: HydrationDatabase? = null
 
-        // Singleton pattern: ensures only one instance of the database is created across the app
+        // Singleton pattern
         fun getDatabase(context: Context, scope: CoroutineScope): HydrationDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    HydrationDatabase::class.java,
-                    "hydration_database" // The actual filename on disk
-                )
-                    // Pass a lambda that looks up the DAO dynamically when called
-                    .addCallback(HydrationDatabaseCallback(scope) { INSTANCE!!.dashboardDao() })
-                    .build()
+                // We create a reference to the builder structure first
+                var instance: HydrationDatabase? = null
 
+                val builder = Room.databaseBuilder(
+                    context.applicationContext,
+                    klass = HydrationDatabase::class.java,
+                    name = "hydration_database"
+                ).addCallback(
+                    object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            // Run pre-population safely using the freshly built instance reference
+                            scope.launch(Dispatchers.IO) {
+                                instance?.dashboardDao()?.let { dao ->
+                                    dao.insertCup(CupsCatalogEntity(amountMl = 250))
+                                    dao.insertCup(CupsCatalogEntity(amountMl = 350))
+                                    dao.insertCup(CupsCatalogEntity(amountMl = 500))
+                                }
+                            }
+                        }
+                    }
+                )
+
+                instance = builder.build()
                 INSTANCE = instance
                 instance
-            }
-        }
-    }
-
-    // A callback class to run tasks when the database events occur
-    private class HydrationDatabaseCallback(
-        private val scope: CoroutineScope,
-        private val daoProvider: () -> DashboardDao // Lazy provider prevents race conditions
-    ) : Callback() {
-
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-
-            // Safe execution
-            scope.launch(Dispatchers.IO) {
-                val dao = daoProvider()
-                dao.insertCup(CupsCatalogEntity(amountMl = 250))
-                dao.insertCup(CupsCatalogEntity(amountMl = 350))
-                dao.insertCup(CupsCatalogEntity(amountMl = 500))
             }
         }
     }
