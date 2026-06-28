@@ -40,3 +40,13 @@ fun List<Int>.toGoalUiModels(mlToOzFactor: Double): List<GoalOptionUiModel> {
         )
     }
 }
+
+sealed interface ActiveSettingsDialog {
+    data object None : ActiveSettingsDialog
+    data object DailyGoal : ActiveSettingsDialog
+    data object Unit : ActiveSettingsDialog
+    data object Frequency : ActiveSettingsDialog
+    data object Period : ActiveSettingsDialog
+    data object Theme : ActiveSettingsDialog
+    data object Language : ActiveSettingsDialog
+}
