@@ -11,7 +11,13 @@ sealed interface DashboardUiState {
 data class DashboardState(
     val streakSection: StreakSectionState,
     val historyLogs: List<DrunkCupHistory>,
+    val drinkButtons: DrinkButtonsState,
     val progressDisplay: DisplayIntakeState
+)
+
+data class DrinkButtonsState(
+    val unit: AppUnit,
+    val presetAmountsMl: List<Int>
 )
 
 data class DisplayIntakeState(

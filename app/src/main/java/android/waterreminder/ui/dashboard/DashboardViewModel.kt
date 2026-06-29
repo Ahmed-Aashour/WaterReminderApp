@@ -36,8 +36,9 @@ class DashboardViewModel @Inject constructor(
             combine(
                 repository.getTodayTotalIntake(startOfToday),
                 repository.getTodayHistoryLogs(startOfToday),
-                repository.getHistorySince(eligiblePastDaysStart)
-            ) { currentIntakeSum, todayLogs, longTermLogs ->
+                repository.getHistorySince(eligiblePastDaysStart),
+                repository.getCupsCatalog()
+            ) { currentIntakeSum, todayLogs, longTermLogs, cupsCatalog ->
 
                 val now = Calendar.getInstance()
                 val todayIndex = now.get(Calendar.DAY_OF_WEEK) - 1 // Sunday = 0
@@ -85,6 +86,10 @@ class DashboardViewModel @Inject constructor(
                             days = weeklyNodes
                         ),
                         historyLogs = mappedHistory,
+                        drinkButtons = DrinkButtonsState(
+                            unit = selectedUnit,
+                            presetAmountsMl = cupsCatalog.map { it.amountMl }
+                        ),
                         progressDisplay = displayState
                     )
                 )

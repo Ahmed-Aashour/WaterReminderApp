@@ -64,6 +64,7 @@ fun DashboardScreen(
             )
 
             DrinkButtonsSection(
+                state = state.drinkButtons,
                 onPresetClick = onAddWater,
                 onCustomAddClick = onCustomAddTrigger
             )

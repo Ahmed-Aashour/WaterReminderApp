@@ -1,7 +1,7 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.content.res.Configuration
-import android.waterreminder.R
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,15 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 // TODO: Animate button clicks
 // TODO: Add Sounds
-// TODO: Use general resource string format
 @Composable
 fun PresetCupButton(
     amountMl: Int,
+    unit: AppUnit,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -47,9 +48,11 @@ fun PresetCupButton(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = stringResource(R.string.dashboard_preset_cup_label_format, amountMl),
+                text = stringResource(unit.formatRes, unit.convertFromMl(amountMl)),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
+                maxLines = 2,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -60,7 +63,7 @@ fun PresetCupButton(
 fun PresetCupButtonPreview_250_Light() {
     ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
-            PresetCupButton(amountMl = 250, onClick = {})
+            PresetCupButton(amountMl = 250, unit = AppUnit.ML, onClick = {})
         }
     }
 }
@@ -78,7 +81,7 @@ fun PresetCupButtonPreview_350_Dark() {
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            PresetCupButton(amountMl = 350, onClick = {})
+            PresetCupButton(amountMl = 350, unit = AppUnit.ML, onClick = {})
         }
     }
 }
@@ -88,7 +91,7 @@ fun PresetCupButtonPreview_350_Dark() {
 fun PresetCupButtonPreview_500_Light() {
     ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
-            PresetCupButton(amountMl = 500, onClick = {})
+            PresetCupButton(amountMl = 500, unit = AppUnit.OZ, onClick = {})
         }
     }
 }
@@ -106,7 +109,7 @@ fun PresetCupButtonPreview_750_Dark() {
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            PresetCupButton(amountMl = 750, onClick = {})
+            PresetCupButton(amountMl = 750, unit = AppUnit.OZ, onClick = {})
         }
     }
 }
