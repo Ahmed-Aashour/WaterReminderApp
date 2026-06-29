@@ -64,7 +64,7 @@ class WaterReminderReceiver : BroadcastReceiver() {
 
             // 1. INTENT FOR QUICK DRINK (+250ml) BUTTON
             val quickDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-                action = "ACTION_QUICK_DRINK"
+                action = NotificationActionReceiver.ACTION_QUICK_DRINK
             }
             val quickDrinkPendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -74,12 +74,12 @@ class WaterReminderReceiver : BroadcastReceiver() {
             )
 
             // 2. INTENT & INPUT FOR CUSTOM TEXT REPLY FIELD
-            val remoteInput = RemoteInput.Builder("KEY_CUSTOM_WATER_AMOUNT").apply {
+            val remoteInput = RemoteInput.Builder(NotificationActionReceiver.KEY_CUSTOM_WATER_AMOUNT).apply {
                 setLabel("Amount in ml (e.g., 350)")
             }.build()
 
             val customDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-                action = "ACTION_CUSTOM_DRINK"
+                action = NotificationActionReceiver.ACTION_CUSTOM_DRINK
             }
             // Must use FLAG_MUTABLE for RemoteInput text input to be attached by the system!
             val customDrinkPendingIntent = PendingIntent.getBroadcast(
