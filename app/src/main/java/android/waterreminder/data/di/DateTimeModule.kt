@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Singleton
@@ -17,6 +18,7 @@ object DateTimeModule {
     @TimeFormat12Hour
     fun provide12HourTimeFormatter(): DateTimeFormatter {
         return DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
     }
 
     @Provides
@@ -24,6 +26,7 @@ object DateTimeModule {
     @TimeFormat24Hour
     fun provide24HourTimeFormatter(): DateTimeFormatter {
         return DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
     }
 
     @Provides
@@ -31,5 +34,6 @@ object DateTimeModule {
     @DateFormatShort
     fun provideShortDateFormatter(): DateTimeFormatter {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
     }
 }
