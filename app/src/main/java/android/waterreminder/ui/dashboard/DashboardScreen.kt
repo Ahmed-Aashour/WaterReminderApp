@@ -71,6 +71,7 @@ fun DashboardScreen(
 
             TodayHistorySection(
                 historyItems = state.historyLogs,
+                currentUnit = state.drinkButtons.unit,
                 onDeleteLog = onDeleteLog
             )
 

@@ -2,6 +2,7 @@ package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.R
 import android.content.res.Configuration
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TodayHistorySection(
     historyItems: List<DrunkCupHistory>,
+    currentUnit: AppUnit,
     onDeleteLog: (DrunkCupHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -79,6 +81,7 @@ fun TodayHistorySection(
                     historyItems.forEach { item ->
                         DismissibleHistoryCupChip(
                             item = item,
+                            currentUnit = currentUnit,
                             onDismissed = { onDeleteLog(item) }
                         )
                     }
@@ -95,6 +98,7 @@ fun TodayHistorySection(
 @Composable
 fun DismissibleHistoryCupChip(
     item: DrunkCupHistory,
+    currentUnit: AppUnit,
     onDismissed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -139,7 +143,7 @@ fun DismissibleHistoryCupChip(
         }
     ) {
         // The foreground content remains your original static design component
-        HistoryCupChip(item = item)
+        HistoryCupChip(item = item, currentUnit = currentUnit)
     }
 }
 
@@ -149,6 +153,7 @@ fun DismissibleHistoryCupChip(
 @Composable
 private fun HistoryCupChip(
     item: DrunkCupHistory,
+    currentUnit: AppUnit,
     modifier: Modifier = Modifier
 ) {
     val shapeToken = RoundedCornerShape(8.dp)
@@ -184,7 +189,7 @@ private fun HistoryCupChip(
         // Right Segment Pane: Shaded container capacity text block
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(1.2f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(
@@ -193,15 +198,18 @@ private fun HistoryCupChip(
                 ),
             contentAlignment = Alignment.Center
         ) {
+            val convertedAmount = currentUnit.convertFromMl(item.amountMl)
+
             Text(
                 text = stringResource(
-                    R.string.dashboard_history_chip_amount_format,
-                    item.amountMl
+                    currentUnit.formatRes,
+                    convertedAmount
                 ),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center,
-                    lineHeight = 16.sp
+                    lineHeight = 14.sp,
+                    fontSize = 13.sp
                 )
             )
         }
@@ -220,7 +228,11 @@ fun TodayHistoryDarkModePreview(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            TodayHistorySection(historyItems = mockHistory, onDeleteLog = {})
+            TodayHistorySection(
+                historyItems = mockHistory,
+                currentUnit = AppUnit.ML,
+                onDeleteLog = {}
+            )
         }
     }
 }
