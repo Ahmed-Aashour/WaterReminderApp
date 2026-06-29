@@ -43,7 +43,7 @@
     <string name="goal_row_title">Goal</string>
     <string name="daily_goal_dialog_title">Goal</string>
     <string name="validation_error_invalid_number">Please enter a valid numeric value.</string>
-    <string name="validation_error_goal_out_of_bounds">Goal must be between %1$dml and %2$dml.</string>
+    <string name="validation_error_out_of_bounds">Value must be between %1$s and %2$s.</string>
 
     <string name="unit_row_title">Unit</string>
     <string name="unit_dialog_title">Unit</string>
@@ -108,6 +108,9 @@
 
     <!-- Section: Drink Selection Panel -->
     <string name="dashboard_section_drink_cups">Drink Cups</string>
+    <string name="dashboard_custom_intake_dialog_title">Custom Intake</string>
+    <string name="dashboard_custom_intake_placeholder_format">Amount (%1$s)</string>
+
     <!-- Section: History Tracking Timeline -->
     <string name="dashboard_section_history_title">Today’s Drink History</string>
     <string name="dashboard_history_empty_state">No Cups Drank yet!</string>

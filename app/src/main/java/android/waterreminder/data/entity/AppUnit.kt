@@ -18,6 +18,7 @@ enum class AppUnit(
         formatRes = R.string.unit_format_ml
     ){
         override fun convertFromMl(amountMl: Int): Int = amountMl
+        override fun convertToMl(amount: Int): Int = amount
     },
     OZ(
         key = "fl oz",
@@ -27,12 +28,18 @@ enum class AppUnit(
     ){
         private val factor = AppSettingsDataStore.ML_TO_OZ_FACTOR
         override fun convertFromMl(amountMl: Int): Int = (amountMl * factor).roundToInt()
+        override fun convertToMl(amount: Int): Int = (amount / factor).roundToInt()
     };
 
     /**
      * Translates standard baseline milliliters into the target presentation quantity.
      */
     abstract fun convertFromMl(amountMl: Int): Int
+
+    /**
+     * Translates a displayed unit quantity back into the standard milliliter baseline.
+     */
+    abstract fun convertToMl(amount: Int): Int
 
     companion object {
         /**

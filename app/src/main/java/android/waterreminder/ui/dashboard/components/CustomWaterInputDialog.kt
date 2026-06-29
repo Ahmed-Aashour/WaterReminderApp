@@ -1,81 +1,88 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.content.res.Configuration
+import android.waterreminder.R
+import android.waterreminder.data.entity.AppUnit
+import android.waterreminder.ui.core.components.BaseDialog
+import android.waterreminder.ui.core.components.CancelButton
+import android.waterreminder.ui.core.components.ConfirmButton
+import android.waterreminder.ui.core.components.TextInputField
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CustomWaterInputDialog(
+    currentUnit: AppUnit,
+    validationEvents: Flow<String>,
     onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit
+    onConfirmCustomString: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var textInput by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
+    var customInputString by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val unitLabel = stringResource(currentUnit.unitRes)
 
-    AlertDialog(
+    // Listen to ViewModel hot channel validation alerts
+    LaunchedEffect(validationEvents) {
+        validationEvents.collectLatest { error ->
+            errorMessage = error
+        }
+    }
+
+    BaseDialog(
+        title = stringResource(R.string.dashboard_custom_intake_dialog_title),
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Custom Intake",
-                style = MaterialTheme.typography.headlineSmall
-            )
-        },
-        text = {
-            OutlinedTextField(
-                value = textInput,
-                onValueChange = { newValue ->
-                    // Only allow numeric input
-                    if (newValue.all { it.isDigit() }) {
-                        textInput = newValue
-                        val amount = newValue.toIntOrNull() ?: 0
-                        // Highlight error state if the amount exceeds a normal daily single intake limit
-                        isError = amount > 3000
+        modifier = modifier,
+        options = {},
+        inputField = {
+            TextInputField(
+                value = customInputString,
+                onValueChange = { input ->
+                    if (input.all { it.isDigit() }) {
+                        customInputString = input
+                        errorMessage = null
                     }
                 },
-                label = { Text("Amount (ml)") },
-                placeholder = { Text("e.g. 400") },
-                isError = isError,
-                supportingText = {
-                    if (isError) {
-                        Text("Please enter a valid amount below 3000 ml")
-                    }
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
+                placeholderText = stringResource(
+                    R.string.dashboard_custom_intake_placeholder_format,
+                    unitLabel
                 ),
-                singleLine = true
+                isError = errorMessage != null
             )
+
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage!!,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+                )
+            }
         },
-        confirmButton = {
-            TextButton(
-                enabled = textInput.isNotEmpty() && !isError,
+        buttons = {
+            CancelButton(onClick = onDismiss)
+            ConfirmButton(
                 onClick = {
-                    val intakeAmount = textInput.toIntOrNull()
-                    if ((intakeAmount != null) && (intakeAmount > 0)) {
-                        onConfirm(intakeAmount)
-                    }
+                    errorMessage = null
+                    onConfirmCustomString(customInputString)
                 }
-            ) {
-                Text("Add")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+            )
         }
     )
 }
@@ -85,13 +92,14 @@ fun CustomWaterInputDialog(
 @Composable
 fun CustomWaterInputDialogPreview() {
     ErtawyTheme {
-        // Surface provides the default systemic background fill color tokens for the dialog backdrop
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
             CustomWaterInputDialog(
+                currentUnit = AppUnit.ML,
+                validationEvents = MutableSharedFlow(),
                 onDismiss = {},
-                onConfirm = {}
+                onConfirmCustomString = {},
             )
         }
     }
