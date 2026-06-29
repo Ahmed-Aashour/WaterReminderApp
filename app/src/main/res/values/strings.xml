@@ -104,7 +104,7 @@
     <!-- Section: Progress Card Components -->
     <string name="dashboard_progress_goal_reached">✓</string>
     <string name="dashboard_progress_percentage_format">%1$d%%</string>
-    <string name="dashboard_progress_quantity_format">%1$s / %2$s %3$s</string>
+    <string name="dashboard_progress_quantity_format">%1$s /\n %2$s %3$s</string>
 
     <!-- Section: Drink Selection Panel -->
     <string name="dashboard_section_drink_cups">Drink Cups</string>
