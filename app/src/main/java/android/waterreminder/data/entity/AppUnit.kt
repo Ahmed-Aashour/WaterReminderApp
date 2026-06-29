@@ -2,7 +2,6 @@ package android.waterreminder.data.entity
 
 import androidx.annotation.StringRes
 import android.waterreminder.R
-import android.waterreminder.data.store.AppSettingsDataStore
 import kotlin.math.roundToInt
 
 enum class AppUnit(
@@ -26,9 +25,9 @@ enum class AppUnit(
         nameRes = R.string.unit_name_oz,
         formatRes = R.string.unit_format_oz
     ){
-        private val factor = AppSettingsDataStore.ML_TO_OZ_FACTOR
-        override fun convertFromMl(amountMl: Int): Int = (amountMl * factor).roundToInt()
-        override fun convertToMl(amount: Int): Int = (amount / factor).roundToInt()
+        private val mlToOzFactor = 0.0338140227
+        override fun convertFromMl(amountMl: Int): Int = (amountMl * mlToOzFactor).roundToInt()
+        override fun convertToMl(amount: Int): Int = (amount / mlToOzFactor).roundToInt()
     };
 
     /**
