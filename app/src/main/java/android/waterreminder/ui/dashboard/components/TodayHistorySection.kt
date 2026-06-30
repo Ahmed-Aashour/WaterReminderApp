@@ -18,12 +18,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -102,24 +104,22 @@ fun DismissibleHistoryCupChip(
     onDismissed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val itemShape = RoundedCornerShape(12.dp)
     val dismissState = rememberSwipeToDismissBoxState()
+    LaunchedEffect(dismissState.currentValue) {
+        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            onDismissed()
+        }
+    }
 
     SwipeToDismissBox(
         state = dismissState,
-        modifier = modifier.clip(RoundedCornerShape(8.dp)),
-        enableDismissFromStartToEnd = false, // 🌟 Only allow swiping left (EndToStart) to prevent layout clipping
-        onDismiss = { dismissValue ->
-            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                onDismissed()
-            }
-        },
+        modifier = modifier.clip(itemShape),
+        enableDismissFromStartToEnd = false, // Only allow swiping left (EndToStart)
         backgroundContent = {
-            // Animate color transition based on swipe target state thresholds
+            val isDismissing = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
             val backgroundColor by animateColorAsState(
-                targetValue = when (dismissState.targetValue) {
-                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
-                    else -> Color.Transparent
-                },
+                targetValue = if (isDismissing) MaterialTheme.colorScheme.error else Color.Transparent,
                 label = "DeleteBackgroundAnimation"
             )
 
@@ -127,23 +127,19 @@ fun DismissibleHistoryCupChip(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(backgroundColor)
-                    .padding(end = 8.dp),
+                    .padding(end = 12.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.dashboard_accessibility_delete_log),
-                    tint = if (dismissState.targetValue == SwipeToDismissBoxValue.EndToStart) {
-                        MaterialTheme.colorScheme.onError
-                    } else {
-                        MaterialTheme.colorScheme.error
-                    }
+                    tint = if (isDismissing) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.error
                 )
             }
         }
     ) {
         // The foreground content remains your original static design component
-        HistoryCupChip(item = item, currentUnit = currentUnit)
+        HistoryCupChip(item = item, currentUnit = currentUnit, shape = itemShape)
     }
 }
 
@@ -154,65 +150,54 @@ fun DismissibleHistoryCupChip(
 private fun HistoryCupChip(
     item: DrunkCupHistory,
     currentUnit: AppUnit,
+    shape: RoundedCornerShape,
     modifier: Modifier = Modifier
 ) {
-    val shapeToken = RoundedCornerShape(8.dp)
-
-    Row(
+    Column(
         modifier = modifier
-            .width(80.dp)
-            .height(55.dp)
-            .border(2.dp, MaterialTheme.colorScheme.primary, shapeToken)
-            .background(MaterialTheme.colorScheme.surface) // Ensure opacity over background actions
-            .clip(shapeToken),
-        verticalAlignment = Alignment.CenterVertically
+            .width(86.dp)
+            .height(64.dp)
+            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), shape = shape) // Ensure opacity over background actions
+            .border(width = 1.5.dp, color = MaterialTheme.colorScheme.primary, shape = shape)
+            .padding(vertical = 4.dp, horizontal = 6.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Left Segment Pane: Multiplier text (e.g., 5x)
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(
-                    R.string.dashboard_history_chip_id_format,
-                    item.id
-                ),
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center
-                )
-            )
-        }
+        // 1. TOP: Debug Log Database Primary Key Identifier (Tiny size, easy to rip out later)
+        Text(
+            text = "ID: ${item.id}",
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                fontSize = 8.sp,
+                fontWeight = FontWeight.Light
+            ),
+            maxLines = 1
+        )
 
-        // Right Segment Pane: Shaded container capacity text block
-        Box(
-            modifier = Modifier
-                .weight(1.2f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .border(
-                    width = (1.5).dp,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            val convertedAmount = currentUnit.convertFromMl(item.amountMl)
+        // 2. CENTER: Dynamic Formatted Hydration Quantity
+        Text(
+            text = stringResource(
+                currentUnit.formatRes,
+                currentUnit.convertFromMl(item.amountMl)
+            ),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            ),
+            maxLines = 1
+        )
 
-            Text(
-                text = stringResource(
-                    currentUnit.formatRes,
-                    convertedAmount
-                ),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 14.sp,
-                    fontSize = 13.sp
-                )
-            )
-        }
+        // 3. BOTTOM: Contextual Timestamp
+        Text(
+            text = item.timeLogged,
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            maxLines = 1
+        )
     }
 }
 
