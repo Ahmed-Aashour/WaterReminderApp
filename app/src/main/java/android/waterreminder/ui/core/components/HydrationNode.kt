@@ -29,11 +29,11 @@ fun HydrationNode(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.width(30.dp),
+        modifier = modifier.wrapContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // --- 1. Circle Progress Node ---
+        // Circle Progress Node
         Box(
             modifier = Modifier
                 .size(30.dp)
@@ -69,14 +69,14 @@ fun HydrationNode(
                 Text(
                     text = stringResource(R.string.dashboard_progress_goal_reached),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
 
-        // --- 2. Node Text Label ---
+        // Node Text Label
         Text(
             text = state.dayLabel,
             style = MaterialTheme.typography.labelSmall,
@@ -86,7 +86,7 @@ fun HydrationNode(
                 MaterialTheme.colorScheme.primary
             },
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            maxLines = 1
         )
     }
 }

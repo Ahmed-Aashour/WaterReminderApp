@@ -32,22 +32,22 @@ fun HydrationStreakSection(
         // Main Container Card matching Figma geometric border frames
         Column(
             modifier = Modifier
-                .width(342.dp)
-                .height(134.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .background(
                     color = MaterialTheme.colorScheme.surface,
-                    shape = MaterialTheme.shapes.medium // Ensure your theme sets cornerRadius = 15.dp
+                    shape = MaterialTheme.shapes.medium
                 )
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
                     shape = MaterialTheme.shapes.medium
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // --- Component 1: Days-Hydrated Label Pill ---
+            // Days-Hydrated Label Pill
             LabelPill(
                 text = pluralStringResource(
                     id = R.plurals.dashboard_streak_count_format,
@@ -56,13 +56,11 @@ fun HydrationStreakSection(
                 )
             )
 
-            // --- Component 2: 7-Day Tracker Row Layout ---
+            // 7-Day Tracker Row Layout
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom // Keeps tracking text labels baseline-aligned
+                verticalAlignment = Alignment.Bottom
             ) {
                 state.days.take(7).forEachIndexed { index, day ->
                     HydrationNode(
