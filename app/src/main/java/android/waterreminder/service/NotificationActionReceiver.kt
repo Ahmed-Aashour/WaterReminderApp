@@ -1,7 +1,6 @@
 package android.waterreminder.service
 
 import android.app.NotificationManager
-import android.app.RemoteInput
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,6 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,55 +19,59 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     @Inject lateinit var waterRepository: WaterRepository
 
-    // Separate background scope to perform asynchronous repository writes safely.
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
     override fun onReceive(context: Context, intent: Intent) {
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
+        val action = intent.action
+        Log.d(TAG, "Received notification broadcast action: $action")
 
-        val amountMl = when (intent.action) {
-            ACTION_QUICK_DRINK -> {
-                Log.d(TAG, "Quick drink triggered via banner.")
-                DEFAULT_QUICK_DRINK_AMOUNT_ML
-            }
-            ACTION_CUSTOM_DRINK -> {
-                Log.d(TAG, "Custom drink input received.")
-                intent.getCustomDrinkAmount()
-            }
-            else -> null
+        // Guard Clause: Only handle intent actions explicitly owned by this receiver contract
+        if (action != ACTION_QUICK_DRINK) {
+            Log.w(TAG, "Unrecognized action received. Aborting execution.")
+            return
         }
 
-        if (amountMl == null || amountMl <= 0) {
+        // Extract the explicit dynamic amount sent via the notification intent bundle
+        val amountMl = intent.getIntExtra(EXTRA_WATER_AMOUNT, -1)
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Safety Guard: Validate that the extracted amount is structurally realistic
+        if (amountMl <= 0) {
+            Log.e(TAG, "Invalid or missing water amount extra ($amountMl Ml). Dismissing notification.")
             notificationManager.cancel(NOTIFICATION_ID)
             return
         }
 
+        // Acquire background process lease from OS before launching async repository operations
         val pendingResult = goAsync()
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
         scope.launch {
             try {
+                Log.d(TAG, "Logging $amountMl ml of water consumption from push button input...")
                 waterRepository.logWaterConsumption(amountMl)
+
+                // Cancel/dismiss the banner seamlessly upon successful database save
                 notificationManager.cancel(NOTIFICATION_ID)
+                Log.d(TAG, "Water log complete. Active hydration notification cleared.")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to write hydration entry from background action receiver: ${e.message}", e)
             } finally {
+                // 🚀 Clean up scopes and release process priorities back to Android OS
                 pendingResult.finish()
+                scope.cancel()
             }
         }
     }
 
-    private fun Intent.getCustomDrinkAmount(): Int? {
-        return RemoteInput.getResultsFromIntent(this)
-            ?.getCharSequence(KEY_CUSTOM_WATER_AMOUNT)
-            ?.toString()
-            ?.toIntOrNull()
-    }
-
     companion object {
-        private const val TAG = "NotificationAction"
-        private const val DEFAULT_QUICK_DRINK_AMOUNT_ML = 250
+        private const val TAG = "NotificationActionReceiver"
+
+        // Centralized identity token for dismissals and canvas modifications
         const val NOTIFICATION_ID = 1001
 
-        const val ACTION_QUICK_DRINK = "ACTION_QUICK_DRINK"
-        const val ACTION_CUSTOM_DRINK = "ACTION_CUSTOM_DRINK"
+        // 🚀 Fully qualified namespace contracts preventing global OS collisions
+        const val ACTION_QUICK_DRINK = "android.waterreminder.action.QUICK_DRINK"
         const val EXTRA_WATER_AMOUNT = "android.waterreminder.extra.WATER_AMOUNT"
-        const val KEY_CUSTOM_WATER_AMOUNT = "KEY_CUSTOM_WATER_AMOUNT"
     }
 }
