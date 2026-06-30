@@ -36,7 +36,7 @@
         </activity>
         <!-- Receiver of alarm signals -->
         <receiver
-                android:name=".service.WaterReminderReceiver"
+                android:name=".service.HydrationReminderReceiver"
                 android:enabled="true"
                 android:exported="false" />
         <!-- New Action Receiver Entry -->

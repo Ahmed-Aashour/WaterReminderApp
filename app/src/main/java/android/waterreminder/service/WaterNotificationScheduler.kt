@@ -15,7 +15,7 @@ class WaterNotificationScheduler(private val context: Context) {
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     fun scheduleNextReminder(startTime: LocalTime, endTime: LocalTime, intervalMinutes: Int) {
-        val intent = Intent(context, WaterReminderReceiver::class.java)
+        val intent = Intent(context, HydrationReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             0,
@@ -48,7 +48,7 @@ class WaterNotificationScheduler(private val context: Context) {
     }
 
     fun cancelReminders() {
-        val intent = Intent(context, WaterReminderReceiver::class.java)
+        val intent = Intent(context, HydrationReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             0,
