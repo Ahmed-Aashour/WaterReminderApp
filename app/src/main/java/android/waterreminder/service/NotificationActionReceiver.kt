@@ -14,11 +14,27 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Handles explicit background action taps forwarded from push notification buttons.
+ *
+ * This receiver processes immediate logging interactions (Quick Add buttons) bypassing the UI thread.
+ * It parses payload intents, pushes localized updates downstream to the persistent [WaterRepository] layer,
+ * and closes out interaction lifecycles by dismissing active status bar notifications.
+ */
 @AndroidEntryPoint
 class NotificationActionReceiver : BroadcastReceiver() {
 
     @Inject lateinit var waterRepository: WaterRepository
 
+    /**
+     * Intercepts notification logging action buttons.
+     *
+     * Validates incoming intent contracts against namespaced properties, evaluates bundle packages
+     * for volume data targets, and initiates asynchronous ingestion tasks.
+     *
+     * @param context The execution context environment mapping.
+     * @param intent The transactional data bundle detailing clicked actions.
+     */
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         Log.d(TAG, "Received notification broadcast action: $action")
@@ -57,7 +73,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to write hydration entry from background action receiver: ${e.message}", e)
             } finally {
-                // 🚀 Clean up scopes and release process priorities back to Android OS
+                // Clean up scopes and release process priorities back to Android OS
                 pendingResult.finish()
                 scope.cancel()
             }
@@ -67,11 +83,20 @@ class NotificationActionReceiver : BroadcastReceiver() {
     companion object {
         private const val TAG = "NotificationActionReceiver"
 
-        // Centralized identity token for dismissals and canvas modifications
+        /**
+         * Global identifier targeting the active notifications frame.
+         * Used to cancel or alter displayed push banners.
+         */
         const val NOTIFICATION_ID = 1001
 
-        // 🚀 Fully qualified namespace contracts preventing global OS collisions
+        /**
+         * Fully qualified global namespace identifier representing quick fluid consumption clicks.
+         */
         const val ACTION_QUICK_DRINK = "android.waterreminder.action.QUICK_DRINK"
+
+        /**
+         * Bundle tracking key mapped to the integer layout defining transaction volume in Milliliters.
+         */
         const val EXTRA_WATER_AMOUNT = "android.waterreminder.extra.WATER_AMOUNT"
     }
 }

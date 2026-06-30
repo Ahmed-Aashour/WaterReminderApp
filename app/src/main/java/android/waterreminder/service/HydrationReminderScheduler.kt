@@ -10,10 +10,31 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 
-class WaterNotificationScheduler(private val context: Context) {
+/**
+ * Centrally manages scheduling and canceling system-level background alarms for hydration reminders.
+ *
+ * This class interfaces directly with Android's [AlarmManager] to set wake-up triggers that survive
+ * device Doze modes. It safely navigates Android 12+ (API 31) and Android 14+ (API 34) exact alarm
+ * permission constraints by enforcing automatic inexact fallbacks and capturing [SecurityException] conditions.
+ *
+ * @property context The application context used to resolve the system alarm service and build intents.
+ */
+class HydrationReminderScheduler(private val context: Context) {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+    /**
+     * Schedules the next recurring hydration reminder broadcast.
+     *
+     * Depending on system permissions and Android platform version, this will attempt to fire an exact
+     * alarm via [AlarmManager.setExactAndAllowWhileIdle] to minimize delivery drifting. If permissions
+     * are missing or revoked by the user, it transparently drops back to low-battery consumption, inexact
+     * windows via [AlarmManager.setAndAllowWhileIdle].
+     *
+     * @param startTime The daily boundary [LocalTime] indicating when notifications are allowed to start.
+     * @param endTime The daily boundary [LocalTime] indicating when notifications must stop.
+     * @param intervalMinutes The frequency tracking step distance used to space consecutive reminders.
+     */
     fun scheduleNextReminder(startTime: LocalTime, endTime: LocalTime, intervalMinutes: Int) {
         val intent = Intent(context, HydrationReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
@@ -30,7 +51,7 @@ class WaterNotificationScheduler(private val context: Context) {
         )
 
         try {
-            // 🚀 Production Fix: Check exact permission rules for API 31+ (Android 12) through API 34+ (Android 14) safely
+            // Guard rule verifying modern runtime permission realities for API 31 through API 34+
             val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 alarmManager.canScheduleExactAlarms()
             } else {
@@ -54,10 +75,15 @@ class WaterNotificationScheduler(private val context: Context) {
         }
     }
 
+    /**
+     * Cancels any active scheduled hydration reminder alarms currently registered within the Android OS.
+     *
+     * Leverages [PendingIntent.FLAG_NO_CREATE] to cleanly verify if an active intent token context is
+     * floating in memory before dispatching a cancel signal, keeping OS resource interaction safe.
+     */
     fun cancelReminders() {
         val intent = Intent(context, HydrationReminderReceiver::class.java)
 
-        // 🚀 Production Fix: Use FLAG_NO_CREATE to see if the alarm token actually exists first
         val existingIntent = PendingIntent.getBroadcast(
             context,
             ALARM_REQUEST_CODE,
@@ -67,13 +93,17 @@ class WaterNotificationScheduler(private val context: Context) {
 
         if (existingIntent != null) {
             alarmManager.cancel(existingIntent)
-            existingIntent.cancel() // Clear the system wrapper token
+            existingIntent.cancel() // Nullify the wrapper token explicitly
             Log.d(TAG, "Active hydration reminders found and canceled.")
         } else {
             Log.d(TAG, "No active reminder alarms were scheduled. Cancel skipped.")
         }
     }
 
+    /**
+     * Fallback execution block that hooks an inexact wake-up intent into the [AlarmManager].
+     * Allows the OS to batched schedule triggers alongside other system apps to minimize battery depletion.
+     */
     private fun scheduleInexactAlarm(triggerTimeMs: Long, pendingIntent: PendingIntent) {
         alarmManager.setAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -84,8 +114,17 @@ class WaterNotificationScheduler(private val context: Context) {
     }
 
     /**
-     * Calculates the exact Epoch millisecond timestamp for
-     * the next alarm trigger.
+     * Calculates the exact Epoch millisecond timestamp for the next valid alarm trigger.
+     *
+     * This logic manages calculation windows across three specific states:
+     * 1. Current clock time resides before the tracking window opens.
+     * 2. Current clock time resides after the tracking window closes.
+     * 3. Current clock time is actively inside the valid tracking window bounds.
+     *
+     * It natively handles overnight intervals (e.g., custom user fasting schedules running from
+     * 18:45 PM to 04:15 AM into the following calendar morning) without throwing back-date errors.
+     *
+     * @return A [Long] representation of the exact UTC epoch target timestamp.
      */
     private fun calculateNextTriggerMillis(
         startTime: LocalTime,
@@ -94,45 +133,50 @@ class WaterNotificationScheduler(private val context: Context) {
     ): Long {
         val now = LocalDateTime.now()
 
-        // Map today's explicit start and end parameters
+        // Establish base anchor datetime mappings
         var startDateTime = now.with(startTime)
         var endDateTime = now.with(endTime)
 
-        // Handle overnight shifts (e.g., Fasting Mode shifting from 6:45 PM to 4:15 AM tomorrow)
+        // Adjust tracking contexts for overnight active shifts
         if (endTime.isBefore(startTime)) {
             if (now.toLocalTime().isBefore(endTime)) {
-                // We are currently in the post-midnight segment of the overnight window
+                // Currently in the post-midnight segment of an overnight window
                 startDateTime = startDateTime.minusDays(1)
             } else {
-                // We are in the pre-midnight segment; the end time belongs to tomorrow
+                // Currently in the pre-midnight segment; the end target occurs on the following day
                 endDateTime = endDateTime.plusDays(1)
             }
         }
 
-        // CASE 1: Current time is BEFORE the window opens
+        // CASE 1: Current clock time is BEFORE the window opens
         if (now.isBefore(startDateTime)) {
             return startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
 
-        // CASE 2: Current time is AFTER the window closes
+        // CASE 2: Current clock time is AFTER the window has closed
         if (now.isAfter(endDateTime)) {
             // Roll forward to schedule for tomorrow's starting opening window
             return startDateTime.plusDays(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
 
-        // CASE 3: Current time is INSIDE the window -> Schedule next interval trigger step
+        // CASE 3: Current clock time is inside the tracking window bounds -> project forward by step distance
         val nextTriggerInterval = now.plusMinutes(intervalMinutes.toLong())
 
         return if (nextTriggerInterval.isBefore(endDateTime)) {
             nextTriggerInterval.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         } else {
-            // If the next interval lands past the closing threshold, sleep until tomorrow's opening window
+            // Drifting outside closing thresholds forces system dormancy until the next morning opening window
             startDateTime.plusDays(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
     }
 
     companion object {
-        private const val TAG = "WaterNotificationScheduler"
+        private const val TAG = "HydrationReminderScheduler"
+
+        /**
+         * Unique application token used to isolate this component's scheduling transactions
+         * from other pending intents inside the device OS layer.
+         */
         private const val ALARM_REQUEST_CODE = 5001
     }
 }

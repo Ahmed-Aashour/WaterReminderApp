@@ -18,12 +18,29 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
+/**
+ * Intercepts periodic [android.app.AlarmManager] signals to process hydration alert intervals.
+ *
+ * When triggered, this receiver handles three core background responsibilities:
+ * 1. Automatically re-arms and schedules the next downstream reminder step via [HydrationReminderScheduler].
+ * 2. Queries active logging presets directly from the Room database.
+ * 3. Builds and dispatches a high-priority system notification containing interactive logging buttons.
+ */
 @AndroidEntryPoint
 class HydrationReminderReceiver : BroadcastReceiver() {
 
     @Inject lateinit var appSettingsDataStore: AppSettingsDataStore
     @Inject lateinit var resolveTrackingWindowUseCase: ResolveTrackingWindowUseCase
 
+    /**
+     * Executes localized sequence building when a background tracking alarm fires.
+     *
+     * Spawns an isolated I/O thread context under a [goAsync] execution contract to safely complete database
+     * transactions and layout assembly routines before relinquishing process priority back to the OS.
+     *
+     * @param context The application or system execution context environment.
+     * @param intent The trigger details delivered by the system scheduler.
+     */
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "Alarm triggered! Processing hydration background window...")
 
@@ -31,7 +48,7 @@ class HydrationReminderReceiver : BroadcastReceiver() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
         val appContext = context.applicationContext
-        val scheduler = WaterNotificationScheduler(appContext)
+        val scheduler = HydrationReminderScheduler(appContext)
 
         scope.launch {
             try {
@@ -68,7 +85,7 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                 }
                 notificationManager.createNotificationChannel(channel)
 
-                // 🚀 Fetch current catalog presets directly from the database source of truth
+                // Fetch current catalog presets directly from the database source of truth
                 val database = HydrationDatabase.getDatabase(appContext, this)
                 val catalogCups = database.dashboardDao().getCupsCatalogFlow().first()
 
@@ -80,8 +97,8 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setAutoCancel(true)
 
-                // 🚀 Dynamically generate notification actions based on active catalog items
-                // Android notifications support up to 3 action buttons safely
+                // Dynamically generate notification actions based on active catalog items.
+                // Enforces a strict maximum layout ceiling of 3 actions to preserve native system layouts.
                 catalogCups.take(3).forEachIndexed { index, cup ->
                     val amountMl = cup.amountMl
 

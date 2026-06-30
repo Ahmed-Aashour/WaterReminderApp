@@ -15,12 +15,30 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Intercepts low-level system startup signals to re-arm tracking alarms after a device reboot.
+ *
+ * Because Android's [android.app.AlarmManager] completely clears all scheduled alarms upon a device
+ * power-down or restart, this receiver acts as a self-healing node to restore consistency to the
+ * recurring background notification cycle.
+ *
+ * Requires `android.permission.RECEIVE_BOOT_COMPLETED` declaration inside the `AndroidManifest.xml`.
+ */
 @AndroidEntryPoint
 class BootReceiver : BroadcastReceiver() {
 
     @Inject lateinit var appSettingsDataStore: AppSettingsDataStore
     @Inject lateinit var resolveTrackingWindowUseCase: ResolveTrackingWindowUseCase
 
+    /**
+     * Responds to device startup broadcast signals.
+     *
+     * Validates incoming intent strings against platform boot actions, claims an asynchronous execution
+     * token via [goAsync], and evaluates user preference states to schedule the next applicable reminder.
+     *
+     * @param context The execution environment context supplied by the OS.
+     * @param intent The broadcast configuration carrying system intent actions.
+     */
     override fun onReceive(context: Context, intent: Intent) {
         // Guard Clause: Only proceed if action matches official system startup signals
         if (intent.action != Intent.ACTION_BOOT_COMPLETED && intent.action != "android.intent.action.QUICKBOOT_POWERON") {
@@ -36,7 +54,7 @@ class BootReceiver : BroadcastReceiver() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
         val appContext = context.applicationContext
-        val scheduler = WaterNotificationScheduler(appContext)
+        val scheduler = HydrationReminderScheduler(appContext)
 
         scope.launch {
             try {
