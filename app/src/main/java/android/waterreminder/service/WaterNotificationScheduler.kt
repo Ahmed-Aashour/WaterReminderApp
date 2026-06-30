@@ -18,13 +18,11 @@ class WaterNotificationScheduler(private val context: Context) {
         val intent = Intent(context, HydrationReminderReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            0,
+            ALARM_REQUEST_CODE,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // 🌟 Compute the precise trigger timestamp using our operational window logic
-        // TODO: Move the function definition here
         val triggerTimeMs = calculateNextTriggerMillis(
             startTime = startTime,
             endTime = endTime,
@@ -32,31 +30,57 @@ class WaterNotificationScheduler(private val context: Context) {
         )
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms()) {
+            // 🚀 Production Fix: Check exact permission rules for API 31+ (Android 12) through API 34+ (Android 14) safely
+            val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                alarmManager.canScheduleExactAlarms()
+            } else {
+                true
+            }
+
+            if (canScheduleExact) {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerTimeMs,
                     pendingIntent
                 )
+                Log.d(TAG, "Next exact reminder scheduled successfully for epoch timestamp: $triggerTimeMs")
             } else {
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeMs, pendingIntent)
+                // Safe background inexact scheduling fallback if the permission is missing
+                scheduleInexactAlarm(triggerTimeMs, pendingIntent)
             }
-            Log.d("WaterScheduler", "Next reminder scheduled successfully for epoch timestamp: $triggerTimeMs")
-        } catch (_: SecurityException) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeMs, pendingIntent)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException thrown trying to set exact alarm. Falling back to inexact.", e)
+            scheduleInexactAlarm(triggerTimeMs, pendingIntent)
         }
     }
 
     fun cancelReminders() {
         val intent = Intent(context, HydrationReminderReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
+
+        // 🚀 Production Fix: Use FLAG_NO_CREATE to see if the alarm token actually exists first
+        val existingIntent = PendingIntent.getBroadcast(
             context,
-            0,
+            ALARM_REQUEST_CODE,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager.cancel(pendingIntent)
-        Log.d("WaterScheduler", "Hydration reminders canceled.")
+
+        if (existingIntent != null) {
+            alarmManager.cancel(existingIntent)
+            existingIntent.cancel() // Clear the system wrapper token
+            Log.d(TAG, "Active hydration reminders found and canceled.")
+        } else {
+            Log.d(TAG, "No active reminder alarms were scheduled. Cancel skipped.")
+        }
+    }
+
+    private fun scheduleInexactAlarm(triggerTimeMs: Long, pendingIntent: PendingIntent) {
+        alarmManager.setAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerTimeMs,
+            pendingIntent
+        )
+        Log.d(TAG, "Next inexact reminder scheduled successfully for epoch timestamp: $triggerTimeMs")
     }
 
     /**
@@ -105,5 +129,10 @@ class WaterNotificationScheduler(private val context: Context) {
             // If the next interval lands past the closing threshold, sleep until tomorrow's opening window
             startDateTime.plusDays(1).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }
+    }
+
+    companion object {
+        private const val TAG = "WaterNotificationScheduler"
+        private const val ALARM_REQUEST_CODE = 5001
     }
 }
