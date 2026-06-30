@@ -120,7 +120,7 @@ fun SettingsScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(start = 30.dp, end = 30.dp, top = 24.dp, bottom = 24.dp)
+                .padding(24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp)

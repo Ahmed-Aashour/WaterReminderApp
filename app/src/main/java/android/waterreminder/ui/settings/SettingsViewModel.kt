@@ -98,11 +98,16 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val wasSaved = appSettingsDataStore.updateDailyGoal(goalMl)
             if (!wasSaved) {
+                // Fetch the user's selected unit to display localized values, or fall back to plain text strings if context demands
+                val currentUnit = uiState.value.unit
+                val minDisplay = context.getString(currentUnit.formatRes, AppSettingsDataStore.MIN_DAILY_GOAL_ML)
+                val maxDisplay = context.getString(currentUnit.formatRes, AppSettingsDataStore.MAX_DAILY_GOAL_ML)
+
                 _validationErrorChannel.send(
                     context.getString(
-                        R.string.validation_error_goal_out_of_bounds,
-                        AppSettingsDataStore.MIN_DAILY_GOAL_ML,
-                        AppSettingsDataStore.MAX_DAILY_GOAL_ML
+                        R.string.validation_error_out_of_bounds,
+                        minDisplay,
+                        maxDisplay
                     )
                 )
             }

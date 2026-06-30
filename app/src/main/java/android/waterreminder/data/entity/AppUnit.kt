@@ -2,6 +2,7 @@ package android.waterreminder.data.entity
 
 import androidx.annotation.StringRes
 import android.waterreminder.R
+import kotlin.math.roundToInt
 
 enum class AppUnit(
     val key: String,
@@ -14,13 +15,30 @@ enum class AppUnit(
         unitRes = R.string.unit_ml,
         nameRes = R.string.unit_name_ml,
         formatRes = R.string.unit_format_ml
-    ),
+    ){
+        override fun convertFromMl(amountMl: Int): Int = amountMl
+        override fun convertToMl(amount: Int): Int = amount
+    },
     OZ(
         key = "fl oz",
         unitRes = R.string.unit_oz,
         nameRes = R.string.unit_name_oz,
         formatRes = R.string.unit_format_oz
-    );
+    ){
+        private val mlToOzFactor = 0.0338140227
+        override fun convertFromMl(amountMl: Int): Int = (amountMl * mlToOzFactor).roundToInt()
+        override fun convertToMl(amount: Int): Int = (amount / mlToOzFactor).roundToInt()
+    };
+
+    /**
+     * Translates standard baseline milliliters into the target presentation quantity.
+     */
+    abstract fun convertFromMl(amountMl: Int): Int
+
+    /**
+     * Translates a displayed unit quantity back into the standard milliliter baseline.
+     */
+    abstract fun convertToMl(amount: Int): Int
 
     companion object {
         /**

@@ -18,6 +18,7 @@ fun DashboardRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showCustomDialog by remember { mutableStateOf(false) }
+    val dashboardState = (uiState as? DashboardUiState.Success)?.data
 
     when (val state = uiState) {
         is DashboardUiState.Loading -> {
@@ -36,12 +37,19 @@ fun DashboardRoute(
     }
 
     if (showCustomDialog) {
-        CustomWaterInputDialog(
-            onDismiss = { showCustomDialog = false },
-            onConfirm = { customAmount ->
-                viewModel.logWater(customAmount)
-                showCustomDialog = false
-            }
-        )
+        dashboardState?.let { state ->
+            CustomWaterInputDialog(
+                currentUnit = state.drinkButtons.unit,
+                validationEvents = viewModel.validationErrorChannel,
+                onDismiss = { showCustomDialog = false },
+                onConfirmCustomString = { customString ->
+                    viewModel.addCustomWaterPresetAndLog(
+                        inputString = customString,
+                        unit = state.drinkButtons.unit,
+                        onSuccess = { showCustomDialog = false }
+                    )
+                }
+            )
+        }
     }
 }

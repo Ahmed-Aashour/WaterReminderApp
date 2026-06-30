@@ -1,6 +1,8 @@
 package android.waterreminder.ui.dashboard.components
 
 import android.waterreminder.R
+import android.waterreminder.data.entity.AppUnit
+import android.waterreminder.ui.dashboard.DrinkButtonsState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DrinkButtonsSection(
+    state: DrinkButtonsState,
     onPresetClick: (Int) -> Unit,
     onCustomAddClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -45,10 +48,10 @@ fun DrinkButtonsSection(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val presets = listOf(250, 350, 500, 750, 1000)
-                presets.forEach { amount ->
+                state.presetAmountsMl.forEach { amount ->
                     PresetCupButton(
                         amountMl = amount,
+                        unit = state.unit,
                         onClick = onPresetClick
                     )
                 }
@@ -64,7 +67,14 @@ fun DrinkButtonsSection(
 fun DrinkButtonsSectionPreview() {
     ErtawyTheme {
         Box(modifier = Modifier.padding(16.dp)) {
-            DrinkButtonsSection(onPresetClick = {}, onCustomAddClick = {})
+            DrinkButtonsSection(
+                state = DrinkButtonsState(
+                    unit = AppUnit.ML,
+                    presetAmountsMl = listOf(250, 350, 500)
+                ),
+                onPresetClick = {},
+                onCustomAddClick = {}
+            )
         }
     }
 }

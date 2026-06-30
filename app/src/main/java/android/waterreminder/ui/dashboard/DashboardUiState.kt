@@ -1,5 +1,7 @@
 package android.waterreminder.ui.dashboard
 
+import android.waterreminder.data.entity.AppUnit
+
 sealed interface DashboardUiState {
     object Loading : DashboardUiState
     data class Success(val data: DashboardState) : DashboardUiState
@@ -9,8 +11,21 @@ sealed interface DashboardUiState {
 data class DashboardState(
     val streakSection: StreakSectionState,
     val historyLogs: List<DrunkCupHistory>,
-    val currentIntake: Int,
-    val targetIntake: Int
+    val drinkButtons: DrinkButtonsState,
+    val progressDisplay: DisplayIntakeState
+)
+
+data class DrinkButtonsState(
+    val unit: AppUnit,
+    val presetAmountsMl: List<Int>
+)
+
+data class DisplayIntakeState(
+    val currentLabel: String,      // e.g., "1500" or "50"
+    val targetLabel: String,       // e.g., "2000" or "68"
+    val unit: AppUnit,             // Target unit configuration
+    val progressFraction: Float,   // e.g., 0.75f for layout bounds filling
+    val progressPercentage: Int    // e.g., 75 for text display tracking
 )
 
 data class StreakSectionState(

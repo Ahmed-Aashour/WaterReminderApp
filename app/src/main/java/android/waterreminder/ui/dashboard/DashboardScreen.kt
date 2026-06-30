@@ -13,8 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
@@ -43,10 +42,10 @@ fun DashboardScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 24.dp)
-                .verticalScroll(rememberScrollState()),
+                .statusBarsPadding()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Header(
                 title = stringResource(R.string.app_name),
@@ -60,18 +59,20 @@ fun DashboardScreen(
             )
 
             ProgressBar(
-                currentIntakeMl = state.currentIntake,
-                targetIntakeMl = state.targetIntake
+                state = state.progressDisplay,
             )
 
             DrinkButtonsSection(
+                state = state.drinkButtons,
                 onPresetClick = onAddWater,
                 onCustomAddClick = onCustomAddTrigger
             )
 
             TodayHistorySection(
                 historyItems = state.historyLogs,
-                onDeleteLog = onDeleteLog
+                currentUnit = state.drinkButtons.unit,
+                onDeleteLog = onDeleteLog,
+                modifier = Modifier.weight(1f)
             )
 
             HydrationStreakSection(

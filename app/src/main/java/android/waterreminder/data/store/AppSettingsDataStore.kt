@@ -40,7 +40,10 @@ class AppSettingsDataStore(private val context: Context) {
         val DEFAULT_FASTING_END_TIME: LocalTime = LocalTime.of(4, 15)   // 04:15
 
         const val MIN_DAILY_GOAL_ML = 1000
-        const val MAX_DAILY_GOAL_ML = 8000
+        const val MAX_DAILY_GOAL_ML = 4000
+
+        const val MIN_CUSTOM_INTAKE_ML = 10      // Smallest sip (e.g., ~0.3 oz)
+        const val MAX_CUSTOM_INTAKE_ML = 4000    // Largest realistic container (4L / ~135 oz)
 
         const val ML_TO_OZ_FACTOR = 0.0338140227
 

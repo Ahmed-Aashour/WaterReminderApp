@@ -1,14 +1,19 @@
 package android.waterreminder.ui.dashboard
 
+import android.content.Context
+import android.waterreminder.R
 import android.waterreminder.data.di.TimeFormat12Hour
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -21,22 +26,29 @@ class DashboardViewModel @Inject constructor(
     private val repository: WaterRepository,
     appSettingsDataStore: AppSettingsDataStore,
     @param:TimeFormat12Hour
-    private val timeFormatter: DateTimeFormatter
+    private val timeFormatter: DateTimeFormatter,
+    @param:ApplicationContext
+    private val context: Context
 ) : ViewModel() {
+
+    private val _validationErrorChannel = Channel<String>(Channel.BUFFERED)
+    val validationErrorChannel = _validationErrorChannel.receiveAsFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<DashboardUiState> = appSettingsDataStore.settingsFlow
         .flatMapLatest { settingsState ->
             val startOfToday = getStartOfToday()
             val targetIntakeGoal = settingsState.dailyGoalMl
+            val selectedUnit = settingsState.unit
             val eligiblePastDaysStart = getPastDaysTimestamp() // Look back 5 weeks for streaks
 
             // Combine only raw streams needed from the repository
             combine(
                 repository.getTodayTotalIntake(startOfToday),
                 repository.getTodayHistoryLogs(startOfToday),
-                repository.getHistorySince(eligiblePastDaysStart)
-            ) { currentIntakeSum, todayLogs, longTermLogs ->
+                repository.getHistorySince(eligiblePastDaysStart),
+                repository.getCupsCatalog()
+            ) { currentIntakeSum, todayLogs, longTermLogs, cupsCatalog ->
 
                 val now = Calendar.getInstance()
                 val todayIndex = now.get(Calendar.DAY_OF_WEEK) - 1 // Sunday = 0
@@ -56,6 +68,26 @@ class DashboardViewModel @Inject constructor(
                 // 3. Calculate streak directly with database metrics
                 val computedStreak = calculateStreak(longTermLogs, targetIntakeGoal, currentIntakeSum)
 
+                val progressFraction = if (targetIntakeGoal > 0) {
+                    (currentIntakeSum.toFloat() / targetIntakeGoal.toFloat()).coerceIn(0f, 1f)
+                } else {
+                    0f
+                }
+
+                val progressPercentage = if (targetIntakeGoal > 0) {
+                    (currentIntakeSum * 100) / targetIntakeGoal
+                } else {
+                    0
+                }
+
+                val displayState = DisplayIntakeState(
+                    currentLabel = selectedUnit.convertFromMl(currentIntakeSum).toString(),
+                    targetLabel = selectedUnit.convertFromMl(targetIntakeGoal).toString(),
+                    unit = selectedUnit,
+                    progressFraction = progressFraction,
+                    progressPercentage = progressPercentage
+                )
+
                 DashboardUiState.Success(
                     DashboardState(
                         streakSection = StreakSectionState(
@@ -64,8 +96,11 @@ class DashboardViewModel @Inject constructor(
                             days = weeklyNodes
                         ),
                         historyLogs = mappedHistory,
-                        currentIntake = currentIntakeSum, // Calculated by SQLite!
-                        targetIntake = targetIntakeGoal
+                        drinkButtons = DrinkButtonsState(
+                            unit = selectedUnit,
+                            presetAmountsMl = cupsCatalog.map { it.amountMl }
+                        ),
+                        progressDisplay = displayState
                     )
                 )
             }
@@ -82,6 +117,46 @@ class DashboardViewModel @Inject constructor(
     fun logWater(amountMl: Int) {
         viewModelScope.launch {
             repository.logWaterConsumption(amountMl)
+        }
+    }
+
+    fun addCustomWaterPresetAndLog(
+        inputString: String,
+        unit: AppUnit,
+        onSuccess: () -> Unit
+    ) {
+        val parsedInt = inputString.trim().toIntOrNull()
+        if (parsedInt == null) {
+            viewModelScope.launch {
+                _validationErrorChannel.send(
+                    context.getString(R.string.validation_error_invalid_number)
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            // Dynamic custom layout upper bound calculations matching current units
+            val minAmount = unit.convertFromMl(AppSettingsDataStore.MIN_CUSTOM_INTAKE_ML)
+            val maxAmount = unit.convertFromMl(AppSettingsDataStore.MAX_CUSTOM_INTAKE_ML)
+
+            if (parsedInt !in minAmount..maxAmount) {
+                _validationErrorChannel.send(
+                    context.getString(
+                        R.string.validation_error_out_of_bounds,
+                        context.getString(unit.formatRes, minAmount),
+                        context.getString(unit.formatRes, maxAmount)
+                    )
+                )
+                return@launch
+            }
+
+            // Execution success sequence path
+            val amountMl = unit.convertToMl(parsedInt) // Reverse convert back to mL data types for repository storage tracking
+            repository.addCupToCatalog(amountMl)
+            repository.logWaterConsumption(amountMl)
+
+            onSuccess()
         }
     }
 
