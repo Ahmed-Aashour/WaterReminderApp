@@ -134,8 +134,5 @@
     <string name="notification_channel_description">Reminders to drink water regularly</string>
     <string name="notification_reminder_title">Time to Hydrate your body! 💧</string>
     <string name="notification_reminder_text">Go drink glass of water and enter the amount</string>
-    <string name="notification_action_quick_add">+250 ml</string>
-    <string name="notification_action_custom">Custom Amount</string>
-    <string name="notification_remote_input_label">Amount in ml (e.g., 350)</string>
 
 </resources>
