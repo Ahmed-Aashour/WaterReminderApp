@@ -62,11 +62,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     companion object {
         private const val TAG = "NotificationAction"
-        private const val NOTIFICATION_ID = 1
         private const val DEFAULT_QUICK_DRINK_AMOUNT_ML = 250
+        const val NOTIFICATION_ID = 1001
 
         const val ACTION_QUICK_DRINK = "ACTION_QUICK_DRINK"
         const val ACTION_CUSTOM_DRINK = "ACTION_CUSTOM_DRINK"
+        const val EXTRA_WATER_AMOUNT = "android.waterreminder.extra.WATER_AMOUNT"
         const val KEY_CUSTOM_WATER_AMOUNT = "KEY_CUSTOM_WATER_AMOUNT"
     }
 }

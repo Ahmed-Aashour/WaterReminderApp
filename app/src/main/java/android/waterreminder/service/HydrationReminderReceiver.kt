@@ -9,17 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.waterreminder.R
+import android.waterreminder.data.database.HydrationDatabase
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import androidx.core.app.NotificationCompat
-import androidx.core.app.RemoteInput
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,55 +68,50 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                 }
                 notificationManager.createNotificationChannel(channel)
 
-                // 1. Quick Add Intent Setup (+250ml)
-                val quickDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-                    action = NotificationActionReceiver.ACTION_QUICK_DRINK
-                }
-                val quickDrinkPendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    101,
-                    quickDrinkIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
+                // 🚀 Fetch current catalog presets directly from the database source of truth
+                val database = HydrationDatabase.getDatabase(appContext, this)
+                val catalogCups = database.dashboardDao().getCupsCatalogFlow().first()
 
-                // 2. Custom Text Field Input Setup via RemoteInput
-                val remoteInput = RemoteInput.Builder(NotificationActionReceiver.KEY_CUSTOM_WATER_AMOUNT).apply {
-                    setLabel(appContext.getString(R.string.notification_remote_input_label))
-                }.build()
-
-                val customDrinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-                    action = NotificationActionReceiver.ACTION_CUSTOM_DRINK
-                }
-                val customDrinkPendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    102,
-                    customDrinkIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE // Must stay mutable for inline keyboard input
-                )
-
-                // 3. Assemble Localized Interactive Notification
-                val notification = NotificationCompat.Builder(context, channelId)
+                val notificationBuilder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle(appContext.getString(R.string.notification_reminder_title))
                     .setContentText(appContext.getString(R.string.notification_reminder_text))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setAutoCancel(true)
-                    .addAction(
-                        android.R.drawable.ic_menu_add,
-                        appContext.getString(R.string.notification_action_quick_add),
-                        quickDrinkPendingIntent
-                    )
-                    .addAction(
-                        NotificationCompat.Action.Builder(
-                            android.R.drawable.ic_menu_edit,
-                            appContext.getString(R.string.notification_action_custom),
-                            customDrinkPendingIntent
-                        ).addRemoteInput(remoteInput).build()
-                    )
-                    .build()
 
-                notificationManager.notify(NOTIFICATION_ID, notification)
+                // 🚀 Dynamically generate notification actions based on active catalog items
+                // Android notifications support up to 3 action buttons safely
+                catalogCups.take(3).forEachIndexed { index, cup ->
+                    val amountMl = cup.amountMl
+
+                    // Format the button text dynamically according to preferred user units (ml / fl oz)
+                    val convertedAmount = prefs.unit.convertFromMl(amountMl)
+                    val label = appContext.getString(prefs.unit.formatRes, convertedAmount)
+
+                    val drinkIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+                        action = NotificationActionReceiver.ACTION_QUICK_DRINK
+                        putExtra(NotificationActionReceiver.EXTRA_WATER_AMOUNT, amountMl)
+                    }
+
+                    val pendingIntent = PendingIntent.getBroadcast(
+                        context,
+                        index + 200, // Unique request code per preset button
+                        drinkIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+
+                    notificationBuilder.addAction(
+                        android.R.drawable.ic_menu_add,
+                        label,
+                        pendingIntent
+                    )
+                }
+
+                notificationManager.notify(
+                    NotificationActionReceiver.NOTIFICATION_ID,
+                    notificationBuilder.build()
+                )
                 Log.d(TAG, "Hydration reminder notification dispatched successfully.")
 
             } catch (e: Exception) {
@@ -134,6 +125,5 @@ class HydrationReminderReceiver : BroadcastReceiver() {
 
     companion object {
         private const val TAG = "HydrationReminderReceiver"
-        private const val NOTIFICATION_ID = 1
     }
 }
