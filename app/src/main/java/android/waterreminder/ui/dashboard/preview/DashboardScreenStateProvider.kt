@@ -9,6 +9,22 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class DashboardScreenStateProvider : PreviewParameterProvider<DashboardState> {
     override val values: Sequence<DashboardState> = listOf(
+        // 🚀 Scenario 0: Empty History Log State (Fresh Day Start)
+        DashboardState(
+            progressDisplay = DisplayIntakeState(
+                currentLabel = "0",
+                targetLabel = "2500",
+                unit = AppUnit.ML,
+                progressFraction = 0.0f,
+                progressPercentage = 0
+            ),
+            historyLogs = emptyList(), // Testing the new action-driven empty state UX
+            drinkButtons = DrinkButtonsState(
+                unit = AppUnit.ML,
+                presetAmountsMl = listOf(250, 350, 500)
+            ),
+            streakSection = MockStreakData.highStreakMidWeek // Preserving an active streak context
+        ),
         // Scenario 1: High Streak (365 Days) / Mid-Week Progression (mL setup)
         DashboardState(
             progressDisplay = DisplayIntakeState(
