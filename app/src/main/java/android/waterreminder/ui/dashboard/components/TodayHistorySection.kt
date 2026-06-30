@@ -1,7 +1,7 @@
 package android.waterreminder.ui.dashboard.components
 
-import android.waterreminder.R
 import android.content.res.Configuration
+import android.waterreminder.R
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.DashboardSection
 import android.waterreminder.ui.dashboard.DrunkCupHistory
@@ -10,9 +10,7 @@ import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -39,54 +37,56 @@ fun TodayHistorySection(
     onDeleteLog: (DrunkCupHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-
     DashboardSection(
         title = stringResource(R.string.dashboard_section_history_title),
         modifier = modifier
     ) {
-        // --- Core Container Card Frame (342dp x 94dp) ---
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(94.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(15.dp)
-                )
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(15.dp)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            if (historyItems.isEmpty()) {
-                // Empty State Handler View
-                Text(
-                    text = stringResource(R.string.dashboard_history_empty_state),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center
+        if (historyItems.isEmpty()) {
+            // Empty State Box
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
                     )
+                    .border(
+                        width = 1.5.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(vertical = 20.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.dashboard_history_empty_state_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
                 )
-            } else {
-                // Scrollable Content Row for active logs
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .horizontalScroll(scrollState),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    historyItems.forEach { item ->
-                        DismissibleHistoryCupChip(
-                            item = item,
-                            currentUnit = currentUnit,
-                            onDismissed = { onDeleteLog(item) }
-                        )
-                    }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = stringResource(R.string.dashboard_history_empty_state_subtitle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            // Clean Vertical Layout Stack
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                historyItems.forEach { item ->
+                    DismissibleHistoryCupChip(
+                        item = item,
+                        currentUnit = currentUnit,
+                        onDismissed = { onDeleteLog(item) }
+                    )
                 }
             }
         }
@@ -115,7 +115,6 @@ fun DismissibleHistoryCupChip(
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier.clip(itemShape),
-        enableDismissFromStartToEnd = false, // Only allow swiping left (EndToStart)
         backgroundContent = {
             val isDismissing = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
             val backgroundColor by animateColorAsState(
@@ -153,47 +152,53 @@ private fun HistoryCupChip(
     shape: RoundedCornerShape,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Row(
         modifier = modifier
-            .width(86.dp)
-            .height(64.dp)
-            .background(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), shape = shape) // Ensure opacity over background actions
+            .fillMaxWidth()
+            .height(36.dp)
+            .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = shape)
             .border(width = 1.5.dp, color = MaterialTheme.colorScheme.primary, shape = shape)
-            .padding(vertical = 4.dp, horizontal = 6.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // 1. TOP: Debug Log Database Primary Key Identifier (Tiny size, easy to rip out later)
-        Text(
-            text = "ID: ${item.id}",
-            style = MaterialTheme.typography.labelSmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                fontSize = 8.sp,
-                fontWeight = FontWeight.Light
-            ),
-            maxLines = 1
-        )
+        // Left Side: Amount and Debug ID placed horizontally next to each other
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp) // Gap between amount and ID
+        ) {
+            // 1. MAIN AMOUNT
+            Text(
+                text = stringResource(
+                    currentUnit.formatRes,
+                    currentUnit.convertFromMl(item.amountMl)
+                ),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp
+                ),
+                maxLines = 1
+            )
 
-        // 2. CENTER: Dynamic Formatted Hydration Quantity
-        Text(
-            text = stringResource(
-                currentUnit.formatRes,
-                currentUnit.convertFromMl(item.amountMl)
-            ),
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            ),
-            maxLines = 1
-        )
+            // 2. DEBUG ID (Placed right next to the amount, easy to strip out later)
+            Text(
+                text = "[ID: ${item.id}]",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Light
+                ),
+                maxLines = 1
+            )
+        }
 
-        // 3. BOTTOM: Contextual Timestamp
+        // Right Side: 3. TIMESTAMP
         Text(
             text = item.timeLogged,
             style = MaterialTheme.typography.labelSmall.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 10.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Medium
             ),
             maxLines = 1

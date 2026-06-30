@@ -120,6 +120,8 @@
 
     <!-- Section: Hydration Streak -->
     <string name="dashboard_section_streak_title">Hydration Streak</string>
+    <string name="dashboard_history_empty_state_title">Stay Hydrated Today!</string>
+    <string name="dashboard_history_empty_state_subtitle">Tap a cup above to log your first drink.</string>
     <plurals name="dashboard_streak_count_format">
         <item quantity="one">%1$d day hydrated!</item>
         <item quantity="other">%1$d days hydrated!</item>
