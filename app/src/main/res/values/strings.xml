@@ -134,5 +134,6 @@
     <string name="notification_channel_description">Reminders to drink water regularly</string>
     <string name="notification_reminder_title">Stay Hydrated! 💧</string>
     <string name="notification_reminder_text">Tap below to log your next glass.</string>
+    <string name="notification_progress_prefix">Progress</string>
 
 </resources>

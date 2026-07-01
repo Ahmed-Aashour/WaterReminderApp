@@ -10,6 +10,7 @@ import android.content.Intent
 import android.util.Log
 import android.waterreminder.R
 import android.waterreminder.data.database.HydrationDatabase
+import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import androidx.core.app.NotificationCompat
@@ -89,13 +90,24 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                 val database = HydrationDatabase.getDatabase(appContext, this)
                 val catalogCups = database.dashboardDao().getCupsCatalogFlow().first()
 
+                // Fetch current total intake from database source of truth
+                val startOfDayTimestamp = java.time.LocalDate.now()
+                    .atStartOfDay(java.time.ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+
+                val totalIntakeMl = database.dashboardDao().getTodayTotalIntakeFlow(startOfDayTimestamp).first()
+
                 val notificationBuilder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle(appContext.getString(R.string.notification_reminder_title))
                     .setContentText(appContext.getString(R.string.notification_reminder_text))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setAutoCancel(true)
+                    .setAutoCancel(false) // Let the user swipe it away manually when done tracking!
+
+                // Inject dynamic progress data
+                updateProgressContent(notificationBuilder, appContext, totalIntakeMl, prefs.dailyGoalMl, prefs.unit)
 
                 // Dynamically generate notification actions based on active catalog items.
                 // Enforces a strict maximum layout ceiling of 3 actions to preserve native system layouts.
@@ -138,6 +150,26 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                 scope.cancel()
             }
         }
+    }
+
+    private fun updateProgressContent(
+        builder: NotificationCompat.Builder,
+        context: Context,
+        totalIntakeMl: Int,
+        dailyGoalMl: Int,
+        unit: AppUnit
+    ) {
+        val convertedIntake = unit.convertFromMl(totalIntakeMl)
+        val convertedGoal = unit.convertFromMl(dailyGoalMl)
+
+        // Example format: "Progress: 1200 / 2000 ml" or "Progress: 40 / 67 fl oz"
+        val progressText = "${context.getString(R.string.notification_progress_prefix)}: " +
+                "$convertedIntake / $convertedGoal ${context.getString(unit.unitRes)}"
+
+        builder.setContentText(progressText)
+
+        // Optional: Add a real native progress bar inside the notification deck!
+        builder.setProgress(dailyGoalMl, totalIntakeMl, false)
     }
 
     companion object {
