@@ -11,6 +11,7 @@ import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -101,7 +102,7 @@ fun TodayHistorySection(
                     DismissibleHistoryCupChip(
                         item = item,
                         currentUnit = currentUnit,
-                        onDismissed = { onDeleteLog(item) }
+                        onDeleteConfirmed = { onDeleteLog(item) }
                     )
                 }
             }
@@ -117,38 +118,45 @@ fun TodayHistorySection(
 fun DismissibleHistoryCupChip(
     item: DrunkCupHistory,
     currentUnit: AppUnit,
-    onDismissed: () -> Unit,
+    onDeleteConfirmed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val itemShape = RoundedCornerShape(12.dp)
-    val dismissState = rememberSwipeToDismissBoxState()
-    LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            onDismissed()
-        }
-    }
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { incomingValue ->
+            // Returning false traps the swipe state at the threshold instead of firing off-screen
+            incomingValue != SwipeToDismissBoxValue.EndToStart
+        },
+        positionalThreshold = { totalWidth -> totalWidth * 0.25f } // Easier to trigger reveal action
+    )
 
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier.clip(itemShape),
+        enableDismissFromStartToEnd = false,
         backgroundContent = {
-            val isDismissing = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+            val hasRevealedAction = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
             val backgroundColor by animateColorAsState(
-                targetValue = if (isDismissing) MaterialTheme.colorScheme.error else Color.Transparent,
-                label = "DeleteBackgroundAnimation"
+                targetValue = if (hasRevealedAction) MaterialTheme.colorScheme.errorContainer else Color.Transparent,
+                label = "RevealBackgroundAnimation"
+            )
+            val iconColor by animateColorAsState(
+                targetValue = if (hasRevealedAction) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.error,
+                label = "RevealIconColorAnimation"
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(backgroundColor)
-                    .padding(end = 12.dp),
+                    .clickable { onDeleteConfirmed() } // Tap confirmation context execution
+                    .padding(end = 16.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.dashboard_accessibility_delete_log),
-                    tint = if (isDismissing) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.error
+                    tint = iconColor
                 )
             }
         }
