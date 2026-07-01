@@ -22,7 +22,8 @@ fun CancelButton(
 ) {
     TextButton(
         onClick = onClick,
-        modifier = modifier.height(40.dp)
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp)
     ) {
         Text(
             text = text,
@@ -40,13 +41,13 @@ fun ConfirmButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(40.dp),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        shape = MaterialTheme.shapes.medium
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
     ) {
         Text(
             text = text,
@@ -63,13 +64,13 @@ fun ClearButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(40.dp),
+        modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             contentColor = MaterialTheme.colorScheme.onErrorContainer
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-        shape = MaterialTheme.shapes.medium
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
     ) {
         Text(
             text = text,
