@@ -7,6 +7,7 @@ import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.entity.WaterHistoryEntity
 import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
+import android.waterreminder.utils.startOfDayEpochMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
@@ -37,7 +39,7 @@ class DashboardViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<DashboardUiState> = appSettingsDataStore.settingsFlow
         .flatMapLatest { settingsState ->
-            val startOfToday = getStartOfToday()
+            val startOfToday = LocalDate.now().startOfDayEpochMillis
             val targetIntakeGoal = settingsState.dailyGoalMl
             val selectedUnit = settingsState.unit
             val eligiblePastDaysStart = getPastDaysTimestamp() // Look back 5 weeks for streaks
@@ -168,15 +170,14 @@ class DashboardViewModel @Inject constructor(
 
     // --- Core Calculation Helper Functions ---
 
-    // Helper properties to keep track of boundaries cleanly on flow emission runs
-    private fun getStartOfToday(): Long = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
-
-    private fun getPastDaysTimestamp(daysBefore: Int = 35): Long = Calendar.getInstance().apply {
-        add(Calendar.DAY_OF_YEAR, -daysBefore)
-        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    /**
+     * Calculates the start-of-day Unix Epoch millisecond timestamp for a given number
+     * of days in the past, accounting for the device's local time zone profile.
+     */
+    private fun getPastDaysTimestamp(daysBefore: Int = 35): Long =
+        LocalDate.now()
+            .minusDays(daysBefore.toLong())
+            .startOfDayEpochMillis
 
     private fun buildWeeklyNodes(
         logs: List<WaterHistoryEntity>,
