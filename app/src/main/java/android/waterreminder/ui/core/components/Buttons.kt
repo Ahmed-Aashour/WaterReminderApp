@@ -5,11 +5,16 @@ import android.waterreminder.R
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,10 +25,12 @@ fun CancelButton(
     modifier: Modifier = Modifier,
     text: String = stringResource(R.string.action_cancel)
 ) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp)
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.small)
+            .clickable { onClick() }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
@@ -39,42 +46,54 @@ fun ConfirmButton(
     modifier: Modifier = Modifier,
     text: String = stringResource(R.string.action_confirm)
 ) {
-    Button(
+    BaseActionButton(
+        text = text,
         onClick = onClick,
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        borderColor = MaterialTheme.colorScheme.primary,
+        modifier = modifier
+    )
 }
 
 @Composable
 fun ClearButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    text: String = stringResource(R.string.action_clear) // Ensure action_clear is defined in strings.xml (e.g., "Clear")
+    text: String = stringResource(R.string.action_clear)
 ) {
-    Button(
+    BaseActionButton(
+        text = text,
         onClick = onClick,
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        borderColor = MaterialTheme.colorScheme.error,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun BaseActionButton(
+    text: String,
+    onClick: () -> Unit,
+    containerColor: Color,
+    contentColor: Color,
+    borderColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(containerColor)
+            .border(BorderStroke(1.dp, borderColor), CircleShape)
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = contentColor
         )
     }
 }
