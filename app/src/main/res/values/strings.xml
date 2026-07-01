@@ -132,7 +132,7 @@
     <!-- ===================================================================== -->
     <string name="notification_channel_name">Hydration Reminders</string>
     <string name="notification_channel_description">Reminders to drink water regularly</string>
-    <string name="notification_reminder_title">Time to Hydrate your body! 💧</string>
-    <string name="notification_reminder_text">Go drink glass of water and enter the amount</string>
+    <string name="notification_reminder_title">Stay Hydrated! 💧</string>
+    <string name="notification_reminder_text">Tap below to log your next glass.</string>
 
 </resources>
