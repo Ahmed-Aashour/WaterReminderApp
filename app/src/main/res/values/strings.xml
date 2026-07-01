@@ -118,6 +118,10 @@
     <string name="dashboard_history_chip_id_format">%1$d</string>
     <string name="dashboard_history_chip_amount_format">%1$d\nml</string>
 
+    <string name="dashboard_accessibility_clear_all_history">Clear all history entries</string>
+    <string name="clear_history_dialog_title">Clear History</string>
+    <string name="clear_history_dialog_description">Are you sure you want to permanently clear all water log records? This action cannot be undone.</string>
+
     <!-- Section: Hydration Streak -->
     <string name="dashboard_section_streak_title">Hydration Streak</string>
     <string name="dashboard_history_empty_state_title">Stay Hydrated Today!</string>
