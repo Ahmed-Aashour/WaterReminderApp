@@ -3,7 +3,6 @@ package android.waterreminder.ui.core.components
 import android.content.res.Configuration
 import android.waterreminder.R
 import android.waterreminder.ui.theme.ErtawyTheme
-import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,7 +26,7 @@ fun CancelButton(
     ) {
         Text(
             text = text,
-            style = ErtawyTypography.sectionStyle,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary
         )
     }
@@ -51,7 +50,7 @@ fun ConfirmButton(
     ) {
         Text(
             text = text,
-            style = ErtawyTypography.sectionStyle
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
@@ -74,7 +73,7 @@ fun ClearButton(
     ) {
         Text(
             text = text,
-            style = ErtawyTypography.sectionStyle
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }

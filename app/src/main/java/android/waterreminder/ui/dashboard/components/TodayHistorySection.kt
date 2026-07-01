@@ -3,19 +3,15 @@ package android.waterreminder.ui.dashboard.components
 import android.content.res.Configuration
 import android.waterreminder.R
 import android.waterreminder.data.entity.AppUnit
+import android.waterreminder.ui.core.components.ClearButton
 import android.waterreminder.ui.core.components.DashboardSection
-import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
@@ -46,10 +42,7 @@ fun TodayHistorySection(
         title = stringResource(R.string.dashboard_section_history_title),
         actionButton = {
             if (historyItems.isNotEmpty()) {
-                // Utilizing core component library structure
-                SquareIconButton(
-                    icon = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.dashboard_accessibility_clear_all_history),
+                ClearButton(
                     onClick = onClearAllHistoryTrigger
                 )
             }
