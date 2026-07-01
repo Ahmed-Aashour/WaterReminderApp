@@ -56,6 +56,29 @@ fun ConfirmButton(
     }
 }
 
+@Composable
+fun ClearButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    text: String = stringResource(R.string.action_clear) // Ensure action_clear is defined in strings.xml (e.g., "Clear")
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.height(40.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Text(
+            text = text,
+            style = ErtawyTypography.sectionStyle
+        )
+    }
+}
+
 @Preview(name = "Light Mode", showBackground = true)
 @Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -66,12 +89,13 @@ fun DialogButtonsPreview() {
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CancelButton(onClick = {})
                 ConfirmButton(onClick = {})
+                ClearButton(onClick = {})
             }
         }
     }

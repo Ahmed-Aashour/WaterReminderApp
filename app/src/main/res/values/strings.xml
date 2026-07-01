@@ -23,6 +23,7 @@
     <string name="content_description_navigate_back">Navigate back</string>
 
     <!-- Shared Actions & Input Controls -->
+    <string name="action_clear">Clear</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_confirm">Confirm</string>
     <string name="text_input_placeholder_custom">Enter custom value…</string>
