@@ -122,26 +122,27 @@ fun DismissibleHistoryCupChip(
     modifier: Modifier = Modifier
 ) {
     val itemShape = RoundedCornerShape(12.dp)
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { incomingValue ->
-            // Returning false traps the swipe state at the threshold instead of firing off-screen
-            incomingValue != SwipeToDismissBoxValue.EndToStart
-        },
-        positionalThreshold = { totalWidth -> totalWidth * 0.25f } // Easier to trigger reveal action
-    )
+    val dismissState = rememberSwipeToDismissBoxState()
+
+    LaunchedEffect(dismissState.currentValue) {
+        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+        }
+    }
 
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier.clip(itemShape),
         enableDismissFromStartToEnd = false,
         backgroundContent = {
-            val hasRevealedAction = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+            val isSwipingToReveal = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+
             val backgroundColor by animateColorAsState(
-                targetValue = if (hasRevealedAction) MaterialTheme.colorScheme.errorContainer else Color.Transparent,
+                targetValue = if (isSwipingToReveal) MaterialTheme.colorScheme.errorContainer else Color.Transparent,
                 label = "RevealBackgroundAnimation"
             )
             val iconColor by animateColorAsState(
-                targetValue = if (hasRevealedAction) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.error,
+                targetValue = if (isSwipingToReveal) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.error,
                 label = "RevealIconColorAnimation"
             )
 
