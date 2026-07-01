@@ -11,6 +11,7 @@ import android.util.Log
 import android.waterreminder.R
 import android.waterreminder.data.database.HydrationDatabase
 import android.waterreminder.data.entity.AppUnit
+import android.waterreminder.data.repository.WaterRepository
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import android.waterreminder.utils.startOfDayEpochMillis
@@ -34,7 +35,7 @@ class HydrationReminderReceiver : BroadcastReceiver() {
 
     @Inject lateinit var appSettingsDataStore: AppSettingsDataStore
     @Inject lateinit var resolveTrackingWindowUseCase: ResolveTrackingWindowUseCase
-
+    @Inject lateinit var waterRepository: WaterRepository
     /**
      * Executes localized sequence building when a background tracking alarm fires.
      *
@@ -88,13 +89,10 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                 }
                 notificationManager.createNotificationChannel(channel)
 
-                // Fetch current catalog presets directly from the database source of truth
-                val database = HydrationDatabase.getDatabase(appContext, this)
-                val catalogCups = database.dashboardDao().getCupsCatalogFlow().first()
-
-                // Fetch current total intake from database source of truth
+                // Fetch current catalog presets & total intake
+                val catalogCups = waterRepository.getCupsCatalog().first()
                 val startOfDay = LocalDate.now().startOfDayEpochMillis
-                val totalIntakeMl = database.dashboardDao().getTodayTotalIntakeFlow(startOfDay).first()
+                val totalIntakeMl = waterRepository.getTodayTotalIntake(startOfDay).first()
 
                 val notificationBuilder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
