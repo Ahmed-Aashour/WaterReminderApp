@@ -30,6 +30,7 @@ fun DashboardRoute(
                 onAddWater = { amount -> viewModel.logWater(amount) },
                 onCustomAddTrigger = { showCustomDialog = true },
                 onDeleteLog = { log -> viewModel.deleteWaterLog(log) },
+                onClearAllHistory = { viewModel.clearAllWaterHistory() },
                 onNavigateToSettings = onNavigateToSettings,
                 modifier = modifier
             )

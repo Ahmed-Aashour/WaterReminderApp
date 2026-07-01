@@ -168,6 +168,12 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun clearAllWaterHistory() {
+        viewModelScope.launch {
+            repository.clearAllHistoryLogs()
+        }
+    }
+
     // --- Core Calculation Helper Functions ---
 
     /**

@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.waterreminder.R
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.DashboardSection
+import android.waterreminder.ui.core.components.SquareIconButton
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
@@ -37,10 +38,21 @@ fun TodayHistorySection(
     historyItems: List<DrunkCupHistory>,
     currentUnit: AppUnit,
     onDeleteLog: (DrunkCupHistory) -> Unit,
+    onClearAllHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     DashboardSection(
         title = stringResource(R.string.dashboard_section_history_title),
+        actionButton = {
+            if (historyItems.isNotEmpty()) {
+                // Utilizing core component library structure
+                SquareIconButton(
+                    icon = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.dashboard_accessibility_clear_all_history),
+                    onClick = onClearAllHistory
+                )
+            }
+        },
         modifier = modifier
     ) {
         if (historyItems.isEmpty()) {
@@ -225,7 +237,8 @@ fun TodayHistoryDarkModePreview(
             TodayHistorySection(
                 historyItems = mockHistory,
                 currentUnit = AppUnit.ML,
-                onDeleteLog = {}
+                onDeleteLog = {},
+                onClearAllHistory = {},
             )
         }
     }
