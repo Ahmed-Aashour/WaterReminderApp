@@ -42,9 +42,9 @@ abstract class HydrationDatabase : RoomDatabase() {
                             // Run pre-population safely using the freshly built instance reference
                             scope.launch(Dispatchers.IO) {
                                 instance?.dashboardDao()?.let { dao ->
-                                    dao.insertCup(CupsCatalogEntity(amountMl = 250))
-                                    dao.insertCup(CupsCatalogEntity(amountMl = 350))
-                                    dao.insertCup(CupsCatalogEntity(amountMl = 500))
+                                    CupsCatalogEntity.DEFAULT_PRESET_CUPS.forEach { amount ->
+                                        dao.insertCup(CupsCatalogEntity(amountMl = amount))
+                                    }
                                 }
                             }
                         }

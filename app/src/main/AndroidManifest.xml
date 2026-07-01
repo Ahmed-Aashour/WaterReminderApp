@@ -2,18 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permission to show notifications (Required for Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Permission to schedule alarms exactly -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Required permissions for accessing network-based and cellular location info -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        android:name=".WaterReminder"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,7 +22,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
-        android:name=".WaterReminder"
         tools:targetApi="31">
         <activity
             android:name=".ui.MainActivity"
@@ -34,23 +33,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Receiver of alarm signals -->
+
         <receiver
-                android:name=".service.WaterReminderReceiver"
+                android:name=".service.HydrationReminderReceiver"
                 android:enabled="true"
                 android:exported="false" />
-        <!-- New Action Receiver Entry -->
+
         <receiver
                 android:name=".service.NotificationActionReceiver"
                 android:enabled="true"
                 android:exported="false" />
-        <!-- Receiver of Boot Completion -->
+
         <receiver
             android:name=".service.BootReceiver"
             android:enabled="true"
-            android:exported="false"> <intent-filter android:priority="999">
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-            <action android:name="android.intent.action.QUICKBOOT_POWERON" /> </intent-filter>
+            android:exported="true">
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
         </receiver>
     </application>
 

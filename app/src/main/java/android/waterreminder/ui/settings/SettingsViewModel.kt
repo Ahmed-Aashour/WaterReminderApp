@@ -6,7 +6,7 @@ import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.store.AppSettingsDataStore
-import android.waterreminder.service.WaterNotificationScheduler
+import android.waterreminder.service.HydrationReminderScheduler
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,7 +32,7 @@ class SettingsViewModel @Inject constructor(
         AppSettingsDataStore.ML_TO_OZ_FACTOR
     )
 
-    private val notificationScheduler = WaterNotificationScheduler(context)
+    private val notificationScheduler = HydrationReminderScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES
 
     /**
