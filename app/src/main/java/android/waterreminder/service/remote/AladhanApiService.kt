@@ -17,7 +17,8 @@ interface AladhanApiService {
     /**
      * Resolves localized prayer time tracking metrics for a designated calendar date.
      *
-     * Example payload endpoint path matching target: "v1/timingsByCity/01-07-2026"
+     * ### API Call Blueprint Example:
+     * `https://api.aladhan.com/v1/timingsByCity/16-06-2026?city=Cairo&country=Egypt&method=5`
      *
      * @param dateString The chronological target formatted explicitly as "dd-MM-yyyy".
      * @param city The geographical municipality query parameter (e.g., "Cairo").
