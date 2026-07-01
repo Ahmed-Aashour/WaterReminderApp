@@ -13,10 +13,12 @@ import android.waterreminder.data.database.HydrationDatabase
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.data.store.AppSettingsDataStore
 import android.waterreminder.service.usecase.ResolveTrackingWindowUseCase
+import android.waterreminder.utils.startOfDayEpochMillis
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -91,12 +93,8 @@ class HydrationReminderReceiver : BroadcastReceiver() {
                 val catalogCups = database.dashboardDao().getCupsCatalogFlow().first()
 
                 // Fetch current total intake from database source of truth
-                val startOfDayTimestamp = java.time.LocalDate.now()
-                    .atStartOfDay(java.time.ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
-
-                val totalIntakeMl = database.dashboardDao().getTodayTotalIntakeFlow(startOfDayTimestamp).first()
+                val startOfDay = LocalDate.now().startOfDayEpochMillis
+                val totalIntakeMl = database.dashboardDao().getTodayTotalIntakeFlow(startOfDay).first()
 
                 val notificationBuilder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
