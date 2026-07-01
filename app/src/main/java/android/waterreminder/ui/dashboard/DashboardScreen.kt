@@ -3,7 +3,6 @@ package android.waterreminder.ui.dashboard
 import android.waterreminder.R
 import android.waterreminder.ui.core.components.Header
 import android.waterreminder.ui.core.components.SquareIconButton
-import android.waterreminder.ui.dashboard.components.ClearHistoryConfirmationDialog
 import android.waterreminder.ui.dashboard.components.DrinkButtonsSection
 import android.waterreminder.ui.dashboard.components.HydrationStreakSection
 import android.waterreminder.ui.dashboard.components.ProgressBar
@@ -20,10 +19,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,23 +32,10 @@ fun DashboardScreen(
     onAddWater: (Int) -> Unit,
     onCustomAddTrigger: () -> Unit,
     onDeleteLog: (DrunkCupHistory) -> Unit,
-    onClearAllHistory: () -> Unit,
+    onClearAllHistoryTrigger: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    var showClearConfirmation by remember { mutableStateOf(false) }
-
-    if (showClearConfirmation) {
-        ClearHistoryConfirmationDialog(
-            onDismiss = { showClearConfirmation = false },
-            onConfirm = {
-                onClearAllHistory()
-                showClearConfirmation = false
-            }
-        )
-    }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -91,7 +73,7 @@ fun DashboardScreen(
                 historyItems = state.historyLogs,
                 currentUnit = state.drinkButtons.unit,
                 onDeleteLog = onDeleteLog,
-                onClearAllHistory = { showClearConfirmation = true },
+                onClearAllHistoryTrigger = onClearAllHistoryTrigger,
                 modifier = Modifier.weight(1f)
             )
 
@@ -123,7 +105,7 @@ fun DashboardScreenPreview(
             onAddWater = {},
             onCustomAddTrigger = {},
             onDeleteLog = {},
-            onClearAllHistory = {},
+            onClearAllHistoryTrigger = {},
             onNavigateToSettings = {}
         )
     }

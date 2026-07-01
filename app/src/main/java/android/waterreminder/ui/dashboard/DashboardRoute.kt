@@ -1,5 +1,6 @@
 package android.waterreminder.ui.dashboard
 
+import android.waterreminder.ui.dashboard.components.ClearHistoryConfirmationDialog
 import android.waterreminder.ui.dashboard.components.CustomWaterInputDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +18,11 @@ fun DashboardRoute(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Dialog visibility triggers
     var showCustomDialog by remember { mutableStateOf(false) }
+    var showClearHistoryDialog by remember { mutableStateOf(false) }
+
     val dashboardState = (uiState as? DashboardUiState.Success)?.data
 
     when (val state = uiState) {
@@ -30,13 +35,14 @@ fun DashboardRoute(
                 onAddWater = { amount -> viewModel.logWater(amount) },
                 onCustomAddTrigger = { showCustomDialog = true },
                 onDeleteLog = { log -> viewModel.deleteWaterLog(log) },
-                onClearAllHistory = { viewModel.clearAllWaterHistory() },
+                onClearAllHistoryTrigger = { showClearHistoryDialog = true },
                 onNavigateToSettings = onNavigateToSettings,
                 modifier = modifier
             )
         }
     }
 
+    // Overlay Zone: Custom Intake Dialog
     if (showCustomDialog) {
         dashboardState?.let { state ->
             CustomWaterInputDialog(
@@ -52,5 +58,16 @@ fun DashboardRoute(
                 }
             )
         }
+    }
+
+    // Overlay Zone: Clear History Confirmation Dialog
+    if (showClearHistoryDialog) {
+        ClearHistoryConfirmationDialog(
+            onDismiss = { showClearHistoryDialog = false },
+            onConfirm = {
+                viewModel.clearAllWaterHistory()
+                showClearHistoryDialog = false
+            }
+        )
     }
 }

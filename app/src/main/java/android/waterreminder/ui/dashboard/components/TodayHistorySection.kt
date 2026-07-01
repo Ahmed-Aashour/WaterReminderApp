@@ -38,7 +38,7 @@ fun TodayHistorySection(
     historyItems: List<DrunkCupHistory>,
     currentUnit: AppUnit,
     onDeleteLog: (DrunkCupHistory) -> Unit,
-    onClearAllHistory: () -> Unit,
+    onClearAllHistoryTrigger: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     DashboardSection(
@@ -49,7 +49,7 @@ fun TodayHistorySection(
                 SquareIconButton(
                     icon = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.dashboard_accessibility_clear_all_history),
-                    onClick = onClearAllHistory
+                    onClick = onClearAllHistoryTrigger
                 )
             }
         },
@@ -238,7 +238,7 @@ fun TodayHistoryDarkModePreview(
                 historyItems = mockHistory,
                 currentUnit = AppUnit.ML,
                 onDeleteLog = {},
-                onClearAllHistory = {},
+                onClearAllHistoryTrigger = {},
             )
         }
     }
