@@ -1,14 +1,19 @@
 package android.waterreminder.ui.core.components
 
+import android.content.res.Configuration
+import android.waterreminder.R
+import android.waterreminder.ui.theme.ErtawyTheme
 import android.waterreminder.ui.theme.ErtawyTypography
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import android.waterreminder.R
 
 @Composable
 fun CancelButton(
@@ -48,5 +53,26 @@ fun ConfirmButton(
             text = text,
             style = ErtawyTypography.sectionStyle
         )
+    }
+}
+
+@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DialogButtonsPreview() {
+    ErtawyTheme {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(16.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CancelButton(onClick = {})
+                ConfirmButton(onClick = {})
+            }
+        }
     }
 }
