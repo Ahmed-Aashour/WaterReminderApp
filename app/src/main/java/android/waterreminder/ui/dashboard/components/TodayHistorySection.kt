@@ -9,19 +9,22 @@ import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -86,12 +89,28 @@ fun TodayHistorySection(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Top
             ) {
-                historyItems.forEach { item ->
+                historyItems.forEachIndexed { index, item ->
+                    // Calculate individual edge shapes
+                    val rowShape = when {
+                        historyItems.size == 1 -> RoundedCornerShape(12.dp)
+                        index == 0 -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                        index == historyItems.lastIndex -> RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                        else -> RectangleShape
+                    }
+
                     DismissibleHistoryCupChip(
                         item = item,
                         currentUnit = currentUnit,
+                        rowShape = rowShape,
                         onDeleteConfirmed = { onDeleteLog(item) }
                     )
+
+                    if (index < historyItems.lastIndex) {
+                        HorizontalDivider(
+                            thickness = 1.5.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
@@ -103,16 +122,13 @@ fun TodayHistorySection(
 fun DismissibleHistoryCupChip(
     item: DrunkCupHistory,
     currentUnit: AppUnit,
+    rowShape: Shape,
     onDeleteConfirmed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dismissState = rememberSwipeToDismissBoxState()
-
-    LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
-        }
-    }
+    val dismissState = rememberSwipeToDismissBoxState(
+        positionalThreshold = { Float.MAX_VALUE }
+    )
 
     SwipeToDismissBox(
         state = dismissState,
@@ -133,7 +149,7 @@ fun DismissibleHistoryCupChip(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(backgroundColor)
+                    .background(backgroundColor, shape = rowShape)
                     .clickable { onDeleteConfirmed() } // Tap confirmation context execution
                     .padding(end = 16.dp),
                 contentAlignment = Alignment.CenterEnd
@@ -147,7 +163,7 @@ fun DismissibleHistoryCupChip(
         }
     ) {
         // The foreground content remains your original static design component
-        HistoryCupChip(item = item, currentUnit = currentUnit)
+        HistoryCupChip(item = item, currentUnit = currentUnit, shape = rowShape)
     }
 }
 
@@ -158,13 +174,14 @@ fun DismissibleHistoryCupChip(
 private fun HistoryCupChip(
     item: DrunkCupHistory,
     currentUnit: AppUnit,
+    shape: Shape,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(36.dp)
-            .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = RectangleShape)
+            .height(42.dp)
+            .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = shape)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
