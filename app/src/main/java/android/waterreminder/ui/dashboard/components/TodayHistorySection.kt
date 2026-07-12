@@ -105,7 +105,7 @@ fun TodayHistorySection(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 historyItems.forEachIndexed { index, item ->
                     val rowShape = when {
@@ -122,10 +122,6 @@ fun TodayHistorySection(
                         isEditMode = isEditMode,
                         onDeleteClick = { onDeleteLog(item) }
                     )
-
-                    if (index < historyItems.lastIndex) {
-                        HorizontalDivider(thickness = 1.5.dp, color = MaterialTheme.colorScheme.primary)
-                    }
                 }
             }
         }
