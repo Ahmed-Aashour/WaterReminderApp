@@ -20,8 +20,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -58,11 +58,6 @@ fun TodayHistorySection(
                         color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(16.dp)
                     )
-                    .border(
-                        width = 1.5.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(16.dp)
-                    )
                     .padding(vertical = 20.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -89,7 +84,7 @@ fun TodayHistorySection(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.Top
             ) {
                 historyItems.forEach { item ->
                     DismissibleHistoryCupChip(
@@ -103,9 +98,6 @@ fun TodayHistorySection(
     }
 }
 
-/**
- * A wrapper container that handles swipe physics, threshold states, and background colors.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DismissibleHistoryCupChip(
@@ -114,7 +106,6 @@ fun DismissibleHistoryCupChip(
     onDeleteConfirmed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val itemShape = RoundedCornerShape(12.dp)
     val dismissState = rememberSwipeToDismissBoxState()
 
     LaunchedEffect(dismissState.currentValue) {
@@ -125,7 +116,7 @@ fun DismissibleHistoryCupChip(
 
     SwipeToDismissBox(
         state = dismissState,
-        modifier = modifier.clip(itemShape),
+        modifier = modifier.fillMaxWidth(),
         enableDismissFromStartToEnd = false,
         backgroundContent = {
             val isSwipingToReveal = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
@@ -156,7 +147,7 @@ fun DismissibleHistoryCupChip(
         }
     ) {
         // The foreground content remains your original static design component
-        HistoryCupChip(item = item, currentUnit = currentUnit, shape = itemShape)
+        HistoryCupChip(item = item, currentUnit = currentUnit)
     }
 }
 
@@ -167,15 +158,13 @@ fun DismissibleHistoryCupChip(
 private fun HistoryCupChip(
     item: DrunkCupHistory,
     currentUnit: AppUnit,
-    shape: RoundedCornerShape,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(36.dp)
-            .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = shape)
-            .border(width = 1.5.dp, color = MaterialTheme.colorScheme.primary, shape = shape)
+            .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = RectangleShape)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
