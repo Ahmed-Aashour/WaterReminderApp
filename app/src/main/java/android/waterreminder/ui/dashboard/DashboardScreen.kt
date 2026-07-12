@@ -63,12 +63,6 @@ fun DashboardScreen(
                 state = state.progressDisplay,
             )
 
-            DrinkButtonsSection(
-                state = state.drinkButtons,
-                onPresetClick = onAddWater,
-                onCustomAddClick = onCustomAddTrigger
-            )
-
             TodayHistorySection(
                 historyItems = state.historyLogs,
                 currentUnit = state.drinkButtons.unit,
@@ -77,9 +71,18 @@ fun DashboardScreen(
                 modifier = Modifier.weight(1f)
             )
 
-            HydrationStreakSection(
-                state = state.streakSection
+            DrinkButtonsSection(
+                state = state.drinkButtons,
+                onPresetClick = onAddWater,
+                onCustomAddClick = onCustomAddTrigger
             )
+
+            val showStreakSection = false
+            if (showStreakSection) {
+                HydrationStreakSection(
+                    state = state.streakSection
+                )
+            }
         }
     }
 }
