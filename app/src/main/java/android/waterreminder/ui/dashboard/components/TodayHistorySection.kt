@@ -5,12 +5,16 @@ import android.waterreminder.R
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.ClearButton
 import android.waterreminder.ui.core.components.DashboardSection
+import android.waterreminder.ui.core.components.EditButton
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,10 +23,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
@@ -41,26 +48,40 @@ fun TodayHistorySection(
     onClearAllHistoryTrigger: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var isEditMode by remember { mutableStateOf(false) }
+
+    LaunchedEffect(historyItems.isEmpty()) {
+        if (historyItems.isEmpty()) {
+            isEditMode = false
+        }
+    }
+
     DashboardSection(
         title = stringResource(R.string.dashboard_section_history_title),
         actionButton = {
             if (historyItems.isNotEmpty()) {
-                ClearButton(
-                    onClick = onClearAllHistoryTrigger
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    EditButton(
+                        isEditing = isEditMode,
+                        onClick = { isEditMode = !isEditMode }
+                    )
+
+                    if (isEditMode) {
+                        ClearButton(onClick = onClearAllHistoryTrigger)
+                    }
+                }
             }
         },
         modifier = modifier
     ) {
         if (historyItems.isEmpty()) {
-            // Empty State Box
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(16.dp)
-                    )
+                    .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
                     .padding(vertical = 20.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -71,9 +92,7 @@ fun TodayHistorySection(
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
                     text = stringResource(R.string.dashboard_history_empty_state_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
@@ -82,7 +101,6 @@ fun TodayHistorySection(
                 )
             }
         } else {
-            // Clean Vertical Layout Stack
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -90,7 +108,6 @@ fun TodayHistorySection(
                 verticalArrangement = Arrangement.Top
             ) {
                 historyItems.forEachIndexed { index, item ->
-                    // Calculate individual edge shapes
                     val rowShape = when {
                         historyItems.size == 1 -> RoundedCornerShape(12.dp)
                         index == 0 -> RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
@@ -98,18 +115,16 @@ fun TodayHistorySection(
                         else -> RectangleShape
                     }
 
-                    DismissibleHistoryCupChip(
+                    HistoryRow(
                         item = item,
                         currentUnit = currentUnit,
-                        rowShape = rowShape,
-                        onDeleteConfirmed = { onDeleteLog(item) }
+                        shape = rowShape,
+                        isEditMode = isEditMode,
+                        onDeleteClick = { onDeleteLog(item) }
                     )
 
                     if (index < historyItems.lastIndex) {
-                        HorizontalDivider(
-                            thickness = 1.5.dp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        HorizontalDivider(thickness = 1.5.dp, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -117,64 +132,13 @@ fun TodayHistorySection(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DismissibleHistoryCupChip(
-    item: DrunkCupHistory,
-    currentUnit: AppUnit,
-    rowShape: Shape,
-    onDeleteConfirmed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        positionalThreshold = { Float.MAX_VALUE }
-    )
-
-    SwipeToDismissBox(
-        state = dismissState,
-        modifier = modifier.fillMaxWidth(),
-        enableDismissFromStartToEnd = false,
-        backgroundContent = {
-            val isSwipingToReveal = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
-
-            val backgroundColor by animateColorAsState(
-                targetValue = if (isSwipingToReveal) MaterialTheme.colorScheme.errorContainer else Color.Transparent,
-                label = "RevealBackgroundAnimation"
-            )
-            val iconColor by animateColorAsState(
-                targetValue = if (isSwipingToReveal) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.error,
-                label = "RevealIconColorAnimation"
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(backgroundColor, shape = rowShape)
-                    .clickable { onDeleteConfirmed() } // Tap confirmation context execution
-                    .padding(end = 16.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.dashboard_accessibility_delete_log),
-                    tint = iconColor
-                )
-            }
-        }
-    ) {
-        // The foreground content remains your original static design component
-        HistoryCupChip(item = item, currentUnit = currentUnit, shape = rowShape)
-    }
-}
-
-/**
- * Split-box item card layout rendering individual metrics.
- */
-@Composable
-private fun HistoryCupChip(
+private fun HistoryRow(
     item: DrunkCupHistory,
     currentUnit: AppUnit,
     shape: Shape,
+    isEditMode: Boolean,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -182,7 +146,7 @@ private fun HistoryCupChip(
             .fillMaxWidth()
             .height(42.dp)
             .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = shape)
-            .padding(horizontal = 16.dp),
+            .padding(start = 16.dp, end = if (isEditMode) 4.dp else 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -193,10 +157,7 @@ private fun HistoryCupChip(
         ) {
             // 1. MAIN AMOUNT
             Text(
-                text = stringResource(
-                    currentUnit.formatRes,
-                    currentUnit.convertFromMl(item.amountMl)
-                ),
+                text = stringResource(currentUnit.formatRes, currentUnit.convertFromMl(item.amountMl)),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
@@ -217,16 +178,43 @@ private fun HistoryCupChip(
             )
         }
 
-        // Right Side: 3. TIMESTAMP
-        Text(
-            text = item.timeLogged,
-            style = MaterialTheme.typography.labelSmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            maxLines = 1
-        )
+        // Right Side: 3. TIMESTAMP & Delete-Icon in Edit Mode
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Timestamp disappears or stays cleanly alongside the button depending on visibility filters
+            AnimatedVisibility(
+                visible = !isEditMode,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Text(
+                    text = item.timeLogged,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    maxLines = 1
+                )
+            }
+
+            // Direct clean single-tap action trigger
+            AnimatedVisibility(
+                visible = isEditMode,
+                enter = fadeIn() + scaleIn(initialScale = 0.7f),
+                exit = fadeOut() + scaleOut(targetScale = 0.7f)
+            ) {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.dashboard_accessibility_delete_log),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
     }
 }
 

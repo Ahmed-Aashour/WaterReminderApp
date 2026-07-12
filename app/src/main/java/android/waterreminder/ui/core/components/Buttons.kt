@@ -73,6 +73,24 @@ fun ClearButton(
 }
 
 @Composable
+fun EditButton(
+    isEditing: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    editText: String = stringResource(R.string.action_edit),
+    doneText: String = stringResource(R.string.action_done)
+) {
+    BaseActionButton(
+        text = if (isEditing) doneText else editText,
+        onClick = onClick,
+        containerColor = if (isEditing) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        contentColor = if (isEditing) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primary,
+        borderColor = MaterialTheme.colorScheme.primary,
+        modifier = modifier
+    )
+}
+
+@Composable
 private fun BaseActionButton(
     text: String,
     onClick: () -> Unit,
@@ -115,6 +133,8 @@ fun DialogButtonsPreview() {
                 CancelButton(onClick = {})
                 ConfirmButton(onClick = {})
                 ClearButton(onClick = {})
+                EditButton(isEditing = false, onClick = {})
+                EditButton(isEditing = true, onClick = {})
             }
         }
     }
