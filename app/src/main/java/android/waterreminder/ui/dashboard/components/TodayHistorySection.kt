@@ -146,7 +146,7 @@ private fun HistoryRow(
             .fillMaxWidth()
             .height(42.dp)
             .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = shape)
-            .padding(start = 16.dp, end = if (isEditMode) 4.dp else 16.dp),
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -183,30 +183,26 @@ private fun HistoryRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Timestamp disappears or stays cleanly alongside the button depending on visibility filters
-            AnimatedVisibility(
-                visible = !isEditMode,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Text(
-                    text = item.timeLogged,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    maxLines = 1
-                )
-            }
 
-            // Direct clean single-tap action trigger
+            Text(
+                text = item.timeLogged,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                maxLines = 1
+            )
+
             AnimatedVisibility(
                 visible = isEditMode,
                 enter = fadeIn() + scaleIn(initialScale = 0.7f),
                 exit = fadeOut() + scaleOut(targetScale = 0.7f)
             ) {
-                IconButton(onClick = onDeleteClick) {
+                IconButton(
+                    onClick = onDeleteClick,
+                    modifier = Modifier.size(36.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = stringResource(R.string.dashboard_accessibility_delete_log),
