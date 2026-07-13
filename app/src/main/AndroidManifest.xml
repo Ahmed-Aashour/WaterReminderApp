@@ -2,13 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Sync api and background data updates -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Trigger background tracking alerts and schedule precise alarm timing -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
+    <!-- Restore notification scheduling on device restart -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <!-- Required permissions for accessing network-based and cellular location info -->
+    <!-- Localize climate-adjusted hydration needs or local sun cycles -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
