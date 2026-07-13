@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import android.waterreminder.R
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.core.components.*
-import android.waterreminder.ui.settings.GoalOptionUiModel
 import android.waterreminder.ui.settings.SettingsUiState
 import android.waterreminder.ui.settings.preview.SettingsScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
@@ -27,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun DailyGoalDialog(
     currentGoalMl: Int,
     currentUnit: AppUnit,
-    predefinedOptions: List<GoalOptionUiModel>,
+    predefinedOptions: List<Int>,
     validationEvents: Flow<String>,
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
@@ -35,7 +34,7 @@ fun DailyGoalDialog(
     modifier: Modifier = Modifier
 ) {
     // Local processing states
-    var selectedGoalMl by remember { mutableStateOf(currentGoalMl.takeIf { ml -> predefinedOptions.any { it.amountMl == ml } }) }
+    var selectedGoalMl by remember { mutableStateOf(currentGoalMl.takeIf { ml -> predefinedOptions.any { it == ml } }) }
     var customInputString by remember { mutableStateOf(if (selectedGoalMl == null) currentGoalMl.toString() else "") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -52,12 +51,12 @@ fun DailyGoalDialog(
         modifier = modifier,
         options = {
             // Render pre-defined selections loop safely
-            predefinedOptions.forEach { option ->
+            predefinedOptions.forEach { amountMl ->
                 SelectionRow(
-                    label = stringResource(currentUnit.formatRes, currentUnit.convertFromMl(currentGoalMl)),
-                    isSelected = selectedGoalMl == option.amountMl,
+                    label = stringResource(currentUnit.formatRes, currentUnit.convertFromMl(amountMl)),
+                    isSelected = selectedGoalMl == amountMl,
                     onClick = {
-                        selectedGoalMl = option.amountMl
+                        selectedGoalMl = amountMl
                         customInputString = ""
                         errorMessage = null
                     }

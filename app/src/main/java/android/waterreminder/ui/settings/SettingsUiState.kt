@@ -11,7 +11,7 @@ import java.time.LocalTime
  */
 data class SettingsUiState(
     val dailyGoalMl: Int,
-    val predefinedGoals: List<GoalOptionUiModel> = emptyList(),
+    val predefinedGoals: List<Int> = emptyList(),
     val unit: AppUnit,
 
     val areNotificationsEnabled: Boolean = true,
@@ -26,20 +26,6 @@ data class SettingsUiState(
     val theme: AppTheme,
     val language: AppLanguage,
 )
-
-data class GoalOptionUiModel(
-    val amountMl: Int,
-    val amountOz: Int,
-)
-
-fun List<Int>.toGoalUiModels(mlToOzFactor: Double): List<GoalOptionUiModel> {
-    return this.map { ml ->
-        GoalOptionUiModel(
-            amountMl = ml,
-            amountOz = (ml * mlToOzFactor).toInt()
-        )
-    }
-}
 
 sealed interface ActiveSettingsDialog {
     data object None : ActiveSettingsDialog

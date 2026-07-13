@@ -29,9 +29,7 @@ class SettingsViewModel @Inject constructor(
 
     private val _validationErrorChannel = Channel<String>(Channel.BUFFERED)
     val validationErrorChannel = _validationErrorChannel.receiveAsFlow()
-    val predefinedGoalOptions: List<GoalOptionUiModel> = AppSettingsDataStore.PREDEFINED_GOALS_ML.toGoalUiModels(
-        AppSettingsDataStore.ML_TO_OZ_FACTOR
-    )
+    val predefinedGoalOptions: List<Int> = AppSettingsDataStore.PREDEFINED_GOALS_ML
 
     private val notificationScheduler = HydrationReminderScheduler(context)
     private val supportedFrequencies = AppSettingsDataStore.SUPPORTED_FREQUENCIES_MINUTES

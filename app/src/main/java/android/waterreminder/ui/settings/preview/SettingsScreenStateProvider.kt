@@ -4,13 +4,12 @@ import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
 import android.waterreminder.data.entity.AppUnit
 import android.waterreminder.ui.settings.SettingsUiState
-import android.waterreminder.ui.settings.toGoalUiModels
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import java.time.LocalTime
 
 class SettingsScreenStateProvider : PreviewParameterProvider<SettingsUiState> {
 
-    private val defaultGoalOptions = listOf(2000, 2250, 2500, 2750, 3000).toGoalUiModels(0.033814)
+    private val defaultGoalOptions = listOf(2000, 2250, 2500, 2750, 3000)
     private val supportedFrequencies = listOf(15, 30, 60, 90, 120, 180)
 
     override val values: Sequence<SettingsUiState> = listOf(

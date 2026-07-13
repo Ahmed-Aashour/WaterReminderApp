@@ -31,7 +31,7 @@ fun HydrationFrame(
 
         SettingsItemRow(
             title = stringResource(R.string.goal_row_title),
-            description = stringResource(id = unit.formatRes, dailyGoal),
+            description = stringResource(id = unit.formatRes, unit.convertFromMl(dailyGoal)),
             onClick = onGoalClick
         )
         SettingsItemRow(
