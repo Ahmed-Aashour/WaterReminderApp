@@ -9,27 +9,24 @@ import android.waterreminder.ui.core.components.EditButton
 import android.waterreminder.ui.dashboard.DrunkCupHistory
 import android.waterreminder.ui.dashboard.preview.HistoryLogsProvider
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
@@ -46,6 +43,7 @@ fun TodayHistorySection(
     currentUnit: AppUnit,
     onDeleteLog: (DrunkCupHistory) -> Unit,
     onClearAllHistoryTrigger: () -> Unit,
+    onEditLogClick: (DrunkCupHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isEditMode by remember { mutableStateOf(false) }
@@ -120,7 +118,8 @@ fun TodayHistorySection(
                         currentUnit = currentUnit,
                         shape = rowShape,
                         isEditMode = isEditMode,
-                        onDeleteClick = { onDeleteLog(item) }
+                        onDeleteClick = { onDeleteLog(item) },
+                        onEditClick = { onEditLogClick(item) }
                     )
                 }
             }
@@ -135,13 +134,16 @@ private fun HistoryRow(
     shape: Shape,
     isEditMode: Boolean,
     onDeleteClick: () -> Unit,
+    onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(42.dp)
+            .clip(shape)
             .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = shape)
+            .clickable(enabled = isEditMode, onClick = onEditClick)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -162,7 +164,21 @@ private fun HistoryRow(
                 maxLines = 1
             )
 
-            // 2. DEBUG ID (Placed right next to the amount, easy to strip out later)
+            // 2. INLINE EDIT INDICATOR
+            AnimatedVisibility(
+                visible = isEditMode,
+                enter = fadeIn() + scaleIn(initialScale = 0.8f),
+                exit = fadeOut() + scaleOut(targetScale = 0.8f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+
+            // 3. DEBUG ID
             Text(
                 text = "[ID: ${item.id}]",
                 style = MaterialTheme.typography.labelSmall.copy(
@@ -227,6 +243,7 @@ fun TodayHistoryDarkModePreview(
                 currentUnit = AppUnit.ML,
                 onDeleteLog = {},
                 onClearAllHistoryTrigger = {},
+                onEditLogClick = {}
             )
         }
     }
