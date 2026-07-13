@@ -23,6 +23,7 @@
     <string name="content_description_navigate_back">Navigate back</string>
 
     <!-- Shared Actions & Input Controls -->
+    <string name="action_clear">Clear</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_confirm">Confirm</string>
     <string name="text_input_placeholder_custom">Enter custom value…</string>
@@ -112,11 +113,15 @@
     <string name="dashboard_custom_intake_placeholder_format">Amount (%1$s)</string>
 
     <!-- Section: History Tracking Timeline -->
-    <string name="dashboard_section_history_title">Today’s Drink History</string>
+    <string name="dashboard_section_history_title">Today History</string>
     <string name="dashboard_history_empty_state">No Cups Drank yet!</string>
     <string name="dashboard_accessibility_delete_log">Delete Log</string>
     <string name="dashboard_history_chip_id_format">%1$d</string>
     <string name="dashboard_history_chip_amount_format">%1$d\nml</string>
+
+    <string name="dashboard_accessibility_clear_all_history">Clear all history entries</string>
+    <string name="clear_history_dialog_title">Clear History</string>
+    <string name="clear_history_dialog_description">Are you sure you want to permanently clear all water log records? This action cannot be undone.</string>
 
     <!-- Section: Hydration Streak -->
     <string name="dashboard_section_streak_title">Hydration Streak</string>
@@ -135,5 +140,7 @@
     <string name="notification_reminder_title">Stay Hydrated! 💧</string>
     <string name="notification_reminder_text">Tap below to log your next glass.</string>
     <string name="notification_progress_prefix">Progress</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_done">Done</string>
 
 </resources>

@@ -120,6 +120,7 @@ fun SettingsScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
+                .statusBarsPadding()
                 .padding(24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,

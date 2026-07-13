@@ -9,11 +9,7 @@ import android.waterreminder.ui.dashboard.components.ProgressBar
 import android.waterreminder.ui.dashboard.components.TodayHistorySection
 import android.waterreminder.ui.dashboard.preview.DashboardScreenStateProvider
 import android.waterreminder.ui.theme.ErtawyTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +28,9 @@ fun DashboardScreen(
     onAddWater: (Int) -> Unit,
     onCustomAddTrigger: () -> Unit,
     onDeleteLog: (DrunkCupHistory) -> Unit,
+    onClearAllHistoryTrigger: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onEditLogTrigger: (DrunkCupHistory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -62,22 +60,27 @@ fun DashboardScreen(
                 state = state.progressDisplay,
             )
 
+            TodayHistorySection(
+                historyItems = state.historyLogs,
+                currentUnit = state.drinkButtons.unit,
+                onDeleteLog = onDeleteLog,
+                onClearAllHistoryTrigger = onClearAllHistoryTrigger,
+                onEditLogClick = onEditLogTrigger,
+                modifier = Modifier.weight(1f)
+            )
+
             DrinkButtonsSection(
                 state = state.drinkButtons,
                 onPresetClick = onAddWater,
                 onCustomAddClick = onCustomAddTrigger
             )
 
-            TodayHistorySection(
-                historyItems = state.historyLogs,
-                currentUnit = state.drinkButtons.unit,
-                onDeleteLog = onDeleteLog,
-                modifier = Modifier.weight(1f)
-            )
-
-            HydrationStreakSection(
-                state = state.streakSection
-            )
+            val showStreakSection = false
+            if (showStreakSection) {
+                HydrationStreakSection(
+                    state = state.streakSection
+                )
+            }
         }
     }
 }
@@ -103,7 +106,9 @@ fun DashboardScreenPreview(
             onAddWater = {},
             onCustomAddTrigger = {},
             onDeleteLog = {},
-            onNavigateToSettings = {}
+            onClearAllHistoryTrigger = {},
+            onNavigateToSettings = {},
+            onEditLogTrigger = {},
         )
     }
 }

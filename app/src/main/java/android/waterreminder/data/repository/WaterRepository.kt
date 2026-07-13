@@ -65,6 +65,13 @@ class WaterRepository @Inject constructor(
     }
 
     /**
+     * Updates the recorded volume level of a specific logged water consumption entry.
+     */
+    suspend fun updateWaterLogAmount(logId: Long, amountMl: Int) {
+        dashboardDao.updateLogAmount(logId, amountMl)
+    }
+
+    /**
      * Deletes a water consumption entry from the history table using its explicit identifier.
      */
     suspend fun deleteWaterLog(logId: Long) {

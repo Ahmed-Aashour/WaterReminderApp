@@ -42,8 +42,8 @@ class AppSettingsDataStore(private val context: Context) {
         const val MIN_DAILY_GOAL_ML = 1000
         const val MAX_DAILY_GOAL_ML = 4000
 
-        const val MIN_CUSTOM_INTAKE_ML = 10      // Smallest sip (e.g., ~0.3 oz)
-        const val MAX_CUSTOM_INTAKE_ML = 4000    // Largest realistic container (4L / ~135 oz)
+        const val MIN_CUSTOM_INTAKE_ML = 50       // Small cup / quick gulp
+        const val MAX_CUSTOM_INTAKE_ML = 1000     // Maximum size of a standard large water bottle (1L)
 
         const val ML_TO_OZ_FACTOR = 0.0338140227
 
