@@ -1,6 +1,7 @@
 package android.waterreminder.ui.settings
 
 import android.content.Context
+import android.util.Log
 import android.waterreminder.R
 import android.waterreminder.data.entity.AppLanguage
 import android.waterreminder.data.entity.AppTheme
@@ -43,6 +44,14 @@ class SettingsViewModel @Inject constructor(
         .map { prefs ->
             val window = resolveTrackingWindowUseCase.execute(prefs)
 
+            Log.d(
+                TAG,
+                "uiState updating: goal=${prefs.dailyGoalMl}ml, unit=${prefs.unit}, " +
+                        "notifications=${prefs.areNotificationsEnabled}, freq=${prefs.frequency}m, " +
+                        "time=[${prefs.startTime}-${prefs.endTime}], activeWindow=[${window.first}-${window.second}], " +
+                        "fasting=${prefs.isFasting}, theme=${prefs.theme}, lang=${prefs.language}"
+            )
+
             SettingsUiState(
                 dailyGoalMl = prefs.dailyGoalMl,
                 predefinedGoals = predefinedGoalOptions,
@@ -82,8 +91,10 @@ class SettingsViewModel @Inject constructor(
     // --- Dynamic User Settings Action Setters ---
 
     fun updateCustomDailyGoalString(inputString: String) {
+        Log.d(TAG, "updateCustomDailyGoalString: input=\"$inputString\"")
         val parsedInt = inputString.trim().toIntOrNull()
         if (parsedInt == null) {
+            Log.d(TAG, "updateCustomDailyGoalString: parsing failed, sending validation error")
             viewModelScope.launch {
                 _validationErrorChannel.send(
                     context.getString(R.string.validation_error_invalid_number)
@@ -95,9 +106,11 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateDailyGoal(goalMl: Int) {
+        Log.d(TAG, "updateDailyGoal: request value=${goalMl}ml")
         viewModelScope.launch {
             val wasSaved = appSettingsDataStore.updateDailyGoal(goalMl)
             if (!wasSaved) {
+                Log.d(TAG, "updateDailyGoal: rejected by datastore (out of bounds)")
                 // Fetch the user's selected unit to display localized values, or fall back to plain text strings if context demands
                 val currentUnit = uiState.value.unit
                 val minDisplay = context.getString(
@@ -121,12 +134,14 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateUnit(unit: AppUnit) {
+        Log.d(TAG, "updateUnit: target unit=$unit")
         viewModelScope.launch {
             appSettingsDataStore.updateUnit(unit)
         }
     }
 
     fun updateNotificationToggle(isEnabled: Boolean) {
+        Log.d(TAG, "updateNotificationToggle: isEnabled=$isEnabled")
         viewModelScope.launch {
             appSettingsDataStore.updateNotificationToggle(isEnabled)
             synchronizeScheduler()
@@ -134,6 +149,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateFrequency(minutes: Int) {
+        Log.d(TAG, "updateFrequency: target minutes=$minutes")
         viewModelScope.launch {
             appSettingsDataStore.updateFrequency(minutes)
             synchronizeScheduler()
@@ -141,6 +157,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateStartAndEndTimes(startHour: LocalTime, endHour: LocalTime) {
+        Log.d(TAG, "updateStartAndEndTimes: start=$startHour, end=$endHour")
         viewModelScope.launch {
             appSettingsDataStore.updateStartAndEndTimes(startHour, endHour)
             synchronizeScheduler()
@@ -148,6 +165,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateFastingState(isFasting: Boolean) {
+        Log.d(TAG, "updateFastingState: isFasting=$isFasting")
         viewModelScope.launch {
             appSettingsDataStore.updateFastingState(isFasting)
             synchronizeScheduler()
@@ -155,12 +173,14 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateTheme(theme: AppTheme) {
+        Log.d(TAG, "updateTheme: target theme=$theme")
         viewModelScope.launch {
             appSettingsDataStore.updateTheme(theme)
         }
     }
 
     fun updateLanguage(language: AppLanguage) {
+        Log.d(TAG, "updateLanguage: target language=$language")
         viewModelScope.launch {
             appSettingsDataStore.updateLanguage(language)
         }
@@ -175,6 +195,10 @@ class SettingsViewModel @Inject constructor(
 
             if (prefs.areNotificationsEnabled) {
                 val window = resolveTrackingWindowUseCase.execute(prefs)
+                Log.d(
+                    TAG,
+                    "synchronizeScheduler: Scheduling tracking window [${window.first} - ${window.second}] every ${prefs.frequency}m"
+                )
 
                 notificationScheduler.scheduleNextReminder(
                     startTime = window.first,
@@ -182,8 +206,13 @@ class SettingsViewModel @Inject constructor(
                     intervalMinutes = prefs.frequency
                 )
             } else {
+                Log.d(TAG, "synchronizeScheduler: Notifications disabled, cancelling active reminders")
                 notificationScheduler.cancelReminders()
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "SettingsViewModel"
     }
 }
