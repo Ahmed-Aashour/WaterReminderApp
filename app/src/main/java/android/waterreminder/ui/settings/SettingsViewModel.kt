@@ -100,8 +100,14 @@ class SettingsViewModel @Inject constructor(
             if (!wasSaved) {
                 // Fetch the user's selected unit to display localized values, or fall back to plain text strings if context demands
                 val currentUnit = uiState.value.unit
-                val minDisplay = context.getString(currentUnit.formatRes, AppSettingsDataStore.MIN_DAILY_GOAL_ML)
-                val maxDisplay = context.getString(currentUnit.formatRes, AppSettingsDataStore.MAX_DAILY_GOAL_ML)
+                val minDisplay = context.getString(
+                    currentUnit.formatRes,
+                    currentUnit.convertFromMl(AppSettingsDataStore.MIN_DAILY_GOAL_ML)
+                )
+                val maxDisplay = context.getString(
+                    currentUnit.formatRes,
+                    currentUnit.convertFromMl(AppSettingsDataStore.MAX_DAILY_GOAL_ML)
+                )
 
                 _validationErrorChannel.send(
                     context.getString(
