@@ -2,12 +2,7 @@ package android.waterreminder.data.dao
 
 import android.waterreminder.data.entity.CupsCatalogEntity
 import android.waterreminder.data.entity.WaterHistoryEntity
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,6 +12,9 @@ interface DashboardDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLog(log: WaterHistoryEntity)
+
+    @Query("UPDATE water_history SET amountMl = :amountMl WHERE id = :logId")
+    suspend fun updateLogAmount(logId: Long, amountMl: Int)
 
     @Delete
     suspend fun deleteLog(log: WaterHistoryEntity)

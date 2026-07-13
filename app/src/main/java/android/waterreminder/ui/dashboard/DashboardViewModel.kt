@@ -122,6 +122,43 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun updateWaterLogAmount(
+        log: DrunkCupHistory,
+        inputString: String,
+        unit: AppUnit,
+        onSuccess: () -> Unit
+    ) {
+        val parsedInt = inputString.trim().toIntOrNull()
+        if (parsedInt == null) {
+            viewModelScope.launch {
+                _validationErrorChannel.send(
+                    context.getString(R.string.validation_error_invalid_number)
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            val minAmount = unit.convertFromMl(AppSettingsDataStore.MIN_CUSTOM_INTAKE_ML)
+            val maxAmount = unit.convertFromMl(AppSettingsDataStore.MAX_CUSTOM_INTAKE_ML)
+
+            if (parsedInt !in minAmount..maxAmount) {
+                _validationErrorChannel.send(
+                    context.getString(
+                        R.string.validation_error_out_of_bounds,
+                        context.getString(unit.formatRes, minAmount),
+                        context.getString(unit.formatRes, maxAmount)
+                    )
+                )
+                return@launch
+            }
+
+            val amountMl = unit.convertToMl(parsedInt)
+            repository.updateWaterLogAmount(log.id, amountMl)
+            onSuccess()
+        }
+    }
+
     fun addCustomWaterPresetAndLog(
         inputString: String,
         unit: AppUnit,
