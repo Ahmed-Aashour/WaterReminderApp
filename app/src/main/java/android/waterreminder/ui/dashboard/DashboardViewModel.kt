@@ -128,32 +128,9 @@ class DashboardViewModel @Inject constructor(
         unit: AppUnit,
         onSuccess: () -> Unit
     ) {
-        val parsedInt = inputString.trim().toIntOrNull()
-        if (parsedInt == null) {
-            viewModelScope.launch {
-                _validationErrorChannel.send(
-                    context.getString(R.string.validation_error_invalid_number)
-                )
-            }
-            return
-        }
+        val amountMl = validateWaterIntakeStringOrEmitErrors(inputString, unit) ?: return
 
         viewModelScope.launch {
-            val minAmount = unit.convertFromMl(AppSettingsDataStore.MIN_CUSTOM_INTAKE_ML)
-            val maxAmount = unit.convertFromMl(AppSettingsDataStore.MAX_CUSTOM_INTAKE_ML)
-
-            if (parsedInt !in minAmount..maxAmount) {
-                _validationErrorChannel.send(
-                    context.getString(
-                        R.string.validation_error_out_of_bounds,
-                        context.getString(unit.formatRes, minAmount),
-                        context.getString(unit.formatRes, maxAmount)
-                    )
-                )
-                return@launch
-            }
-
-            val amountMl = unit.convertToMl(parsedInt)
             repository.updateWaterLogAmount(log.id, amountMl)
             onSuccess()
         }
@@ -164,37 +141,11 @@ class DashboardViewModel @Inject constructor(
         unit: AppUnit,
         onSuccess: () -> Unit
     ) {
-        val parsedInt = inputString.trim().toIntOrNull()
-        if (parsedInt == null) {
-            viewModelScope.launch {
-                _validationErrorChannel.send(
-                    context.getString(R.string.validation_error_invalid_number)
-                )
-            }
-            return
-        }
+        val amountMl = validateWaterIntakeStringOrEmitErrors(inputString, unit) ?: return
 
         viewModelScope.launch {
-            // Dynamic custom layout upper bound calculations matching current units
-            val minAmount = unit.convertFromMl(AppSettingsDataStore.MIN_CUSTOM_INTAKE_ML)
-            val maxAmount = unit.convertFromMl(AppSettingsDataStore.MAX_CUSTOM_INTAKE_ML)
-
-            if (parsedInt !in minAmount..maxAmount) {
-                _validationErrorChannel.send(
-                    context.getString(
-                        R.string.validation_error_out_of_bounds,
-                        context.getString(unit.formatRes, minAmount),
-                        context.getString(unit.formatRes, maxAmount)
-                    )
-                )
-                return@launch
-            }
-
-            // Execution success sequence path
-            val amountMl = unit.convertToMl(parsedInt) // Reverse convert back to mL data types for repository storage tracking
             repository.addCupToCatalog(amountMl)
             repository.logWaterConsumption(amountMl)
-
             onSuccess()
         }
     }
@@ -212,6 +163,38 @@ class DashboardViewModel @Inject constructor(
     }
 
     // --- Core Calculation Helper Functions ---
+
+    /**
+     * Validates the raw user input string against unit bounds.
+     * Returns the amount in mL if valid, or null if validation fails (handling error emissions automatically).
+     */
+    private fun validateWaterIntakeStringOrEmitErrors(inputString: String, unit: AppUnit): Int? {
+        val parsedInt = inputString.trim().toIntOrNull()
+        if (parsedInt == null) {
+            viewModelScope.launch {
+                _validationErrorChannel.send(context.getString(R.string.validation_error_invalid_number))
+            }
+            return null
+        }
+
+        val minAmount = unit.convertFromMl(AppSettingsDataStore.MIN_CUSTOM_INTAKE_ML)
+        val maxAmount = unit.convertFromMl(AppSettingsDataStore.MAX_CUSTOM_INTAKE_ML)
+
+        if (parsedInt !in minAmount..maxAmount) {
+            viewModelScope.launch {
+                _validationErrorChannel.send(
+                    context.getString(
+                        R.string.validation_error_out_of_bounds,
+                        context.getString(unit.formatRes, minAmount),
+                        context.getString(unit.formatRes, maxAmount)
+                    )
+                )
+            }
+            return null
+        }
+
+        return unit.convertToMl(parsedInt)
+    }
 
     /**
      * Calculates the start-of-day Unix Epoch millisecond timestamp for a given number
